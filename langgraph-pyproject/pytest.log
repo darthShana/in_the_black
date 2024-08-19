@@ -1,0 +1,87 @@
+2024-08-12 17:27:38 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1026)
+2024-08-12 17:27:39 [    INFO] Extracted 29 (process_bank_export.py:109)
+2024-08-12 17:27:39 [    INFO]          Date   Unique Id  ...                             Memo   Amount
+0  2023/04/01  2023040101  ...  12-3273-0018314-92 001 INTEREST  -796.92
+1  2023/04/28  2023042801  ...                    3HLRPR 864878  1903.66
+2  2023/05/01  2023050101  ...  12-3273-0018314-92 001 INTEREST  -771.22
+3  2023/05/07  2023050701  ...      FC12-3148-0191417-00 dharsh  -450.00
+4  2023/05/31  2023053101  ...                    3HLRPR 875665  1990.37
+
+[5 rows x 7 columns] (process_bank_export.py:110)
+2024-08-12 17:27:39 [    INFO] saving filtered records:29 (process_bank_export.py:116)
+2024-08-12 17:27:48 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1026)
+2024-08-12 17:27:52 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1026)
+2024-08-12 17:27:52 [    INFO] filtered values from bank statement: 29 (process_bank_export.py:120)
+2024-08-12 17:28:03 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1026)
+2024-08-12 17:28:08 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1026)
+2024-08-12 17:28:08 [    INFO] mandatory values from bank statement: 29 (process_bank_export.py:75)
+2024-08-12 17:28:35 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1026)
+2024-08-12 17:28:39 [    INFO] Extracted 355 (process_bank_export.py:109)
+2024-08-12 17:28:39 [    INFO]          Date   Unique Id  ...                               Memo   Amount
+0  2023/04/02  2023040201  ...               MONTHLY ACCO UNT FEE     0.00
+1  2023/04/02  2023040202  ...                                NaN   -15.23
+2  2023/04/03  2023040301  ...           D/D 5398975-01 WATERCARE  -196.49
+3  2023/04/04  2023040401  ...  FC12-3013-0205105-00 dharsh train   -90.00
+4  2023/04/05  2023040501  ...                                NaN  2300.00
+
+[5 rows x 7 columns] (process_bank_export.py:110)
+2024-08-12 17:28:43 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1026)
+2024-08-12 17:28:43 [    INFO] (?:(?=.*Payee:.*AUCKLAND COUNCIL)(?=.*Memo:.*34 Nicholas)|(?=.*Memo:.*D/D 5398975-01 WATERCARE)|(?=.*Payee:.*ASB BANK Insurance)) (bank_statement_retriever.py:115)
+2024-08-12 17:28:43 [    INFO] saving filtered records:25 (process_bank_export.py:116)
+2024-08-12 17:28:52 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1026)
+2024-08-12 17:28:55 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1026)
+2024-08-12 17:28:55 [    INFO] filtered values from bank statement: 25 (process_bank_export.py:120)
+2024-08-12 17:29:08 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1026)
+2024-08-12 17:29:11 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1026)
+2024-08-12 17:29:12 [    INFO] mandatory values from bank statement: 25 (process_bank_export.py:75)
+2024-08-12 17:29:38 [    INFO] None (test_end_of_year_accounts.py:23)
+2024-08-12 17:29:38 [    INFO] <h1>Statement of Profit or Loss</h1>
+
+For the year ended 
+
+<table>
+    <tr>
+        <th></th>
+        <th></th>
+    </tr>
+    <tr>
+        <td>Trading income</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Rental Revenue</td>
+        <td>35458.69</td>
+    </tr>
+    <tr>
+        <td>Total Trading Income</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Gross Profit</td>
+        <td>35458.69</td>
+    </tr>
+    <tr>
+        <td>Expenses</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Mortgage Interest</td>
+        <td>20639.56</td>
+    </tr>
+    <tr>
+        <td>Water</td>
+        <td>3188.26</td>
+    </tr>
+    <tr>
+        <td>Rates</td>
+        <td>2629.31</td>
+    </tr>
+    <tr>
+        <td>Insurance</td>
+        <td>2260.92</td>
+    </tr>
+    <tr>
+        <td>Total Expenses</td>
+        <td>28718.05</td>
+    </tr>
+</table> (statement_of_profit_or_loss.py:33)

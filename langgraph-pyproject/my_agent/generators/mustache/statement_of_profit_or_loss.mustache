@@ -1,0 +1,42 @@
+<h1>Statement of Profit or Loss</h1>
+
+For the year ended {{ fy_end_date }}
+
+<table>
+    <tr>
+        <th></th>
+        <th>{{ fy_end_year }}</th>
+    </tr>
+    <tr>
+        <td>Trading income</td>
+        <td></td>
+    </tr>
+    {{#revenue_items}}
+    <tr>
+        <td>{{display_name}}</td>
+        <td>{{balance}}</td>
+    </tr>
+    {{/revenue_items}}
+    <tr>
+        <td>Total Trading Income</td>
+        <td>{{total_trading_income}}</td>
+    </tr>
+    <tr>
+        <td>Gross Profit</td>
+        <td>{{gross_profit}}</td>
+    </tr>
+    <tr>
+        <td>Expenses</td>
+        <td></td>
+    </tr>
+    {{#expenses_items}}
+    <tr>
+        <td>{{display_name}}</td>
+        <td>{{balance}}</td>
+    </tr>
+    {{/expenses_items}}
+    <tr>
+        <td>Total Expenses</td>
+        <td>{{expenses_total}}</td>
+    </tr>
+</table>

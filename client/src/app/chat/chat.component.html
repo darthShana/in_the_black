@@ -1,0 +1,25 @@
+<mat-accordion>
+  <mat-expansion-panel (opened)="panelOpenState.set(true)" (closed)="panelOpenState.set(false)">
+    <mat-expansion-panel-header>
+      <mat-panel-title>Chatbot</mat-panel-title>
+<!--      <mat-panel-description>-->
+<!--        {{panelOpenState() ? 'open' : 'closed'}}-->
+<!--      </mat-panel-description>-->
+    </mat-expansion-panel-header>
+    <div #scrollMe class="chatbox-outter">
+      <div class="chatbox-inner">
+
+        <form>
+          <mat-form-field class="full-width">
+            <textarea class="form-field-full" #someId type="text" matInput
+                  (keydown.enter)="stream(someId.value); someId.value = ''"
+                  placeholder="prompt.."  style="width: 100%">
+            </textarea>
+
+          </mat-form-field>
+        </form>
+      </div>
+    </div>
+
+  </mat-expansion-panel>
+</mat-accordion>
