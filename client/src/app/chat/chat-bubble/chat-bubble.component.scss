@@ -1,0 +1,17 @@
+:host {
+  display: flex;
+}
+
+.test {
+  background-color: red;
+}
+
+.human-image {
+  background-image: url('../../../assets/human.jpg');
+  background-size: cover;
+}
+
+.ai-image {
+  background-image: url('../../../assets/ai.png');
+  background-size: cover;
+}

@@ -6,12 +6,13 @@ import {CommonModule} from "@angular/common";
 import {Subject, takeUntil} from "rxjs";
 import {AssistantService} from "../service/assistant.service";
 import {MatExpansionModule} from "@angular/material/expansion";
+import {ChatBubbleComponent} from "./chat-bubble/chat-bubble.component";
 
 @Component({
   selector: 'app-chat',
   standalone: true,
   imports: [
-    CommonModule, MatFormField, MatInput, MatExpansionModule
+    CommonModule, MatFormField, MatInput, MatExpansionModule, ChatBubbleComponent
   ],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.scss'
@@ -41,6 +42,8 @@ export class ChatComponent implements OnInit, OnDestroy{
   }
 
   protected stream(query: string){
-    this.assistantService.stream(query)
+    this.assistantService
+      .stream(query)
+      .then(r => console.log("streaming finished"))
   }
 }

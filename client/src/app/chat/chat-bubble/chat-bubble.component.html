@@ -1,0 +1,37 @@
+<div style="width: 80%">
+
+
+  <mat-card *ngIf="humanRequest" appearance="outlined">
+    <mat-card-header>
+      <div mat-card-avatar class="human-image"></div>
+    </mat-card-header>
+    <mat-card-content>
+      <div [innerText]='humanRequest'></div>
+    </mat-card-content>
+  </mat-card>
+
+  <div *ngIf="!humanRequest">
+
+    <mat-card appearance="outlined">
+
+      <mat-card-header>
+        <div mat-card-avatar class="ai-image"></div>
+      </mat-card-header>
+
+      <div *ngFor="let thought of thoughtOrder">
+        <div *ngIf="thoughtMap.get(thought)?.display">
+          <mat-card-content *ngIf="thoughtMap.get(thought)?.aiResponse">
+            <div [innerText]='thoughtMap.get(thought)?.aiResponse'></div>
+          </mat-card-content>
+        </div>
+      </div>
+      <mat-card-content *ngIf="toolUseInProgress">
+        <div class="loading">Working</div>
+      </mat-card-content>
+
+    </mat-card>
+
+  </div>
+</div>
+
+

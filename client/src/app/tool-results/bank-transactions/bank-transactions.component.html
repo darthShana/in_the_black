@@ -1,19 +1,5 @@
 <p>bank-transactions works!</p>
 
-<mat-stepper [linear]="true" #stepper>
-  <mat-step label="load transactions" completed="{{transactionsLoaded}}">
-  </mat-step>
-  <mat-step label="classify" completed="{{transactionsClassified}}">
-  </mat-step>
-  <mat-step label="update / confirm" completed="{{transactionsSaved}}">
-    <div>
-      <button mat-flat-button (click)="confirmTransactions()">Confirm</button>
-    </div>
-  </mat-step>
-  <mat-step label="done" completed="{{transactionsSaved}}">
-  </mat-step>
-</mat-stepper>
-
 <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
   @for (column of displayedColumns; track column) {
     <ng-container [matColumnDef]="column">

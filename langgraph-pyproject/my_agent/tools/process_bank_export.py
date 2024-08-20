@@ -171,10 +171,11 @@ classify_transactions_tool = StructuredTool.from_function(
 class SaveClassifiedTransactionsInput(BaseModel):
     state: Annotated[dict, InjectedState] = Field(description="current state")
     bank_account_type: BankAccountTypeEnum = Field(description="The kind of bank account this statement is for")
+    confirm_save: bool = Field(description="has the human confirmed saving these transactions")
 
 
-def save_classified_transactions(state: Annotated[dict, InjectedState], bank_account_type: BankAccountTypeEnum) -> bool:
-
+def save_classified_transactions(state: Annotated[dict, InjectedState], bank_account_type: BankAccountTypeEnum, confirm_save: bool) -> bool:
+    log.info(f"confirm_save is {confirm_save}")
     user = UserRetriever.get_user("in here test")
     transactions = json.loads(state['transactions'])['bank_transactions']
     mapped = to_dynamo_items(user.user_id, transactions, bank_account_type)

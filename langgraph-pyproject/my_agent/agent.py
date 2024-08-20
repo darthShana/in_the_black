@@ -10,6 +10,7 @@ from typing import Annotated, Literal
 from langgraph.constants import END
 from langgraph.graph import StateGraph
 from langgraph.prebuilt import tools_condition
+from pydantic.v1 import BaseModel
 from typing_extensions import TypedDict
 
 from langgraph.graph.message import AnyMessage, add_messages
@@ -82,6 +83,11 @@ def update_transactions(state: State):
             return {'transactions': ai_message.content}
 
 
+# We define a fake node to ask the human
+def ask_human(state: State):
+    pass
+
+
 def route_tool_results(state: State) -> Literal["assistant", "update_transactions"]:
     if messages := state.get("messages", []):
         ai_message = messages[-1]
@@ -95,59 +101,79 @@ def route_tool_results(state: State) -> Literal["assistant", "update_transaction
     return "assistant"
 
 
-safe_tools = [
+class AskHuman(BaseModel):
+    """Ask the human a question"""
+    confirm_save: str
+
+
+tools = [
     load_transactions_tool,
     document_classifier_tool,
     filter_transactions_tool,
     classify_transactions_tool,
-]
-sensitive_tools = [
     save_classified_transactions_tool
 ]
-sensitive_tool_names = {t.name for t in sensitive_tools}
 
 
-def route_tools(state: State) -> Literal["safe_tools", "sensitive_tools", "__end__"]:
-    next_node = tools_condition(state)
-    # If no tools are invoked, return to the user
-    if next_node == END:
-        return END
-    ai_message = state["messages"][-1]
-    # This assumes single tool calls. To handle parallel tool calling, you'd want to
-    # use an ANY condition
-    first_tool_call = ai_message.tool_calls[0]
-    if first_tool_call["name"] in sensitive_tool_names:
-        return "sensitive_tools"
-    return "safe_tools"
+def should_continue(state):
+    messages = state["messages"]
+    last_message = messages[-1]
+    # If there is no function call, then we finish
+    if not last_message.tool_calls:
+        return "end"
+    # If tool call is asking Human, we return that node
+    # You could also add logic here to let some system know that there's something that requires Human input
+    # For example, send a slack message, etc
+    elif last_message.tool_calls[0]["name"] == "AskHuman":
+        return "ask_human"
+    # Otherwise if there is, we continue
+    else:
+        return "continue"
 
 
 # Define a new graph
 workflow = StateGraph(State, config_schema=GraphConfig)
-assistant_runnable = assistant_prompt | llm.bind_tools(safe_tools + sensitive_tools)
+assistant_runnable = assistant_prompt | llm.bind_tools(tools + [AskHuman])
 
 workflow.set_entry_point("assistant")
 workflow.add_node("assistant", Assistant(assistant_runnable))
-workflow.add_node("safe_tools", create_tool_node_with_fallback(safe_tools))
-workflow.add_node("sensitive_tools", create_tool_node_with_fallback(sensitive_tools))
+workflow.add_node("tools", create_tool_node_with_fallback(tools))
+workflow.add_node("ask_human", ask_human)
 workflow.add_node("update_transactions", update_transactions)
 
-# We now add a conditional edge
 workflow.add_conditional_edges(
+    # First, we define the start node. We use `agent`.
+    # This means these are the edges taken after the `agent` node is called.
     "assistant",
-    route_tools,
+    # Next, we pass in the function that will determine which node is called next.
+    should_continue,
+    # Finally we pass in a mapping.
+    # The keys are strings, and the values are other nodes.
+    # END is a special node marking that the graph should finish.
+    # What will happen is we will call `should_continue`, and then the output of that
+    # will be matched against the keys in this mapping.
+    # Based on which one it matches, that node will then be called.
+    {
+        # If `tools`, then we call the tool node.
+        "continue": "tools",
+        # We may ask the human
+        "ask_human": "ask_human",
+        # Otherwise we finish.
+        "end": END,
+    },
 )
 workflow.add_conditional_edges(
-    "safe_tools",
+    "tools",
     route_tool_results,
     {
         "assistant": "assistant",
         "update_transactions": "update_transactions"
     }
 )
-workflow.add_edge("sensitive_tools", "assistant")
+workflow.add_edge("ask_human", "assistant")
 workflow.add_edge("update_transactions", "assistant")
 
 # The checkpointer lets the graph persist its state
 # this is a complete memory for the entire graph.
 memory = MemorySaver()
-graph = workflow.compile(checkpointer=memory, interrupt_before=["sensitive_tools"],)
+graph = workflow.compile(checkpointer=memory, interrupt_before=["ask_human"],)

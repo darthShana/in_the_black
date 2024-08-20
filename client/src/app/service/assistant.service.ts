@@ -17,7 +17,13 @@ export class AssistantService {
   public toolResultsSubject: Subject<string> = new Subject()
   public toolProgressSubject: Subject<string> = new Subject()
 
-  client = new Client();
+  // client = new Client({
+  //   apiUrl: "https://in-the-black-deployment-cf3bb1df90f9515a8912f9f63e20cfca.default.us.langgraph.app",
+  //   defaultHeaders: {
+  //     "x-api-key":"ls__46f92d1f04484620a7602442d163936c"
+  //   }
+  // });
+  client = new Client()
   thread?: Thread;
   assistantId = "agent"
 
@@ -68,9 +74,15 @@ export class AssistantService {
           if (!runId) {
             return
           }
-
-          // console.log(`content: ${JSON.stringify(dataItem)}`);
-
+          // @ts-ignore
+          if (dataItem["content"] && dataItem["content"][0] && dataItem["content"][0].text) {
+            if (!this.conversationMap.has(runId + "-b")) {
+              this.conversationSubject.next(runId + "-b")
+            }
+            // @ts-ignore
+            this.conversationMap.set(runId + "-b", dataItem)
+            this.conversationMapSubject.next(this.conversationMap)
+          }
         }
       } else if (message.event === "messages/complete") {
         // console.log(`complete message ${JSON.stringify(message)}`)
@@ -86,11 +98,16 @@ export class AssistantService {
             }
           }
           if (parts.type === "tool"){
+            console.log('parts.name: ', parts.name)
             this.toolProgressSubject.next(parts.name)
           }
-          // if (parts['tool_calls'][0].name == 'AskHuman') {
-            // ask the human a question
-          // }
+          if (parts.type === "ai" && parts.tool_calls){
+            if(parts.tool_calls[0].name === "AskHuman"){
+              console.log('ask human subject.....')
+              this.conversationMap.set(runId + "-b", parts.tool_calls[0])
+              this.conversationMapSubject.next(this.conversationMap)
+            }
+          }
 
         }
 
