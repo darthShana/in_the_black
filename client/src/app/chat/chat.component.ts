@@ -1,39 +1,45 @@
-import {Component, OnDestroy, OnInit, signal} from '@angular/core';
-import {MatFormField} from "@angular/material/form-field";
-import {MatInput} from "@angular/material/input";
-import {CommonModule} from "@angular/common";
-
-import {Subject, takeUntil} from "rxjs";
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatFormField } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
+import { CommonModule, NgForOf } from '@angular/common';
+import { v4 as uuid } from 'uuid';
+import { Subject, takeUntil } from 'rxjs';
 import {AssistantService} from "../service/assistant.service";
-import {MatExpansionModule} from "@angular/material/expansion";
 import {ChatBubbleComponent} from "./chat-bubble/chat-bubble.component";
 
 @Component({
   selector: 'app-chat',
   standalone: true,
   imports: [
-    CommonModule, MatFormField, MatInput, MatExpansionModule, ChatBubbleComponent
+    CommonModule,
+    ChatBubbleComponent,
+    FormsModule,
+    MatFormField,
+    MatInput,
+    NgForOf,
+    ReactiveFormsModule,
   ],
   templateUrl: './chat.component.html',
-  styleUrl: './chat.component.scss'
+  styleUrl: './chat.component.scss',
 })
-export class ChatComponent implements OnInit, OnDestroy{
+export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
+  title = 'client-app';
+  conversationOrder: string[] = [];
+  conversationMap?: Map<string, Record<string, unknown & {content: {text: string}[] & any}>>;
 
+  @ViewChild('textChain') textChainRef?: ElementRef;
+  @ViewChild('textChainWrapper') textChainWrapperRef?: ElementRef;
+
+  user_id: string = uuid();
   unsubscribe: Subject<void> = new Subject();
-  conversationList: string[] = []
-  conversationMap: Map<string, Record<string, unknown>> = new Map();
-  readonly panelOpenState = signal(false);
-  constructor(private assistantService: AssistantService) {
-  }
-  async ngOnInit() {
-    await this.assistantService.initialize()
 
-    this.assistantService.conversationMapSubject
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(conversationMap => this.conversationMap = conversationMap)
-    this.assistantService.conversationSubject
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(conversation => this.conversationList.push(conversation))
+  constructor(
+    private assistantService: AssistantService
+  ) {
+    console.log('CONSTRUCT');
+    this.user_id = 'user_id';
+
   }
 
   ngOnDestroy(): void {
@@ -41,9 +47,46 @@ export class ChatComponent implements OnInit, OnDestroy{
     this.unsubscribe.complete();
   }
 
-  protected stream(query: string){
+  async ngOnInit() {
+    console.log('INIT');
+
+    await this.assistantService.initialize(this.user_id);
+
+    this.assistantService.conversationOrderSubject
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe((result) => {
+        console.log(result);
+        this.conversationOrder = result;
+      });
+
+    this.assistantService.streamResultsSubject
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe((result) => {
+        // console.log(result);
+        this.conversationMap = result;
+      });
+
+  }
+
+  ngAfterViewInit(): void {
+
+    const observer = new ResizeObserver(entries => {
+      entries.forEach(entry => {
+        // console.log("scroll", entry);
+        if (this.textChainWrapperRef) {
+
+          this.textChainWrapperRef.nativeElement.scrollTop =  this.textChainWrapperRef?.nativeElement.scrollHeight
+        }
+      });
+    });
+
+    observer.observe(this.textChainRef?.nativeElement);
+
+  }
+
+  protected stream(query: string) {
     this.assistantService
-      .stream(query)
-      .then(r => console.log("streaming finished"))
+      .stream("process transactions from file Export20240727172157.csv")
+      .then(r => console.log("stream done"));
   }
 }

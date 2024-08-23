@@ -1,15 +1,47 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {ChatComponent} from "./chat/chat.component";
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { MatFormField, MatInput } from '@angular/material/input';
+import { ChatComponent } from './chat/chat.component';
+import { inject } from '@angular/core';
+import {
+  MatBottomSheet,
+  MatBottomSheetModule,
+} from '@angular/material/bottom-sheet';
+import { delay } from 'rxjs';
+import {ChatBubbleComponent} from "./chat/chat-bubble/chat-bubble.component";
 import {ToolResultsComponent} from "./tool-results/tool-results.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, ChatComponent, ToolResultsComponent],
+  imports: [
+    RouterOutlet,
+    CommonModule,
+    ChatBubbleComponent,
+    FormsModule,
+    MatInput,
+    MatFormField,
+    ChatComponent,
+    ToolResultsComponent,
+    MatBottomSheetModule,
+  ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  title = 'client';
+  readonly bottomSheet = inject(MatBottomSheet);
+  isOpen = false;
+
+  open(): void {
+    this.isOpen = true;
+    const sheetRef = this.bottomSheet.open(ChatComponent, {
+      backdropClass: 'bottom-sheet-overlay',
+    });
+
+    sheetRef.backdropClick().pipe(delay(200)).subscribe(() => {
+      this.isOpen = false;
+    })
+  }
 }

@@ -2,3 +2,22 @@
 
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+
+.bottom-sheet-overlay {
+  @apply cdk-overlay-transparent-backdrop;
+
+  + .cdk-global-overlay-wrapper {
+
+    .cdk-overlay-pane {
+      display: flex !important;
+      width: 100% !important;
+      justify-content: end !important;
+      padding-right: 12px !important;
+
+      mat-bottom-sheet-container {
+        overflow: hidden;
+        padding: 0;
+      }
+    }
+  }
+}

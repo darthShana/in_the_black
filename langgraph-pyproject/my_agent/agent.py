@@ -101,11 +101,6 @@ def route_tool_results(state: State) -> Literal["assistant", "update_transaction
     return "assistant"
 
 
-class AskHuman(BaseModel):
-    """Ask the human a question"""
-    confirm_save: str
-
-
 tools = [
     load_transactions_tool,
     document_classifier_tool,

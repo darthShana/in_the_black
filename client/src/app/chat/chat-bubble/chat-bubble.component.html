@@ -1,37 +1,46 @@
-<div style="width: 80%">
+<div style="display: flex; width: 100%;" [style.justifyContent]="isUser ? 'end' : 'start'">
+  <div style="width: 80%">
 
 
-  <mat-card *ngIf="humanRequest" appearance="outlined">
-    <mat-card-header>
-      <div mat-card-avatar class="human-image"></div>
-    </mat-card-header>
-    <mat-card-content>
-      <div [innerText]='humanRequest'></div>
-    </mat-card-content>
-  </mat-card>
-
-  <div *ngIf="!humanRequest">
-
-    <mat-card appearance="outlined">
-
+    <mat-card *ngIf="isUser" appearance="outlined">
       <mat-card-header>
-        <div mat-card-avatar class="ai-image"></div>
+        <div mat-card-avatar class="human-image"></div>
       </mat-card-header>
-
-      <div *ngFor="let thought of thoughtOrder">
-        <div *ngIf="thoughtMap.get(thought)?.display">
-          <mat-card-content *ngIf="thoughtMap.get(thought)?.aiResponse">
-            <div [innerText]='thoughtMap.get(thought)?.aiResponse'></div>
-          </mat-card-content>
-        </div>
-      </div>
-      <mat-card-content *ngIf="toolUseInProgress">
-        <div class="loading">Working</div>
+      <mat-card-content>
+        <div
+          *ngIf="thought && $any(thought['content'])[0]['text']"
+          [innerText]='thought && $any(thought["content"])[0]["text"]'></div>
+        <button
+          *ngIf="thought && $any(thought['content'])[0]['command']"
+          (click)="continue()"
+          mat-flat-button>
+          {{$any(thought['content'])[0]['command']}}</button>
       </mat-card-content>
-
     </mat-card>
 
+    <div *ngIf="!isUser">
+
+      <mat-card appearance="outlined">
+
+        <mat-card-header>
+          <div mat-card-avatar class="ai-image"></div>
+        </mat-card-header>
+
+        <div *ngFor="let thought of thoughtOrder">
+          <div *ngIf="thoughtMap.get(thought)?.display">
+            <mat-card-content *ngIf="!thoughtMap.get(thought)?.directToolResult && thoughtMap.get(thought)?.aiResponse">
+              <div [innerText]='thoughtMap.get(thought)?.aiResponse'></div>
+            </mat-card-content>
+          </div>
+        </div>
+        <mat-card-content *ngIf="toolUseIbProgress">
+          <div class="loading">Working</div>
+        </mat-card-content>
+
+      </mat-card>
+
+    </div>
   </div>
+
+
 </div>
-
-

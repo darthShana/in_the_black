@@ -1,42 +1,40 @@
 import {Component, HostBinding, Input, OnInit, SimpleChanges} from '@angular/core';
-import {CommonModule} from "@angular/common";
+import untruncateJson from "untruncate-json";
 import {MatCardModule} from "@angular/material/card";
+import {CommonModule} from "@angular/common";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
+import {MatButton} from "@angular/material/button";
+import {AssistantService} from "../../service/assistant.service";
 
 export type Thought = {
   aiResponse: string;
   directToolResult: any;
   display: boolean;
 }
-
 @Component({
   selector: 'app-chat-bubble',
   standalone: true,
-  imports: [CommonModule, MatCardModule, MatProgressSpinner],
+  imports: [CommonModule, MatCardModule, MatProgressSpinner, MatButton],
   templateUrl: './chat-bubble.component.html',
   styleUrl: './chat-bubble.component.scss'
 })
 export class ChatBubbleComponent implements OnInit{
 
   @Input() thought?:Record<string, unknown>;
-  humanRequest!:string ;
+  isUser = false;
   thoughtMap: Map<string, Thought> = new Map()
   thoughtTime: Map<string, Number> = new Map()
   thoughtOrder:string[] = []
-  toolUseInProgress: boolean = false
+  toolUseIbProgress: boolean = false
 
-  @HostBinding('class')
-  get position(): string {
-    if (this.humanRequest) {
-      return 'right-align';
-    }
-
-    return 'left-align';
+  constructor(private assistanceService: AssistantService) {
   }
 
+
   ngOnInit() {
-    if(this.thought && this.thought["human"]){
-      this.humanRequest = this.thought["human"] as string
+    console.log(this.thought, this.thought && this.thought["type"])
+    if(this.thought && this.thought["type"]){
+      this.isUser = this.thought["type"] === 'human';
     }
   }
 
@@ -64,10 +62,20 @@ export class ChatBubbleComponent implements OnInit{
         if(latest) {
 
           // console.log(newThought)
-          this.toolUseInProgress = newThought['tool_use_in_progress'] as boolean;
+          this.toolUseIbProgress = newThought['tool_use_in_progress'] as boolean;
 
-          // @ts-ignore
-          if (newThought["content"] && newThought["content"][0] && newThought["content"][0].text) {
+          if (newThought["content"] && (newThought["content"] as string).indexOf("```json") != -1) {
+            let json = (newThought["content"] as string);
+            json = json.substring(json.indexOf("```json") + 7)
+            if (json.indexOf("```") != -1) {
+              json = json.substring(0, json.lastIndexOf("```"))
+            }
+            const fixJson = untruncateJson(json)
+            // console.log(fixJson)
+            latest.directToolResult = JSON.parse(fixJson)
+            latest.display = true
+            // @ts-ignore
+          } else if (newThought["content"] && newThought["content"][0] && newThought["content"][0].text) {
             // @ts-ignore
             latest.aiResponse = newThought["content"][0].text
             latest.display = true
@@ -80,5 +88,9 @@ export class ChatBubbleComponent implements OnInit{
       }
 
     }
+  }
+
+  async continue(){
+    this.assistanceService.continue().then()
   }
 }

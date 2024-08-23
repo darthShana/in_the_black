@@ -1,26 +1,12 @@
-<div style="height: 100%;width: 100%; max-height: 100%; overflow-y: scroll; background-color: aqua" >
-  <div style="display: flex; flex-direction: column; gap: 1rem;">
-    <mat-accordion>
-      <mat-expansion-panel (opened)="panelOpenState.set(true)" (closed)="panelOpenState.set(false)">
-        <mat-expansion-panel-header>
-          <mat-panel-title>Chatbot</mat-panel-title>
-        </mat-expansion-panel-header>
-        <div #scrollMe class="chatbox-outter">
-          <div class="chatbox-inner">
+<div #textChainWrapper style="max-height: 100%; overflow: auto; padding: 16px;">
+  <div #textChain style="display: flex; flex-direction: column; gap: 1rem; width: 100%; max-width: 35vw;">
 
-            <app-chat-bubble *ngFor="let exchange of conversationList" [thought]="conversationMap!.get(exchange)"></app-chat-bubble>
-            <form>
-              <mat-form-field class="full-width">
-                <textarea class="form-field-full" #someId type="text" matInput
-                      (keydown.enter)="stream(someId.value); someId.value = ''"
-                      placeholder="prompt.."  style="width: 100%"></textarea>
+    <app-chat-bubble *ngFor="let runId of conversationOrder" [thought]="conversationMap!.get(runId)"></app-chat-bubble>
+    <form>
+      <mat-form-field class="example-full-width" style="padding-top: 12px; width: 100%" appearance="outline">
+        <textarea class="form-field-full" #someId type="text" matInput (keydown.enter)="stream(someId.value); someId.value = ''" placeholder="prompt.." cols="50" style="width: 100%"></textarea>
 
-              </mat-form-field>
-            </form>
-          </div>
-        </div>
-
-      </mat-expansion-panel>
-    </mat-accordion>
+      </mat-form-field>
+    </form>
   </div>
 </div>

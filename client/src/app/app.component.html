@@ -1,8 +1,19 @@
-<h1>{{title}}</h1>
-
 <main class="main">
-  <div class="content">
-    <app-tool-results></app-tool-results>
-    <app-chat style="height: 100%;width: 100%; position: absolute;right: 0;bottom: 0; max-width: 40vw; max-height: 40vh"></app-chat>
-  </div>
+  <app-tool-results></app-tool-results>
+  <router-outlet />
 </main>
+
+
+<!-- [style.right]="isOpen ? '-64px' : '24px'" -->
+<div
+  style="position: absolute; right: 24px; bottom: 24px; background-color: rgb(188, 188, 188); border-radius: 48px; cursor: pointer; user-select: none; transition: all 300ms;"
+  (click)="open()"
+>
+  <!-- <button>Open</button> -->
+  <div style="height: 48px; width: 48px; display: flex; justify-content: center;">
+    <div style="justify-content: center; display: flex; flex-direction: column;">
+      CHAT
+    </div>
+
+  </div>
+</div>
