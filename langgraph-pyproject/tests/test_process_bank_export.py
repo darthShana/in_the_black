@@ -1,11 +1,10 @@
 import datetime
 import logging
-import pytest
 from langsmith import unit
 from unittest.mock import ANY
 
 from my_agent.model.transaction import BankAccountTypeEnum
-from my_agent.tools.get_transactions import get_transactions
+from my_agent.retrievers.get_transactions import get_transactions
 from my_agent.tools.process_bank_export import to_dynamo_items
 
 log = logging.getLogger(__name__)

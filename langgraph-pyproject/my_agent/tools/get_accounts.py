@@ -1,25 +1,30 @@
-import json
 import logging
-from typing import List, Dict, Annotated
+from datetime import datetime
+from typing import Dict
 
 from langchain_core.tools import StructuredTool
-from langgraph.prebuilt import InjectedState
 from pydantic.v1 import BaseModel, Field
 
 from my_agent.model.account import Account, AccountTypeEnum
-from my_agent.model.chart_of_accounts import ChartOfAccounts, default_chart_of_accounts
-from my_agent.model.transaction import Transaction, BankAccountTypeEnum
+from my_agent.model.chart_of_accounts import default_chart_of_accounts
+from my_agent.model.transaction import BankAccountTypeEnum
+from my_agent.retrievers.get_user import UserRetriever
+from my_agent.retrievers.get_transactions import get_transactions
+
 log = logging.getLogger(__name__)
 
 
 class GetAccountsInput(BaseModel):
-    state: Annotated[dict, InjectedState] = Field(description="current state")
-    chart_of_accounts: ChartOfAccounts = Field(description="a json object specifies which accounts to debit and credit for each transaction type")
+    start: datetime = Field(description="get transactions after this date and time")
+    end: datetime = Field(description="get transactions before this date and time")
 
 
-def get_accounts(state: Annotated[dict, InjectedState], chart_of_accounts: ChartOfAccounts) -> Dict[str, Account]:
+def get_accounts(start: datetime, end: datetime) -> Dict[str, Account]:
     accounts: Dict[str, Account] = {}
-    transactions = json.loads(state['transactions'])['bank_transactions']
+    user = UserRetriever.get_user("in here test")
+    chart_of_accounts = default_chart_of_accounts
+
+    transactions = get_transactions(user.user_id, start, end)
 
     for transaction in transactions:
         transaction_type = transaction.transaction_type
@@ -66,21 +71,8 @@ get_accounts_tool = StructuredTool.from_function(
     func=get_accounts,
     name=get_accounts_tool_name,
     description="""
-        Useful to calculate the accounts for a set of transactions
+        Useful to calculate the accounts for time period
         """,
-    args_schema=GetAccountsInput,
+    args_schema=GetAccountsInput
 )
 
-
-def get_chart_of_accounts() -> ChartOfAccounts:
-    return default_chart_of_accounts
-
-
-get_chart_of_accounts_tool_name = "get_chart_of_accounts"
-get_chart_of_accounts_tool = StructuredTool.from_function(
-    func=get_chart_of_accounts,
-    name=get_chart_of_accounts_tool_name,
-    description="""
-        Useful to get a chart of accounts which can be used to determine which accounts to debit and credit for each transaction
-        """
-)

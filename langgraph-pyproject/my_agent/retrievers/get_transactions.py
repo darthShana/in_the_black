@@ -1,22 +1,14 @@
 import json
 from datetime import datetime
-from typing import List, Dict
+from typing import List
 
 import decimal
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
-from langchain_core.tools import StructuredTool
-from pydantic.v1 import BaseModel, Field
 
 from my_agent.model.transaction import Transaction
-from my_agent.retrievers.get_user import UserRetriever
 
 dynamodb = boto3.resource('dynamodb')
-
-
-class GetTransactionsInput(BaseModel):
-    start: datetime = Field(description="get transactions after this date and time")
-    end: datetime = Field(description="get transactions before this date and time")
 
 
 def to_transaction(i):
@@ -30,29 +22,17 @@ def to_transaction(i):
     )
 
 
-def get_transactions(start: datetime, end: datetime) -> dict[str, List[dict]]:
-    user = UserRetriever.get_user("in here test")
+def get_transactions(customer_number: str, start: datetime, end: datetime) -> List[Transaction]:
     table = dynamodb.Table('Transactions')
 
     date_attr = boto3.dynamodb.conditions.Attr('TransactionDate')
     customer_attr = boto3.dynamodb.conditions.Attr('CustomerNumber')
     response = table.scan(
         FilterExpression=
-        customer_attr.eq(user.user_id) &
+        customer_attr.eq(customer_number) &
         date_attr.between(start.strftime('%Y/%m/%d'), end.strftime('%Y/%m/%d'))
     )
 
     transactions = [to_transaction(i) for i in response['Items']]
     transactions.sort(key=lambda t: t.date, reverse=False)
-    return {'bank_transactions': [j.dict() for j in transactions]}
-
-
-get_transactions_tool_name = "get_transactions"
-get_transactions_tool = StructuredTool.from_function(
-    func=get_transactions,
-    name=get_transactions_tool_name,
-    description="""
-        Useful to load saved transactions so they can be used to generate reports
-        """,
-    args_schema=GetTransactionsInput,
-)
+    return transactions

@@ -2,14 +2,13 @@ import logging
 from datetime import datetime
 from pprint import pprint
 
-import pytest
 from langsmith import unit
 
-from tests.test_get_accounts import to_transaction, to_overrides
+from tests.test_get_accounts import to_overrides
 from tests.test_process_bank_export import customer_number
 from my_agent.tools.generate_end_of_year_reports import generate_end_of_year_reports
 from my_agent.tools.get_accounts import get_accounts
-from my_agent.tools.get_transactions import get_transactions
+from my_agent.retrievers.get_transactions import get_transactions
 from bs4 import BeautifulSoup
 
 
