@@ -13,10 +13,10 @@ log = logging.getLogger(__name__)
 
 
 available_transaction_types = [{
-        "name": "loan_interest",
+        "name": "loan interest",
         "description": "interest paid on loans (mortgages) used for the rental properties"
     }, {
-        "name": "rental_income",
+        "name": "rental income",
         "description": "rental income received from rental properties"
     }, {
         "name": "water",
@@ -34,10 +34,10 @@ available_transaction_types = [{
         "name": "capital deposit",
         "description": "funds put into the company account"
     }, {
-        "name": "unknown_payment",
+        "name": "unknown payment",
         "description": "other payments made from this bank account"
     }, {
-        "name": "unknown_deposit",
+        "name": "unknown deposit",
         "description": "other deposits made to this bank account"
     }]
 
