@@ -18,7 +18,7 @@ def generate_end_of_year_reports(accounts: Dict[str, Account]) -> Dict[str, str]
     }
 
 
-generate_end_of_year_reports_tool_name = "get_accounts"
+generate_end_of_year_reports_tool_name = "generate_end_of_year_reports"
 generate_end_of_year_reports_tool = StructuredTool.from_function(
     func=generate_end_of_year_reports,
     name=generate_end_of_year_reports_tool_name,
