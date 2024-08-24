@@ -90,7 +90,7 @@ export class ChatBubbleComponent implements OnInit{
     }
   }
 
-  async continue(){
-    this.assistanceService.continue().then()
+  async continue(option: string){
+    this.assistanceService.continue(option).then()
   }
 }

@@ -26,13 +26,13 @@ export class AssistantService {
   public toolProgressSubject: Subject<string> = new Subject()
 
 
-  client = new Client()
-  // client = new Client({
-  //   apiUrl: "https://car-place-c140416414d65a64b96a99091f4c2c44.default.us.langgraph.app",
-  //   defaultHeaders: {
-  //     'x-api-key': 'ls__46f92d1f04484620a7602442d163936c',
-  //   },
-  // });
+  // client = new Client()
+  client = new Client({
+    apiUrl: "https://in-the-black-deployment1-868b23288fc75ff39ea9e5d8aa6b5c27.default.us.langgraph.app",
+    defaultHeaders: {
+      'x-api-key': 'ls__46f92d1f04484620a7602442d163936c',
+    },
+  });
   thread?: Thread;
   assistant?: Assistant;
 
@@ -64,14 +64,14 @@ export class AssistantService {
     }
   }
 
-  async continue(){
+  async continue(option: string){
     if (!this.thread || !this.assistant) {
       return;
     }
     const state = await this.client.threads.getState(this.thread['thread_id']);
     // @ts-ignore
     const toolCallId = state['values']["messages"].at(-1)['tool_calls'][0]['id'];
-    const toolMessage = [{"tool_call_id": toolCallId, "type": "tool", "content": "true"}];
+    const toolMessage = [{"tool_call_id": toolCallId, "type": "tool", "content": option}];
     await this.client.threads.updateState(
       this.thread["thread_id"],
       {
@@ -177,7 +177,7 @@ export class AssistantService {
           type: 'human',
           content: [
             {
-              command: 'Continue',
+              options: parts.tool_calls[0].args['options'],
             },
           ],
         });

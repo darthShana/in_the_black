@@ -8,7 +8,7 @@ from boto3.dynamodb.conditions import Key
 from my_agent.model.chart_of_accounts import default_chart_of_accounts
 from my_agent.model.transaction import BankAccountTypeEnum
 from tests.test_process_bank_export import customer_number
-from my_agent.tools.process_bank_export import classify_transaction, save_classified_transactions
+from my_agent.tools.process_bank_export import save_classified_transactions, classify_transactions
 
 log = logging.getLogger(__name__)
 dynamodb = boto3.resource('dynamodb')
@@ -74,9 +74,9 @@ def upload_transactions(s3_client, transaction_filter):
     s3_client.upload_file('tests/data/Export20240727172157.csv', "black-transactions-8e8f04a", f"{customer_number}/Export20240727172157.csv")
     s3_client.upload_file('tests/data/Export20240804075341.csv', "black-transactions-8e8f04a", f"{customer_number}/Export20240804075341.csv")
 
-    t1 = classify_transaction('Export20240727172157.csv', None)
+    t1 = classify_transactions('Export20240727172157.csv', None)
     save_classified_transactions(BankAccountTypeEnum.COMPANY_ACCOUNT, t1)
-    t2 = classify_transaction('Export20240804075341.csv', transaction_filter, )
+    t2 = classify_transactions('Export20240804075341.csv', transaction_filter, )
     save_classified_transactions(BankAccountTypeEnum.PERSONAL_ACCOUNT, t2)
     return True
 

@@ -86,7 +86,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
 
   protected stream(query: string) {
     this.assistantService
-      .stream("process transactions from file Export20240727172157.csv")
+      .stream(query)
       .then(r => console.log("stream done"));
   }
 }

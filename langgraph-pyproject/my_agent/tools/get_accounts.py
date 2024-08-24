@@ -1,22 +1,27 @@
 import logging
 from typing import List, Dict
 
+from langchain_core.tools import StructuredTool
+from pydantic.v1 import BaseModel, Field
+
 from my_agent.model.account import Account, AccountTypeEnum
-from my_agent.model.chart_of_accounts import ChartOfAccounts
+from my_agent.model.chart_of_accounts import ChartOfAccounts, default_chart_of_accounts
 from my_agent.model.transaction import Transaction, BankAccountTypeEnum
 log = logging.getLogger(__name__)
 
 
-def get_accounts(transactions: List[Transaction], chart_of_accounts: ChartOfAccounts, overrides: dict) -> Dict[str, Account]:
+class GetAccountsInput(BaseModel):
+    transactions: List[Transaction] = Field(description="loaded transactions from which to calculate accounts")
+    chart_of_accounts: ChartOfAccounts = Field(description="a json object specifies which accounts to debit and credit for each transaction type")
+
+
+def get_accounts(transactions: List[Transaction], chart_of_accounts: ChartOfAccounts) -> Dict[str, Account]:
     accounts: Dict[str, Account] = {}
 
     for transaction in transactions:
         transaction_type = transaction.transaction_type
 
-        if transaction.transaction_id in overrides:
-            debit_account_name = overrides[transaction.transaction_id]['debit']
-            credit_account_name = overrides[transaction.transaction_id]['credit']
-        elif transaction_type in chart_of_accounts.transaction_map:
+        if transaction_type in chart_of_accounts.transaction_map:
             debit_account_name = chart_of_accounts.transaction_map[transaction_type]['debit']
             credit_account_name = chart_of_accounts.transaction_map[transaction_type]['credit']
         else:
@@ -52,3 +57,27 @@ def get_accounts(transactions: List[Transaction], chart_of_accounts: ChartOfAcco
 
     return accounts
 
+
+get_accounts_tool_name = "get_accounts"
+get_accounts_tool = StructuredTool.from_function(
+    func=get_accounts,
+    name=get_accounts_tool_name,
+    description="""
+        Useful to calculate the accounts for a set of transactions
+        """,
+    args_schema=GetAccountsInput,
+)
+
+
+def get_chart_of_accounts() -> ChartOfAccounts:
+    return default_chart_of_accounts
+
+
+get_chart_of_accounts_tool_name = "get_chart_of_accounts"
+get_chart_of_accounts_tool = StructuredTool.from_function(
+    func=get_chart_of_accounts,
+    name=get_chart_of_accounts_tool_name,
+    description="""
+        Useful to get a chart of accounts which can be used to determine which accounts to debit and credit for each transaction
+        """
+)
