@@ -2,9 +2,6 @@ import logging
 from datetime import datetime
 from typing import Dict
 
-from langchain_core.tools import StructuredTool
-from pydantic.v1 import BaseModel, Field
-
 from my_agent.model.account import Account, AccountTypeEnum
 from my_agent.model.chart_of_accounts import default_chart_of_accounts
 from my_agent.model.transaction import BankAccountTypeEnum
@@ -12,11 +9,6 @@ from my_agent.retrievers.get_user import UserRetriever
 from my_agent.retrievers.get_transactions import get_transactions
 
 log = logging.getLogger(__name__)
-
-
-class GetAccountsInput(BaseModel):
-    start: datetime = Field(description="get transactions after this date and time")
-    end: datetime = Field(description="get transactions before this date and time")
 
 
 def get_accounts(start: datetime, end: datetime) -> Dict[str, Account]:
@@ -64,15 +56,3 @@ def get_accounts(start: datetime, end: datetime) -> Dict[str, Account]:
         accounts[credit_account_name].credit(transaction)
 
     return accounts
-
-
-get_accounts_tool_name = "get_accounts"
-get_accounts_tool = StructuredTool.from_function(
-    func=get_accounts,
-    name=get_accounts_tool_name,
-    description="""
-        Useful to calculate the accounts for time period
-        """,
-    args_schema=GetAccountsInput
-)
-
