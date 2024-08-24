@@ -30,7 +30,7 @@ def to_transaction(i):
     )
 
 
-def get_transactions(start: datetime, end: datetime) -> dict[str, list[Transaction]]:
+def get_transactions(start: datetime, end: datetime) -> dict[str, List[dict]]:
     user = UserRetriever.get_user("in here test")
     table = dynamodb.Table('Transactions')
 
@@ -44,7 +44,7 @@ def get_transactions(start: datetime, end: datetime) -> dict[str, list[Transacti
 
     transactions = [to_transaction(i) for i in response['Items']]
     transactions.sort(key=lambda t: t.date, reverse=False)
-    return {'bank_transactions': transactions}
+    return {'bank_transactions': [j.dict() for j in transactions]}
 
 
 get_transactions_tool_name = "get_transactions"
