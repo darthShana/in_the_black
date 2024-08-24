@@ -19,7 +19,7 @@ class GetAccountsInput(BaseModel):
 
 def get_accounts(state: Annotated[dict, InjectedState], chart_of_accounts: ChartOfAccounts) -> Dict[str, Account]:
     accounts: Dict[str, Account] = {}
-    transactions = json.loads(state['transactions'])['bank_transactions']
+    transactions = state['transactions']['bank_transactions']
 
     for transaction in transactions:
         transaction_type = transaction.transaction_type
