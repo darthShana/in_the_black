@@ -20,7 +20,7 @@ from my_agent.tools.ask_human import AskHuman
 from my_agent.tools.document_classifier import document_classifier_tool
 from my_agent.tools.generate_end_of_year_reports import generate_end_of_year_reports_tool
 from my_agent.tools.get_accounts import get_accounts_tool, get_chart_of_accounts_tool
-from my_agent.tools.get_transactions import get_transactions_tool
+from my_agent.tools.get_transactions import get_transactions_tool, get_transactions_tool_name
 from my_agent.tools.process_bank_export import classify_transactions_tool, save_classified_transactions_tool, load_transactions_tool, load_transactions_tool_name, \
     classify_transactions_tool_name, filter_transactions_tool, filter_transactions_tool_name
 from my_agent.utils.nodes import create_tool_node_with_fallback
@@ -98,7 +98,8 @@ def route_tool_results(state: State) -> Literal["assistant", "update_transaction
         if isinstance(ai_message, ToolMessage) and (
                 ai_message.name == load_transactions_tool_name or
                 ai_message.name == filter_transactions_tool_name or
-                ai_message.name == classify_transactions_tool_name
+                ai_message.name == classify_transactions_tool_name or
+                ai_message.name == get_transactions_tool_name
         ):
             return "update_transactions"
 

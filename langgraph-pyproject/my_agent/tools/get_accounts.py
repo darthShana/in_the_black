@@ -1,7 +1,9 @@
+import json
 import logging
-from typing import List, Dict
+from typing import List, Dict, Annotated
 
 from langchain_core.tools import StructuredTool
+from langgraph.prebuilt import InjectedState
 from pydantic.v1 import BaseModel, Field
 
 from my_agent.model.account import Account, AccountTypeEnum
@@ -11,12 +13,13 @@ log = logging.getLogger(__name__)
 
 
 class GetAccountsInput(BaseModel):
-    transactions: List[Transaction] = Field(description="loaded transactions from which to calculate accounts")
+    state: Annotated[dict, InjectedState] = Field(description="current state")
     chart_of_accounts: ChartOfAccounts = Field(description="a json object specifies which accounts to debit and credit for each transaction type")
 
 
-def get_accounts(transactions: List[Transaction], chart_of_accounts: ChartOfAccounts) -> Dict[str, Account]:
+def get_accounts(state: Annotated[dict, InjectedState], chart_of_accounts: ChartOfAccounts) -> Dict[str, Account]:
     accounts: Dict[str, Account] = {}
+    transactions = json.loads(state['transactions'])['bank_transactions']
 
     for transaction in transactions:
         transaction_type = transaction.transaction_type
