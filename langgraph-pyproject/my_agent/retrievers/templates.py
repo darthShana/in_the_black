@@ -30,7 +30,7 @@ transaction_classification_examples = [
         "result": """
             {
                 "Unique Id": "2023040101",
-                "transaction_type": "loan_interest"
+                "transaction_type": "loan interest"
             }
         """
     },
@@ -48,7 +48,7 @@ transaction_classification_examples = [
         "result": """
         {
             "Unique Id": "2023042801",
-            "transaction_type": "rental_income"
+            "transaction_type": "rental income"
         }
         """
     }

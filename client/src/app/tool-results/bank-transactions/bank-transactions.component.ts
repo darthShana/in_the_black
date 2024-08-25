@@ -1,4 +1,5 @@
 import {Component, inject, Input, OnDestroy, OnInit, ViewChild} from '@angular/core';
+import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Subject, takeUntil} from "rxjs";
 import {AssistantService} from "../../service/assistant.service";
 import {CommonModule} from "@angular/common";
@@ -10,21 +11,31 @@ import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {MatStep, MatStepper} from "@angular/material/stepper";
 import {MatButton} from "@angular/material/button";
 import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
+import {MatIcon} from "@angular/material/icon";
 
 @Component({
   selector: 'app-bank-transactions',
   standalone: true,
-  imports: [CommonModule, MatTableModule, MatFormField, MatInput, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepper, MatStep, MatButton, ReactiveFormsModule],
+  imports: [CommonModule, MatTableModule, MatFormField, MatInput, MatFormFieldModule, MatInputModule, MatSelectModule, MatStepper, MatStep, MatButton, ReactiveFormsModule, MatIcon],
   templateUrl: './bank-transactions.component.html',
-  styleUrl: './bank-transactions.component.scss'
+  styleUrl: './bank-transactions.component.scss',
+  animations: [
+    trigger('detailExpand', [
+      state('collapsed,void', style({height: '0px', minHeight: '0'})),
+      state('expanded', style({height: '*'})),
+      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
+    ]),
+  ],
 })
 export class BankTransactionsComponent implements OnInit, OnDestroy{
 
   unsubscribe: Subject<void> = new Subject();
   dataSource: MatTableDataSource<any, MatPaginator> = new MatTableDataSource<any, MatPaginator>();
-  displayedColumns: string[] = [];
-  availableTransactionTypes: any[] = [];
+  columnsToDisplay: string[] = [];
+  columnsToDisplayWithExpand: string[] = [];
+  expandedElement:  any | null
 
+  availableTransactionTypes: any[] = [];
   transactionsLoaded: boolean = false;
   transactionsClassified: boolean = false
   transactionsSaved: boolean = false
@@ -47,7 +58,8 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
         if(transactions['available_transaction_types']){
           this.availableTransactionTypes = transactions['available_transaction_types']
         }
-        this.displayedColumns = Object.getOwnPropertyNames(transactions['bank_transactions'][0])
+        this.columnsToDisplay = Object.getOwnPropertyNames(transactions['bank_transactions'][0])
+        this.columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
         // console.log('transactions: ', transactions, 'dataSource', this.dataSource, 'displayedColumns: ', this.displayedColumns)
       })
     this.assistantService.toolProgressSubject
@@ -72,11 +84,6 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
   }
 
 
-  applyFilter(event: Event) {
-    const filterValue = (event.target as HTMLInputElement).value;
-    this.dataSource.filter = filterValue.trim().toLowerCase();
-  }
-
   async updateTransactionType(changeEvent: MatSelectChange, element: any) {
     console.log(changeEvent)
     console.log(element)
@@ -84,7 +91,4 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
 
   }
 
-  confirmTransactions(){
-
-  }
 }
