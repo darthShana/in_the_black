@@ -1,3 +1,30 @@
+<mat-form-field class="example-chip-list">
+  <mat-label>Favorite Fruits</mat-label>
+  <mat-chip-grid #chipGrid aria-label="Enter fruits">
+    @for (filter of filters(); track filter) {
+      <mat-chip-row
+        (removed)="remove(filter)"
+        [editable]="true"
+        (edited)="edit(filter, $event)"
+        [aria-description]="'press enter to edit ' + filter.text"
+      >
+        {{filter.text}}
+        <button matChipRemove [attr.aria-label]="'remove ' + filter.text">
+          <mat-icon>disable</mat-icon>
+          <mat-icon>cancel</mat-icon>
+        </button>
+      </mat-chip-row>
+    }
+    <input
+      placeholder="New fruit..."
+      [matChipInputFor]="chipGrid"
+      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+      [matChipInputAddOnBlur]="addOnBlur"
+      (matChipInputTokenEnd)="add($event)"
+    />
+  </mat-chip-grid>
+</mat-form-field>
+
 <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">
   @for (column of columnsToDisplay; track column) {
     <ng-container [matColumnDef]="column">
@@ -28,9 +55,18 @@
             <mat-form-field *ngIf="column !== 'transaction_type'" class="example-full-width">
               <mat-label>{{column}}</mat-label>
               <input matInput value="{{element[column]}}">
-              <mat-icon matSuffix>settings</mat-icon>
+              <div cdkMenuBar>
+                <button cdkMenuItem [cdkMenuTriggerFor]="itemlist" mat-icon-button><mat-icon matSuffix>settings</mat-icon></button>
+              </div>
+              <ng-template #itemlist>
+                <div class="menu" cdkMenu>
+                  <button class="menu-item" cdkMenuItem><mat-icon>filter_alt</mat-icon>Filter by {{ column }}: {{ element[column] }}</button>
+                  <button class="menu-item" cdkMenuItem><mat-icon>backspace</mat-icon>Exclude {{ column }}: {{ element[column] }}</button>
+                </div>
+              </ng-template>
             </mat-form-field>
             <mat-form-field *ngIf="column === 'transaction_type'">
+              <mat-label>{{column}}</mat-label>
               <mat-select [(value)]="element[column]" (selectionChange)="updateTransactionType($event, element)" >
                 <mat-option *ngFor="let transactionType of availableTransactionTypes" value="{{transactionType.name}}">
                   {{transactionType.name.replace("_", " ")}}
@@ -51,3 +87,4 @@
   </tr>
   <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
 </table>
+

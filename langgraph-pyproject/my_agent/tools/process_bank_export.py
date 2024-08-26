@@ -116,37 +116,29 @@ load_transactions_tool = StructuredTool.from_function(
 )
 
 
-def filter_transactions(state: Annotated[dict, InjectedState]):
+def filter_transactions(transactions: List[dict], statement_filter: dict):
     log.info("filtering transactions")
-    filtered = json.loads(state['transactions'])['bank_transactions']
-    statement_filter = state['statement_filter']
     log.info(f"statement_filter: {statement_filter}")
     log.info(f"statement_filter type: {type(statement_filter)}")
 
-    if statement_filter is not None:
-        filtered = statement_retriever.filter_transactions(filtered, statement_filter)
+    filtered = statement_retriever.filter_transactions(transactions, statement_filter)
 
     log.info(f"filtered records:{len(filtered)}")
     return {'bank_transactions': filtered}
 
 
-filter_transactions_tool_name = "filter_transactions"
-filter_transactions_tool = StructuredTool.from_function(
-    func=filter_transactions,
-    name=filter_transactions_tool_name,
-    description="""
-        Useful to filter transactions in a bank statement if the user wants to include or exclude some of them
-        """,
-)
-
-
 class ClassifyTransactionsInput(BaseModel):
+    apply_filter: bool = Field(description="if a filter should be applied to transactions before classification")
     state: Annotated[dict, InjectedState] = Field(description="current state")
 
 
-def classify_transactions(state: Annotated[dict, InjectedState]) -> dict[str, List[dict]]:
+def classify_transactions(apply_filter: bool, state: Annotated[dict, InjectedState]) -> dict[str, List[dict]]:
     log.info('classify_transactions-----')
     filtered = json.loads(state['transactions'])['bank_transactions']
+
+    if apply_filter:
+        transaction_filter = json.loads(state['transaction_filter'])
+        filtered = filter_transactions(filtered, transaction_filter)
 
     classifications = statement_retriever.classify_transactions(filtered)
     log.info(f"classified values from bank statement: {len(filtered)}")
