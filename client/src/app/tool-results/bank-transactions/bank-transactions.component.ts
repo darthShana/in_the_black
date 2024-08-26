@@ -19,7 +19,9 @@ import {CdkMenu, CdkMenuTrigger, CdkMenuItem, CdkMenuBar} from "@angular/cdk/men
 import {MatChipGrid, MatChipRow} from "@angular/material/chips";
 
 export interface Filter {
+  column: string
   text: string;
+  include: boolean;
 }
 
 @Component({
@@ -60,11 +62,12 @@ export interface Filter {
 export class BankTransactionsComponent implements OnInit, OnDestroy{
 
   unsubscribe: Subject<void> = new Subject();
-  dataSource: MatTableDataSource<any, MatPaginator> = new MatTableDataSource<any, MatPaginator>();
+  originalDataSource: MatTableDataSource<any, MatPaginator> = new MatTableDataSource<any, MatPaginator>();
+  filteredDataSource: MatTableDataSource<any, MatPaginator> = new MatTableDataSource<any, MatPaginator>();
   columnsToDisplay: string[] = [];
   columnsToDisplayWithExpand: string[] = [];
   expandedElement:  any | null
-  readonly filters = signal<Filter[]>([{text: 'Lemon'}, {text: 'Lime'}, {text: 'Apple'}]);  readonly announcer = inject(LiveAnnouncer);
+  readonly filters = signal<Filter[]>([]);  readonly announcer = inject(LiveAnnouncer);
   readonly addOnBlur = true;
   readonly separatorKeysCodes = [ENTER, COMMA] as const;
 
@@ -87,7 +90,8 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(transactions => {
         console.log('transactions: ', transactions, 'property name: ', Object.getOwnPropertyNames(transactions['bank_transactions'][0]));
-        this.dataSource = new MatTableDataSource(transactions['bank_transactions']);
+        this.originalDataSource = new MatTableDataSource(transactions['bank_transactions']);
+        this.filteredDataSource = new MatTableDataSource(transactions['bank_transactions']);
         if(transactions['available_transaction_types']){
           this.availableTransactionTypes = transactions['available_transaction_types']
         }
@@ -118,14 +122,21 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
 
   add(event: MatChipInputEvent): void {
     const value = (event.value || '').trim();
+    let split = value.split(":")
 
     // Add our fruit
     if (value) {
-      this.filters.update(filters => [...filters, {text: value}]);
+      this.filters.update(filters => [...filters, {column: split[0], text: split[1], include: true}]);
     }
 
     // Clear the input value
     event.chipInput!.clear();
+  }
+
+  addFilter(column: string, value: string, include: boolean) {
+    if (column && value && include){
+      this.filters.update(filters => [...filters, {column: column, text: value, include: include}])
+    }
   }
 
   remove(fruit: Filter): void {
@@ -167,5 +178,6 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
     // await this.assistantService.updateTransactionType()
 
   }
+
 
 }

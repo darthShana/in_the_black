@@ -128,15 +128,15 @@ def filter_transactions(transactions: List[dict], statement_filter: dict):
 
 
 class ClassifyTransactionsInput(BaseModel):
-    apply_filter: bool = Field(description="if a filter should be applied to transactions before classification")
+    confirm_filter: bool = Field(description="has the human confirmed the filter which should be applied to transactions before classification")
     state: Annotated[dict, InjectedState] = Field(description="current state")
 
 
-def classify_transactions(apply_filter: bool, state: Annotated[dict, InjectedState]) -> dict[str, List[dict]]:
+def classify_transactions(confirm_filter: bool, state: Annotated[dict, InjectedState]) -> dict[str, List[dict]]:
     log.info('classify_transactions-----')
     filtered = json.loads(state['transactions'])['bank_transactions']
 
-    if apply_filter:
+    if confirm_filter:
         transaction_filter = json.loads(state['transaction_filter'])
         filtered = filter_transactions(filtered, transaction_filter)
 

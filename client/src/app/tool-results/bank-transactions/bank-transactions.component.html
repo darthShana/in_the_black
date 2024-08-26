@@ -8,7 +8,7 @@
         (edited)="edit(filter, $event)"
         [aria-description]="'press enter to edit ' + filter.text"
       >
-        {{filter.text}}
+        {{filter.include?'+':'-'}}{{filter.column}}: {{filter.text}}
         <button matChipRemove [attr.aria-label]="'remove ' + filter.text">
           <mat-icon>disable</mat-icon>
           <mat-icon>cancel</mat-icon>
@@ -25,7 +25,7 @@
   </mat-chip-grid>
 </mat-form-field>
 
-<table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8">
+<table mat-table [dataSource]="filteredDataSource" multiTemplateDataRows class="mat-elevation-z8">
   @for (column of columnsToDisplay; track column) {
     <ng-container [matColumnDef]="column">
       <th mat-header-cell *matHeaderCellDef> {{column}} </th>
@@ -60,8 +60,8 @@
               </div>
               <ng-template #itemlist>
                 <div class="menu" cdkMenu>
-                  <button class="menu-item" cdkMenuItem><mat-icon>filter_alt</mat-icon>Filter by {{ column }}: {{ element[column] }}</button>
-                  <button class="menu-item" cdkMenuItem><mat-icon>backspace</mat-icon>Exclude {{ column }}: {{ element[column] }}</button>
+                  <button class="menu-item" (click)="addFilter(column, element[column], true)" cdkMenuItem><mat-icon>filter_alt</mat-icon>Filter by {{ column }}: {{ element[column] }}</button>
+                  <button class="menu-item" (click)="addFilter(column, element[column], true)" cdkMenuItem><mat-icon>backspace</mat-icon>Exclude {{ column }}: {{ element[column] }}</button>
                 </div>
               </ng-template>
             </mat-form-field>
