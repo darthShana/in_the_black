@@ -22,8 +22,8 @@ default_chart_of_accounts = ChartOfAccounts(
             'loans': {'display_name': 'loans', 'account_type': AccountTypeEnum.LIABILITY}
         },
         transaction_map={
-            'loan_interest': {'debit': 'mortgage_interest', 'credit': 'bank_account'},
-            'rental_income': {'debit': 'bank_account', 'credit': 'rental_revenue'},
+            'loan interest': {'debit': 'mortgage_interest', 'credit': 'bank_account'},
+            'rental income': {'debit': 'bank_account', 'credit': 'rental_revenue'},
             'water': {'debit': 'water', 'credit': 'bank_account'},
             'rates': {'debit': 'rates', 'credit': 'bank_account'},
             'insurance': {'debit': 'insurance', 'credit': 'bank_account'},
