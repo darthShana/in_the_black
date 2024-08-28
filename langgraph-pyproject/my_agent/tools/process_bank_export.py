@@ -117,11 +117,11 @@ load_transactions_tool = StructuredTool.from_function(
 
 
 class ClassifyTransactionsInput(BaseModel):
-    confirm_filter: bool = Field(description="human confirmation that the required transactions have been filtered")
+    filter: str = Field(description="human confirmation that the required transactions have been filtered")
     state: Annotated[dict, InjectedState] = Field(description="current state")
 
 
-def classify_transactions(confirm_filter: bool, state: Annotated[dict, InjectedState]) -> dict[str, List[dict]]:
+def classify_transactions(filter: str, state: Annotated[dict, InjectedState]) -> dict[str, List[dict]]:
     log.info('classify_transactions-----')
     log.info("confirm_filter: {}".format(confirm_filter))
     log.info(state['transactions'])
