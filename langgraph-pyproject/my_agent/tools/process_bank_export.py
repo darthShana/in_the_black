@@ -123,7 +123,7 @@ class ClassifyTransactionsInput(BaseModel):
 
 def classify_transactions(filter: str, state: Annotated[dict, InjectedState]) -> dict[str, List[dict]]:
     log.info('classify_transactions-----')
-    log.info("confirm_filter: {}".format(confirm_filter))
+    log.info("confirm_filter: {}".format(filter))
     log.info(state['transactions'])
     filtered = state['transactions']['bank_transactions']
 
