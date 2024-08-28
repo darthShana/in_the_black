@@ -6,6 +6,7 @@ import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {MatButton} from "@angular/material/button";
 import {AssistantService} from "../../service/assistant.service";
 import {TransactionsService} from "../../service/transactions.service";
+import {Subject, takeUntil} from "rxjs";
 
 export type Thought = {
   aiResponse: string;
@@ -21,22 +22,43 @@ export type Thought = {
 })
 export class ChatBubbleComponent implements OnInit{
 
+  unsubscribe: Subject<void> = new Subject();
   @Input() thought?:Record<string, unknown>;
   isUser = false;
   thoughtMap: Map<string, Thought> = new Map()
   thoughtTime: Map<string, Number> = new Map()
   thoughtOrder:string[] = []
   toolUseIbProgress: boolean = false
+  private completedTool: string = ""
 
-  constructor(private assistanceService: AssistantService, private transactionService: TransactionsService) {
+  constructor(private assistantService: AssistantService, private transactionService: TransactionsService) {
   }
 
+  ngOnDestroy(): void {
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
+  }
 
-  ngOnInit() {
+    ngOnInit() {
     console.log(this.thought, this.thought && this.thought["type"])
     if(this.thought && this.thought["type"]){
       this.isUser = this.thought["type"] === 'human';
     }
+
+    this.assistantService.toolProgressSubject
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe( completedTool => {
+        if(completedTool === "load_transactions"){
+          this.completedTool = completedTool;
+        }
+        if(completedTool === "classify_transactions"){
+          this.completedTool = completedTool;
+        }
+        if(completedTool === "save_transactions"){
+          this.completedTool = completedTool;
+        }
+      })
+
   }
 
   async ngOnChanges(changes: SimpleChanges) {
@@ -93,6 +115,10 @@ export class ChatBubbleComponent implements OnInit{
 
   async continue(option: string){
     this.transactionService.confirmFilteredTransactions()
-    this.assistanceService.continue(option).then()
+    console.log(`completedTool: ${this.completedTool}`)
+    if (this.completedTool === "load_transactions"){
+      option = "not required"
+    }
+    this.assistantService.continue(option).then()
   }
 }

@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import datetime
 
@@ -80,7 +81,7 @@ def update_transactions(state: State):
         ai_message = messages[-1]
         if isinstance(ai_message, ToolMessage):
             log.info("node update_transactions")
-            return {'transactions': ai_message.content}
+            return {'transactions': json.loads(ai_message.content)}
 
 
 # We define a fake node to ask the human

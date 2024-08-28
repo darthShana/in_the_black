@@ -207,6 +207,10 @@ export class AssistantService {
     if (!this.thread || !this.assistant) {
       return;
     }
-    await this.client.threads.updateState(this.thread['thread_id'], {values:{"transactions": {'bank_transactions': filterMaps}}});
+    await this.client.threads.updateState(this.thread['thread_id'],
+      {
+        values:{"transactions": {'bank_transactions': filterMaps}},
+        asNode: "ask_human"
+      });
   }
 }
