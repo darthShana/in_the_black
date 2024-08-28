@@ -170,7 +170,7 @@ class SaveClassifiedTransactionsInput(BaseModel):
 def save_classified_transactions(state: Annotated[dict, InjectedState], bank_account_type: BankAccountTypeEnum, confirm_save: bool) -> bool:
     log.info(f"confirm_save is {confirm_save}")
     user = UserRetriever.get_user("in here test")
-    transactions = json.loads(state['transactions'])['bank_transactions']
+    transactions = state['transactions']['bank_transactions']
     mapped = to_dynamo_items(user.user_id, transactions, bank_account_type)
 
     for item in mapped:
