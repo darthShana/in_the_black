@@ -134,7 +134,8 @@ class ClassifyTransactionsInput(BaseModel):
 
 def classify_transactions(confirm_filter: bool, state: Annotated[dict, InjectedState]) -> dict[str, List[dict]]:
     log.info('classify_transactions-----')
-    filtered = json.loads(state['transactions'])['bank_transactions']
+    log.info(state['transactions'])
+    filtered = state['transactions']['bank_transactions']
 
     if confirm_filter:
         transaction_filter = json.loads(state['transaction_filter'])

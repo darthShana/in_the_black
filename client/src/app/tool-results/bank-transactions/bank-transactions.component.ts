@@ -12,16 +12,19 @@ import {MatPaginator} from "@angular/material/paginator";
 import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {MatStep, MatStepper} from "@angular/material/stepper";
 import {MatButton, MatIconButton} from "@angular/material/button";
-import {FormBuilder, ReactiveFormsModule, Validators} from "@angular/forms";
+import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {MatChipEditedEvent, MatChipInputEvent, MatChipsModule} from '@angular/material/chips';
 import {MatIconModule} from "@angular/material/icon";
 import {CdkMenu, CdkMenuTrigger, CdkMenuItem, CdkMenuBar} from "@angular/cdk/menu";
 import {MatChipGrid, MatChipRow} from "@angular/material/chips";
+import {MatCheckbox} from "@angular/material/checkbox";
+import {TransactionsService} from "../../service/transactions.service";
 
 export interface Filter {
   column: string
   text: string;
   include: boolean;
+  enabled: boolean;
 }
 
 @Component({
@@ -48,6 +51,8 @@ export interface Filter {
     MatIconButton,
     MatChipGrid,
     MatChipRow,
+    MatCheckbox,
+    FormsModule,
   ],
   templateUrl: './bank-transactions.component.html',
   styleUrl: './bank-transactions.component.scss',
@@ -62,7 +67,7 @@ export interface Filter {
 export class BankTransactionsComponent implements OnInit, OnDestroy{
 
   unsubscribe: Subject<void> = new Subject();
-  originalDataSource: MatTableDataSource<any, MatPaginator> = new MatTableDataSource<any, MatPaginator>();
+  originalDataSource: Record<string, any>[] = [];
   filteredDataSource: MatTableDataSource<any, MatPaginator> = new MatTableDataSource<any, MatPaginator>();
   columnsToDisplay: string[] = [];
   columnsToDisplayWithExpand: string[] = [];
@@ -77,7 +82,7 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
   transactionsSaved: boolean = false
 
 
-  constructor(private assistantService: AssistantService) {
+  constructor(private assistantService: AssistantService, private transactionService: TransactionsService) {
   }
 
   ngOnDestroy(): void {
@@ -90,7 +95,7 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(transactions => {
         console.log('transactions: ', transactions, 'property name: ', Object.getOwnPropertyNames(transactions['bank_transactions'][0]));
-        this.originalDataSource = new MatTableDataSource(transactions['bank_transactions']);
+        this.originalDataSource = transactions['bank_transactions'];
         this.filteredDataSource = new MatTableDataSource(transactions['bank_transactions']);
         if(transactions['available_transaction_types']){
           this.availableTransactionTypes = transactions['available_transaction_types']
@@ -99,6 +104,7 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
         this.columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
         // console.log('transactions: ', transactions, 'dataSource', this.dataSource, 'displayedColumns: ', this.displayedColumns)
       })
+
     this.assistantService.toolProgressSubject
       .pipe(takeUntil(this.unsubscribe))
       .subscribe( completedTool => {
@@ -118,6 +124,40 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
         }
       })
 
+    this.transactionService.filterSubject
+      .pipe(takeUntil(this.unsubscribe))
+      .subscribe(( command => {
+        if (command === 'flush'){
+          this.assistantService.updateTransactions(this.filterMaps(this.originalDataSource, this.filters()))
+        }
+      }))
+
+  }
+
+  private filterMaps(maps: Record<string, any>[], filters: Filter[]): Record<string, any>[] {
+    if (filters.filter(f=>f.enabled).length === 0) {
+      return maps;
+    }
+
+    return maps.filter(map => {
+      for (const filter of filters) {
+        if (!filter.enabled) continue;
+
+        const value = map[filter.column];
+        const containsText = value && value.toString().toLowerCase().includes(filter.text.toLowerCase());
+
+        if (filter.include && containsText) {
+          return true;
+        }
+
+        if (!filter.include && containsText) {
+          return false;
+        }
+      }
+
+      // If no filters matched, include the item by default
+      return false;
+    });
   }
 
   add(event: MatChipInputEvent): void {
@@ -126,7 +166,7 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
 
     // Add our fruit
     if (value) {
-      this.filters.update(filters => [...filters, {column: split[0], text: split[1], include: true}]);
+      this.filters.update(filters => [...filters, {column: split[0], text: split[1], include: true, enabled: true}]);
     }
 
     // Clear the input value
@@ -134,42 +174,69 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
   }
 
   addFilter(column: string, value: string, include: boolean) {
-    if (column && value && include){
-      this.filters.update(filters => [...filters, {column: column, text: value, include: include}])
+    if (column && value){
+      this.filters.update(filters => {
+        filters.push({column: column, text: value, include: include, enabled:true})
+        let filtered = this.filterMaps(this.originalDataSource, filters)
+        this.filteredDataSource = new MatTableDataSource(filtered)
+        return filters
+      })
+
     }
   }
 
-  remove(fruit: Filter): void {
-    this.filters.update(fruits => {
-      const index = fruits.indexOf(fruit);
+  remove(filter: Filter): void {
+    this.filters.update(filters => {
+      const index = filters.indexOf(filter);
       if (index < 0) {
-        return fruits;
+        return filters;
       }
 
-      fruits.splice(index, 1);
-      this.announcer.announce(`Removed ${fruit.text}`);
-      return [...fruits];
+      filters.splice(index, 1);
+      let filtered = this.filterMaps(this.originalDataSource, filters)
+      this.filteredDataSource = new MatTableDataSource(filtered)
+      this.announcer.announce(`Removed ${filter.text}`);
+      return [...filters];
     });
   }
 
-  edit(fruit: Filter, event: MatChipEditedEvent) {
-    const value = event.value.trim();
-
-    // Remove fruit if it no longer has a name
-    if (!value) {
-      this.remove(fruit);
+  edit(filter: Filter, event: MatChipEditedEvent) {
+    const full = event.value.trim();
+    console.log(`editing ${full}`)
+    // Remove filter if it no longer has a name
+    if (!full) {
+      this.remove(filter);
       return;
     }
 
-    // Edit existing fruit
-    this.filters.update(filters => {
-      const index = filters.indexOf(fruit);
-      if (index >= 0) {
-        filters[index].text = value;
-        return [...filters];
-      }
-      return filters;
-    });
+    const regex = /^([+-])(.*?):\s*(.*)$/;
+    const match = full.match(regex);
+
+    if (match) {
+      const [, action, column, value] = match;
+      this.filters.update(filters => {
+        const index = filters.indexOf(filter);
+        if (index >= 0) {
+          filters[index].include = action == "+";
+          filters[index].column = column;
+          filters[index].text = value;
+
+          let filtered = this.filterMaps(this.originalDataSource, filters)
+          this.filteredDataSource = new MatTableDataSource(filtered)
+
+          return [...filters];
+        }
+
+        return filters;
+      });
+    }
+  }
+
+  toggle(filter: Filter, event: Event): void {
+    event.stopPropagation()
+    filter.enabled = !filter.enabled;
+    let filtered = this.filterMaps(this.originalDataSource, this.filters())
+    this.filteredDataSource = new MatTableDataSource(filtered)
   }
 
   async updateTransactionType(changeEvent: MatSelectChange, element: any) {
@@ -178,6 +245,5 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
     // await this.assistantService.updateTransactionType()
 
   }
-
 
 }

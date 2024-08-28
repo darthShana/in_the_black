@@ -202,4 +202,11 @@ export class AssistantService {
 
     this.thread = await this.client.threads.create();
   }
+
+  async updateTransactions(filterMaps: Record<string, any>[]) {
+    if (!this.thread || !this.assistant) {
+      return;
+    }
+    await this.client.threads.updateState(this.thread['thread_id'], {values:{"transactions": {'bank_transactions': filterMaps}}});
+  }
 }

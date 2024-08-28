@@ -5,6 +5,7 @@ import {CommonModule} from "@angular/common";
 import {MatProgressSpinner} from "@angular/material/progress-spinner";
 import {MatButton} from "@angular/material/button";
 import {AssistantService} from "../../service/assistant.service";
+import {TransactionsService} from "../../service/transactions.service";
 
 export type Thought = {
   aiResponse: string;
@@ -27,7 +28,7 @@ export class ChatBubbleComponent implements OnInit{
   thoughtOrder:string[] = []
   toolUseIbProgress: boolean = false
 
-  constructor(private assistanceService: AssistantService) {
+  constructor(private assistanceService: AssistantService, private transactionService: TransactionsService) {
   }
 
 
@@ -91,6 +92,7 @@ export class ChatBubbleComponent implements OnInit{
   }
 
   async continue(option: string){
+    this.transactionService.confirmFilteredTransactions()
     this.assistanceService.continue(option).then()
   }
 }
