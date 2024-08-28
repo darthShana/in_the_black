@@ -27,7 +27,6 @@ log = logging.getLogger(__name__)
 class State(TypedDict):
     messages: Annotated[list[AnyMessage], add_messages]
     transactions: dict[str, list[dict]]
-    statement_filter: dict
 
 
 class Assistant:

@@ -116,30 +116,16 @@ load_transactions_tool = StructuredTool.from_function(
 )
 
 
-def filter_transactions(transactions: List[dict], statement_filter: dict):
-    log.info("filtering transactions")
-    log.info(f"statement_filter: {statement_filter}")
-    log.info(f"statement_filter type: {type(statement_filter)}")
-
-    filtered = statement_retriever.filter_transactions(transactions, statement_filter)
-
-    log.info(f"filtered records:{len(filtered)}")
-    return {'bank_transactions': filtered}
-
-
 class ClassifyTransactionsInput(BaseModel):
-    confirm_filter: bool = Field(description="has the human confirmed the filter which should be applied to transactions before classification")
+    confirm_filter: bool = Field(description="has the human confirmed that the required transactions have been filtered")
     state: Annotated[dict, InjectedState] = Field(description="current state")
 
 
 def classify_transactions(confirm_filter: bool, state: Annotated[dict, InjectedState]) -> dict[str, List[dict]]:
     log.info('classify_transactions-----')
+    log.info("confirm_filter: {}".format(confirm_filter))
     log.info(state['transactions'])
     filtered = state['transactions']['bank_transactions']
-
-    if confirm_filter:
-        transaction_filter = json.loads(state['transaction_filter'])
-        filtered = filter_transactions(filtered, transaction_filter)
 
     classifications = statement_retriever.classify_transactions(filtered)
     log.info(f"classified values from bank statement: {len(filtered)}")
