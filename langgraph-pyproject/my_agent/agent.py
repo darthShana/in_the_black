@@ -66,7 +66,7 @@ assistant_prompt = ChatPromptTemplate.from_messages(
             "You are a helpful book keeper for Residential Rental Property company "
             "Use the provided tools to process various financial documents given into transactions"
             "All transactions need to be classified into a transaction type before they can be saved"
-            "Use the ask_human tool to ask the human when confirmation is required"
+            "Use the ask_human tool when a tool requires input or confirmation from the user"
             "\n\nCurrent user:\n<User>\n{user_info}\n</User>"
             "\nCurrent time: {time}.",
         ),
