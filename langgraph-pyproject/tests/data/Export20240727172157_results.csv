@@ -1,30 +1,30 @@
 Unique Id,transaction_type
-2023040101,loan_interest
-2023042801,rental_income
-2023050101,loan_interest
-2023050701,unknown_payment
-2023053101,rental_income
-2023060101,loan_interest
-2023061301,unknown_payment
-2023063001,rental_income
-2023070101,loan_interest
-2023073101,rental_income
-2023080101,loan_interest
-2023083101,rental_income
-2023090101,loan_interest
-2023092601,unknown_payment
-2023092901,rental_income
-2023100101,loan_interest
-2023103101,rental_income
-2023110101,loan_interest
-2023113001,rental_income
-2023120101,loan_interest
-2023122101,rental_income
-2024010101,loan_interest
-2024013101,rental_income
-2024020101,loan_interest
-2024022901,rental_income
-2024030101,loan_interest
-2024032801,rental_income
-2024032802,rental_income
-2023040102,loan_interest
+2023040101,loan interest
+2023042801,rental income
+2023050101,loan interest
+2023050701,capital withdrawal
+2023053101,rental income
+2023060101,loan interest
+2023061301,capital withdrawal
+2023063001,rental income
+2023070101,loan interest
+2023073101,rental income
+2023080101,loan interest
+2023083101,rental income
+2023090101,loan interest
+2023092601,capital withdrawal
+2023092901,rental income
+2023100101,loan interest
+2023103101,rental income
+2023110101,loan interest
+2023113001,rental income
+2023120101,loan interest
+2023122101,rental income
+2024010101,loan interest
+2024013101,rental income
+2024020101,loan interest
+2024022901,rental income
+2024030101,loan interest
+2024032801,rental income
+2024032802,rental income
+2023040102,loan interest

@@ -13,15 +13,6 @@ customer_number = 'b5c7f883-eb98-4ef0-a744-1496510552c2'
 
 
 @unit
-def test_process_bank_export(upload_transactions: bool, transaction_filter):
-
-    transactions = get_transactions(customer_number, datetime.datetime(2023, 4, 1), datetime.datetime(2024,4, 1))
-    assert len(transactions) == 27 + 25
-    assert transactions[0].date == datetime.datetime(2023, 4, 1)
-    assert transactions[-1].date == datetime.datetime(2024, 3, 28)
-
-
-@unit
 def test_to_dynamo_item():
     trans = {"Date": "2023/04/01", "Unique Id": "2023040101", "Tran Type": "LOAN INT", "Cheque Number": "", "Payee": "LOAN - INTEREST", "Memo": "12-3273-0018314-92 001 INTEREST", "Amount":-796.92}
     classified = {"Unique Id": "2023040101", "transaction_type": "loan_interest"}

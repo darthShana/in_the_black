@@ -8,7 +8,7 @@ from my_agent.model.account import Account, AccountTypeEnum
 log = logging.getLogger(__name__)
 
 
-def generate_statement_of_profit_or_loss(accounts: Dict[str, Account]) -> str:
+def generate_statement_of_profit_or_loss(accounts: Dict[str, Account]) -> dict:
     revenue_items = [{
         'display_name': v.display_name,
         'balance': v.balance()}
@@ -31,4 +31,9 @@ def generate_statement_of_profit_or_loss(accounts: Dict[str, Account]) -> str:
             'expenses_total': expenses_total
         })
         log.info(result)
-        return result
+    return {
+            'revenue_items': revenue_items,
+            'gross_profit': revenue_total,
+            'expenses_items': expenses_items,
+            'expenses_total': expenses_total
+        }

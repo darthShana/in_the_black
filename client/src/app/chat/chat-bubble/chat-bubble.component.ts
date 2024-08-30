@@ -29,7 +29,6 @@ export class ChatBubbleComponent implements OnInit{
   thoughtTime: Map<string, Number> = new Map()
   thoughtOrder:string[] = []
   toolUseIbProgress: boolean = false
-  private completedTool: string = ""
 
   constructor(private assistantService: AssistantService, private transactionService: TransactionsService) {
   }
@@ -45,19 +44,6 @@ export class ChatBubbleComponent implements OnInit{
       this.isUser = this.thought["type"] === 'human';
     }
 
-    this.assistantService.toolProgressSubject
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe( completedTool => {
-        if(completedTool === "load_transactions"){
-          this.completedTool = completedTool;
-        }
-        if(completedTool === "classify_transactions"){
-          this.completedTool = completedTool;
-        }
-        if(completedTool === "save_transactions"){
-          this.completedTool = completedTool;
-        }
-      })
 
   }
 
@@ -114,11 +100,6 @@ export class ChatBubbleComponent implements OnInit{
   }
 
   async continue(option: string){
-    this.transactionService.confirmFilteredTransactions()
-    console.log(`completedTool: ${this.completedTool}`)
-    if (this.completedTool === "load_transactions"){
-      option = "not required"
-    }
-    this.assistantService.continue(option).then()
+    await this.transactionService.confirmFilteredTransactions(option)
   }
 }

@@ -1,46 +1,35 @@
 import logging
 from datetime import datetime
-from pprint import pprint
-
+from decimal import Decimal
 from langsmith import unit
 
-from tests.test_get_accounts import to_overrides
-from tests.test_process_bank_export import customer_number
 from my_agent.tools.generate_end_of_year_reports import generate_end_of_year_reports
-from my_agent.tools.get_accounts import get_accounts
-from my_agent.retrievers.get_transactions import get_transactions
-from bs4 import BeautifulSoup
-
+from tests.test_get_accounts import to_transaction
 
 log = logging.getLogger(__name__)
 
 
 @unit
-def test_generate_profit_or_loss(upload_transactions: bool, sample_transaction_overrides, chart_of_accounts):
-    transactions = get_transactions(customer_number, datetime(2023, 4, 1), datetime(2024, 3, 31))
-    check = [transaction for transaction in transactions if transaction.transaction_type == "water"]
-    log.info(pprint(check, compact=True))
+def test_generate_profit_or_loss(sample_transaction_types, sample_transaction_file, sample_transaction_file2, monkeypatch):
+    transactions = [to_transaction(row, transaction_type) for row, transaction_type in zip(
+        sample_transaction_file.to_dict('records'),
+        sample_transaction_types.to_dict('records'))]
+    transactions.extend([to_transaction(row, {'transaction_type': row['transaction_type']}) for row in sample_transaction_file2.to_dict('records')])
+    transactions = [transaction for transaction in transactions if datetime(2023, 4, 1) <= transaction.date <= datetime(2024, 3, 31)]
 
-    transaction_overrides = to_overrides(transactions, sample_transaction_overrides.to_dict('records'))
-    accounts = get_accounts(transactions, chart_of_accounts, transaction_overrides)
+    def mock_get_transactions(user_id, start, end):
+        return transactions
 
-    reports = generate_end_of_year_reports(accounts)
+    monkeypatch.setattr("my_agent.tools.get_accounts.get_transactions", mock_get_transactions)
+    reports = generate_end_of_year_reports(datetime(2023, 4, 1), datetime(2024, 3, 31))
 
-    soup = BeautifulSoup(reports['statement_of_profit_or_loss'], features="html5lib")
+    pl = reports['statement_of_profit_or_loss']
 
-    rental_revenue = [td.find_next_sibling('td').text for td in soup.find_all('td') if td.text == 'Rental Revenue'][0]
-    gross_profit = [td.find_next_sibling('td').text for td in soup.find_all('td') if td.text == 'Gross Profit'][0]
-    mortgage_interest = [td.find_next_sibling('td').text for td in soup.find_all('td') if td.text == 'Mortgage Interest'][0]
-    water = [td.find_next_sibling('td').text for td in soup.find_all('td') if td.text == 'Water'][0]
-    rates = [td.find_next_sibling('td').text for td in soup.find_all('td') if td.text == 'Rates'][0]
-    insurance = [td.find_next_sibling('td').text for td in soup.find_all('td') if td.text == 'Insurance'][0]
-    total_expenses = [td.find_next_sibling('td').text for td in soup.find_all('td') if td.text == 'Total Expenses'][0]
+    assert next(obj for obj in pl['revenue_items'] if obj['display_name'] == 'Rental Revenue')['balance'] == Decimal('35458.69')
+    assert pl['gross_profit'] == Decimal('35458.69')
 
-    assert rental_revenue == '35458.69'
-    assert gross_profit == '35458.69'
-
-    assert mortgage_interest == '20639.56'
-    assert water == '3188.26'
-    assert rates == '2629.31'
-    assert insurance == '2260.92'
-    assert total_expenses == '28718.05'
+    assert next(obj for obj in pl['expenses_items'] if obj['display_name'] == 'Mortgage Interest')['balance'] == Decimal('20639.56')
+    assert next(obj for obj in pl['expenses_items'] if obj['display_name'] == 'Water')['balance'] == Decimal('3188.26')
+    assert next(obj for obj in pl['expenses_items'] if obj['display_name'] == 'Rates')['balance'] == Decimal('2629.31')
+    assert next(obj for obj in pl['expenses_items'] if obj['display_name'] == 'Insurance')['balance'] == Decimal('2260.92')
+    assert pl['expenses_total'] == Decimal('28718.05')

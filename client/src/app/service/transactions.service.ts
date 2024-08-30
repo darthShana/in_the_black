@@ -10,7 +10,7 @@ export class TransactionsService {
 
   constructor() { }
 
-  confirmFilteredTransactions() {
-    this.filterSubject.next("flush")
+  async confirmFilteredTransactions(option: string) {
+    this.filterSubject.next(option)
   }
 }

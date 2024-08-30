@@ -14,7 +14,7 @@ class GenerateEnfOfYearReportInput(BaseModel):
     end: datetime = Field(description="get transactions before this date and time")
 
 
-def generate_end_of_year_reports(start: datetime, end: datetime) -> Dict[str, str]:
+def generate_end_of_year_reports(start: datetime, end: datetime) -> dict[str, dict]:
     accounts = get_accounts(start, end)
     statement_of_profit_or_loss = generate_statement_of_profit_or_loss(accounts)
     return {

@@ -1,0 +1,21 @@
+<h6>Statement of Profit Or Loss</h6>
+
+<table mat-table [dataSource]="reportLines" class="mat-elevation-z8">
+
+  <ng-container matColumnDef="description">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let element">
+      <h6 *ngIf="element.subtitle">{{element.description}}</h6>
+      <p *ngIf="!element.subtitle">{{element.description}}</p>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="amount">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let element">
+      <h6 *ngIf="element.subtitle">{{element.amount}}</h6>
+      <p *ngIf="!element.subtitle">{{element.amount}}</p>
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+</table>

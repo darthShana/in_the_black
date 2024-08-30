@@ -13,7 +13,7 @@ export class AssistantService {
     this.conversationOrder
   );
 
-  public toolResultsSubject: Subject<string> = new Subject();
+  public toolContentSubject: Subject<string> = new Subject();
 
   public streamResults: Map<
     string,
@@ -22,17 +22,17 @@ export class AssistantService {
   public streamResultsSubject: BehaviorSubject<
     Map<string, Record<string, unknown & { content: { text: string }[] } & any>>
   > = new BehaviorSubject(this.streamResults);
-  public bankTransactionsSubject: Subject<any> = new Subject()
+  public toolResultsSubject: Subject<any> = new Subject()
   public toolProgressSubject: Subject<string> = new Subject()
 
 
-  // client = new Client()
-  client = new Client({
-    apiUrl: "https://in-the-black-deployment1-868b23288fc75ff39ea9e5d8aa6b5c27.default.us.langgraph.app",
-    defaultHeaders: {
-      'x-api-key': 'ls__46f92d1f04484620a7602442d163936c',
-    },
-  });
+  client = new Client()
+  // client = new Client({
+  //   apiUrl: "https://in-the-black-deployment1-868b23288fc75ff39ea9e5d8aa6b5c27.default.us.langgraph.app",
+  //   defaultHeaders: {
+  //     'x-api-key': 'ls__46f92d1f04484620a7602442d163936c',
+  //   },
+  // });
   thread?: Thread;
   assistant?: Assistant;
 
@@ -128,7 +128,7 @@ export class AssistantService {
         dataItem['content'] &&
         (dataItem['content'] as string).indexOf('```json') != -1
       ) {
-        this.toolResultsSubject.next(dataItem['content'])
+        this.toolContentSubject.next(dataItem['content'])
       } else
 
       if (dataItem['content'] && dataItem['content'][0] && dataItem['content'][0]['text']) {
@@ -145,17 +145,26 @@ export class AssistantService {
 
   handleComplete(data: any) {
     let parts = data.at(-1)
-    if (parts.type === "tool" && (parts.name == 'classify_transactions' || parts.name == 'load_transactions')) {
+
+    if (parts.type === "tool"){
+      console.log('completed tool: ', parts.name)
+      this.toolProgressSubject.next(parts.name)
+    }
+
+    if (parts.type === "tool" && (['classify_transactions', 'load_transactions', 'generate_end_of_year_reports'].includes(parts.name))) {
+      console.log('handleComplete')
+      console.log(parts.content)
       if (parts.content && (typeof parts.content === 'string') && (parts.content as string).startsWith("{\"bank_transactions\"")) {
         console.log("bank_transactions------")
         const transactions = JSON.parse(parts.content)
-        this.bankTransactionsSubject.next(transactions)
+        this.toolResultsSubject.next(transactions)
+      }
+      if (parts.content && (typeof parts.content === 'string') && parts.name === "generate_end_of_year_reports") {
+        console.log("end_of_year_reports------")
+        this.toolResultsSubject.next(parts.content)
       }
     }
-    if (parts.type === "tool"){
-      console.log('parts.name: ', parts.name)
-      this.toolProgressSubject.next(parts.name)
-    }
+
     if (parts.type === "ai" && parts.tool_calls){
       if(parts.tool_calls[0].name === "AskHuman"){
         console.log('ask human subject.....')
@@ -203,7 +212,7 @@ export class AssistantService {
     this.thread = await this.client.threads.create();
   }
 
-  async updateTransactions(filterMaps: Record<string, any>[]) {
+  async updateTransactions(filterMaps: Record<string, any>[], command: string) {
     if (!this.thread || !this.assistant) {
       return;
     }
@@ -212,5 +221,8 @@ export class AssistantService {
         values:{"transactions": {'bank_transactions': filterMaps}},
         asNode: "ask_human"
       });
+    console.log("transactions updated")
+    this.continue(command).then()
+
   }
 }

@@ -90,8 +90,8 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
     this.unsubscribe.complete();
   }
 
-  ngOnInit() {
-    this.assistantService.bankTransactionsSubject
+  async ngOnInit() {
+    this.assistantService.toolResultsSubject
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(transactions => {
         console.log('transactions: ', transactions, 'property name: ', Object.getOwnPropertyNames(transactions['bank_transactions'][0]));
@@ -111,7 +111,6 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
         console.log(`tool completed:${completedTool}`)
         if(completedTool === "load_transactions"){
           this.transactionsLoaded = true;
-          console.log('transactionsLoaded: ', this.transactionsLoaded )
         }
         if(completedTool === "classify_transactions"){
           this.transactionsClassified = true;
@@ -127,9 +126,7 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
     this.transactionService.filterSubject
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(( command => {
-        if (command === 'flush'){
-          this.assistantService.updateTransactions(this.filterMaps(this.originalDataSource, this.filters()))
-        }
+        this.assistantService.updateTransactions(this.filterMaps(this.originalDataSource, this.filters()), command)
       }))
 
   }
@@ -242,8 +239,21 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
   async updateTransactionType(changeEvent: MatSelectChange, element: any) {
     console.log(changeEvent)
     console.log(element)
-    // await this.assistantService.updateTransactionType()
 
+    let toUpdate = this.originalDataSource.find((record) => {
+      for (const key in element) {
+        if (key != 'transaction_type' && element.hasOwnProperty(key)) {
+          if (record[key] !== element[key]) {
+            return false;
+          }
+        }
+      }
+      return true;
+    });
+    if (toUpdate){
+      console.log(`updating transaction type to:${element['transaction_type']}`)
+      toUpdate['transaction_type'] = element['transaction_type']
+    }
   }
 
 }

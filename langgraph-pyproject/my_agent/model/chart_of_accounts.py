@@ -28,6 +28,7 @@ default_chart_of_accounts = ChartOfAccounts(
             'rates': {'debit': 'rates', 'credit': 'bank_account'},
             'insurance': {'debit': 'insurance', 'credit': 'bank_account'},
             'capital withdrawal':  {'debit': 'capital', 'credit': 'bank_account'},
-            'capital deposit':  {'debit': 'bank_account', 'credit': 'capital'}
+            'capital deposit':  {'debit': 'bank_account', 'credit': 'capital'},
+            'loan deposit':  {'debit': 'bank_account', 'credit': 'loans'}
         }
     )

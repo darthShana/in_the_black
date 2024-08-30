@@ -25,6 +25,27 @@ def sample_transaction_file():
 
 
 @pytest.fixture
+def sample_transaction_file2():
+    df = pd.read_csv('tests/data/Export20240804075341_inputs.csv')
+    filter_condition = df['Memo'].str.contains('D/D 5398975-01 WATERCARE|D/D 12345148793 34 Nicholas|D/D BATCH 015085 05 275945 01', case=False, na=False)
+    filtered_df = df[filter_condition]
+
+    def get_transaction_type(payee):
+        payee = payee.lower()  # Convert to lowercase for case-insensitive matching
+        if 'water' in payee:
+            return 'water'
+        elif 'auckland council' in payee:
+            return 'rates'
+        elif 'insurance' in payee:
+            return 'insurance'
+        else:
+            return 'other'  # You can change this to whatever default you prefer
+
+    filtered_df['transaction_type'] = filtered_df['Payee'].apply(get_transaction_type)
+    return filtered_df
+
+
+@pytest.fixture
 def sample_transaction_types():
     return pd.read_csv('tests/data/Export20240727172157_results.csv')
 
@@ -56,27 +77,4 @@ def transaction_filter():
         ]
     }
 
-
-@pytest.fixture(scope="session")
-def upload_transactions(s3_client, transaction_filter):
-    table = dynamodb.Table('Transactions')
-    response = table.query(
-        IndexName='CustomerIndex',
-        KeyConditionExpression=Key('CustomerNumber').eq(customer_number)
-    )
-
-    with table.batch_writer() as batch:
-        for item in response['Items']:
-            batch.delete_item(Key={
-                "TransactionID": item["TransactionID"]
-            })
-
-    s3_client.upload_file('tests/data/Export20240727172157.csv', "black-transactions-8e8f04a", f"{customer_number}/Export20240727172157.csv")
-    s3_client.upload_file('tests/data/Export20240804075341.csv', "black-transactions-8e8f04a", f"{customer_number}/Export20240804075341.csv")
-
-    t1 = classify_transactions('Export20240727172157.csv', None)
-    save_classified_transactions(BankAccountTypeEnum.COMPANY_ACCOUNT, t1)
-    t2 = classify_transactions('Export20240804075341.csv', transaction_filter, )
-    save_classified_transactions(BankAccountTypeEnum.PERSONAL_ACCOUNT, t2)
-    return True
 

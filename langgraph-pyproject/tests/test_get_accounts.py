@@ -2,7 +2,7 @@ import logging
 import uuid
 from datetime import datetime
 from decimal import Decimal
-
+from unittest.mock import patch
 from langsmith import unit
 
 from my_agent.model.transaction import Transaction, BankAccountTypeEnum
@@ -35,14 +35,16 @@ def to_overrides(transactions: list[Transaction], overrides):
 
 
 @unit
-def test_get_accounts(sample_transaction_file, sample_transaction_types, sample_transaction_overrides, chart_of_accounts):
+def test_get_accounts(sample_transaction_file, sample_transaction_types, sample_transaction_overrides, chart_of_accounts, monkeypatch):
     transactions = [to_transaction(row, transaction_type) for row, transaction_type in zip(
         sample_transaction_file.to_dict('records'),
         sample_transaction_types.to_dict('records'))]
 
     transactions = [transaction for transaction in transactions if datetime(2023, 4, 1) <= transaction.date <= datetime(2024, 3, 31)]
-    transaction_overrides = to_overrides(transactions, sample_transaction_overrides.to_dict('records'))
-    accounts = get_accounts(transactions, chart_of_accounts, transaction_overrides)
+    monkeypatch.setattr('my_agent.tools.get_accounts.get_transactions', lambda user_id, start, end: transactions)
+
+    accounts = get_accounts(datetime(2023, 4, 1), datetime(2024, 3, 31))
+
     assert accounts['bank_account'].display_name == "Bank Account"
     assert len(accounts['bank_account'].transactions()) == 27
     assert accounts['bank_account'].balance() == Decimal('6369.13')
@@ -56,7 +58,7 @@ def test_get_accounts(sample_transaction_file, sample_transaction_types, sample_
     assert accounts['capital'].balance() == Decimal('-8450.00')
 
 
-def test_get_accounts_expense(chart_of_accounts):
+def test_get_accounts_expense(chart_of_accounts, monkeypatch):
     transactions = [Transaction(
         transaction_id=str(uuid.uuid4()),
         date=datetime.strptime('2024/02/20', '%Y/%m/%d'),
@@ -65,7 +67,9 @@ def test_get_accounts_expense(chart_of_accounts):
         custom_id='2345',
         bank_account_type=BankAccountTypeEnum.PERSONAL_ACCOUNT
     )]
-    accounts = get_accounts(transactions, chart_of_accounts, {})
+    monkeypatch.setattr('my_agent.tools.get_accounts.get_transactions', lambda user_id, start, end: transactions)
+
+    accounts = get_accounts(datetime(2023, 4, 1), datetime(2024, 3, 31))
     assert 'bank_account' not in accounts
     assert accounts['water'].balance() == Decimal('45')
     assert accounts['capital'].balance() == Decimal('45')
@@ -78,37 +82,43 @@ def test_get_accounts_expense(chart_of_accounts):
         custom_id='2345',
         bank_account_type=BankAccountTypeEnum.COMPANY_ACCOUNT
     )]
-    accounts = get_accounts(transactions, chart_of_accounts, {})
+    monkeypatch.setattr('my_agent.tools.get_accounts.get_transactions', lambda user_id, start, end: transactions)
+
+    accounts = get_accounts(datetime(2023, 4, 1), datetime(2024, 3, 31))
     assert 'capital' not in accounts
     assert accounts['water'].balance() == Decimal('45.00')
     assert accounts['bank_account'].balance() == Decimal('-45.00')
 
 
-def test_get_accounts_liability(chart_of_accounts):
+def test_get_accounts_liability(chart_of_accounts, monkeypatch):
     transaction_id = str(uuid.uuid4())
     transactions = [Transaction(
         transaction_id=transaction_id,
         date=datetime.strptime('2024/02/20', '%Y/%m/%d'),
-        transaction_type='unknown_deposit',
+        transaction_type='loan deposit',
         amount=45,
         custom_id='2345',
         bank_account_type=BankAccountTypeEnum.COMPANY_ACCOUNT
     )]
-    accounts = get_accounts(transactions, chart_of_accounts, {transaction_id: {'debit': 'bank_account', 'credit': 'loans'}})
+    monkeypatch.setattr('my_agent.tools.get_accounts.get_transactions', lambda user_id, start, end: transactions)
+
+    accounts = get_accounts(datetime(2023, 4, 1), datetime(2024, 3, 31))
     assert accounts['bank_account'].balance() == Decimal('45')
     assert accounts['loans'].balance() == Decimal('45')
 
 
-def test_get_accounts_equity_investment(chart_of_accounts):
+def test_get_accounts_equity_investment(chart_of_accounts, monkeypatch):
     transaction_id = str(uuid.uuid4())
     transactions = [Transaction(
         transaction_id=transaction_id,
         date=datetime.strptime('2024/02/20', '%Y/%m/%d'),
-        transaction_type='unknown_income',
+        transaction_type='capital deposit',
         amount=45,
         custom_id='2345',
         bank_account_type=BankAccountTypeEnum.COMPANY_ACCOUNT
     )]
-    accounts = get_accounts(transactions, chart_of_accounts, {transaction_id: {'debit': 'bank_account', 'credit': 'capital'}})
+    monkeypatch.setattr('my_agent.tools.get_accounts.get_transactions', lambda user_id, start, end: transactions)
+
+    accounts = get_accounts(datetime(2023, 4, 1), datetime(2024, 3, 31))
     assert accounts['bank_account'].balance() == Decimal('45')
     assert accounts['capital'].balance() == Decimal('45')
