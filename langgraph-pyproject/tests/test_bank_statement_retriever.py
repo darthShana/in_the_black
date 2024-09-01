@@ -31,6 +31,14 @@ def expected_simple_transaction_results() -> list[dict]:
     return data
 
 
+@pytest.fixture
+def simple_transactions_with_balance() -> list[dict]:
+    file = open("tests/data/transactions_with_balance.csv", "r")
+    data = list(csv.DictReader(file, delimiter=","))
+    file.close()
+    return data
+
+
 @unit
 def test_bank_statement_retriever(simple_transactions, expected_simple_transaction_results):
     bank_statement_retriever = BankStatementRetriever()
@@ -44,21 +52,13 @@ def test_bank_statement_retriever(simple_transactions, expected_simple_transacti
 
 
 @unit
-def test_bank_statement_retriever_with_filter(filter_transactions):
+def test_filter_transactions_with_balance(simple_transactions_with_balance):
     bank_statement_retriever = BankStatementRetriever()
-    transaction_filter = {
-        '$or': [
-            {
-                '$and': [
-                    {'Payee': {'$contain': 'AUCKLAND COUNCIL'}},
-                    {'Memo': {'$contain': '34 Nicholas'}}
-                ]
-            }, {
-                'Memo': {'$contain': 'D/D 5398975-01 WATERCARE'}
-            }, {
-                'Payee': {'$contain': 'ASB BANK Insurance'}
-            }
-        ]
-    }
-    filtered_transaction_results = bank_statement_retriever.filter_transactions(filter_transactions, transaction_filter)
-    assert len(filtered_transaction_results) == 25
+    simple_transaction_results = bank_statement_retriever.classify_transactions(simple_transactions_with_balance[:10])
+
+    log.info(simple_transaction_results)
+    for transaction, transaction_type in zip(simple_transactions_with_balance[:10], simple_transaction_results):
+        if transaction["Details"] == "Loan Payment":
+            assert transaction_type['transaction_type'] == "capital deposit"
+        if transaction["Details"] == "Loan Interest":
+            assert transaction_type['transaction_type'] == "loan interest"

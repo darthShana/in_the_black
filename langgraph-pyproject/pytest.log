@@ -1,59 +1,7 @@
-2024-08-30 14:36:03 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1038)
-2024-08-30 14:36:09 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1038)
-2024-08-30 14:36:09 [    INFO] [{'Unique Id': '2023040101', 'transaction_type': 'loan interest'}, {'Unique Id': '2023042801', 'transaction_type': 'rental income'}, {'Unique Id': '2023050101', 'transaction_type': 'loan interest'}, {'Unique Id': '2023050701', 'transaction_type': 'capital withdrawal'}, {'Unique Id': '2023053101', 'transaction_type': 'rental income'}, {'Unique Id': '2023060101', 'transaction_type': 'loan interest'}, {'Unique Id': '2023061301', 'transaction_type': 'capital withdrawal'}, {'Unique Id': '2023063001', 'transaction_type': 'rental income'}, {'Unique Id': '2023070101', 'transaction_type': 'loan interest'}, {'Unique Id': '2023073101', 'transaction_type': 'rental income'}, {'Unique Id': '2023080101', 'transaction_type': 'loan interest'}, {'Unique Id': '2023083101', 'transaction_type': 'rental income'}, {'Unique Id': '2023090101', 'transaction_type': 'loan interest'}, {'Unique Id': '2023092601', 'transaction_type': 'capital withdrawal'}, {'Unique Id': '2023092901', 'transaction_type': 'rental income'}, {'Unique Id': '2023100101', 'transaction_type': 'loan interest'}, {'Unique Id': '2023103101', 'transaction_type': 'rental income'}, {'Unique Id': '2023110101', 'transaction_type': 'loan interest'}, {'Unique Id': '2023113001', 'transaction_type': 'rental income'}, {'Unique Id': '2023120101', 'transaction_type': 'loan interest'}, {'Unique Id': '2023122101', 'transaction_type': 'rental income'}, {'Unique Id': '2024010101', 'transaction_type': 'loan interest'}, {'Unique Id': '2024013101', 'transaction_type': 'rental income'}, {'Unique Id': '2024020101', 'transaction_type': 'loan interest'}, {'Unique Id': '2024022901', 'transaction_type': 'rental income'}, {'Unique Id': '2024030101', 'transaction_type': 'loan interest'}, {'Unique Id': '2024032801', 'transaction_type': 'rental income'}, {'Unique Id': '2024032802', 'transaction_type': 'rental income'}, {'Unique Id': '2023040102', 'transaction_type': 'loan interest'}] (test_bank_statement_retriever.py:39)
-2024-08-30 14:36:13 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1038)
-2024-08-30 14:36:13 [    INFO] (?:(?=.*Payee:.*AUCKLAND COUNCIL.*Memo:.*34 Nicholas)|(?=.*Memo:.*D/D 5398975-01 WATERCARE)|(?=.*Payee:.*ASB BANK Insurance)) (bank_statement_retriever.py:122)
-2024-08-30 14:36:16 [    INFO] <h1>Statement of Profit or Loss</h1>
-
-For the year ended 
-
-<table>
-    <tr>
-        <th></th>
-        <th></th>
-    </tr>
-    <tr>
-        <td>Trading income</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Rental Revenue</td>
-        <td>35458.69</td>
-    </tr>
-    <tr>
-        <td>Total Trading Income</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Gross Profit</td>
-        <td>35458.69</td>
-    </tr>
-    <tr>
-        <td>Expenses</td>
-        <td></td>
-    </tr>
-    <tr>
-        <td>Mortgage Interest</td>
-        <td>20639.56</td>
-    </tr>
-    <tr>
-        <td>Water</td>
-        <td>3188.26</td>
-    </tr>
-    <tr>
-        <td>Rates</td>
-        <td>2629.31</td>
-    </tr>
-    <tr>
-        <td>Insurance</td>
-        <td>2260.92</td>
-    </tr>
-    <tr>
-        <td>Total Expenses</td>
-        <td>28718.05</td>
-    </tr>
-</table> (statement_of_profit_or_loss.py:33)
-2024-08-30 14:36:22 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1038)
-2024-08-30 14:36:26 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1038)
-2024-08-30 14:36:31 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1038)
-2024-08-30 14:36:31 [    INFO] mandatory values from bank statement: 1 (process_bank_export.py:75)
+2024-09-01 17:30:10 [    INFO] response form image conversion (file_loader.py:99)
+2024-09-01 17:30:10 [    INFO] {'Date': 'Sun, 01 Sep 2024 05:30:08 GMT', 'Content-Type': 'application/json', 'Content-Length': '662384', 'Connection': 'keep-alive', 'Apigw-Requestid': 'daRIRiI9oAMEPBw='} (file_loader.py:100)
+2024-09-01 17:30:10 [    INFO] loaded images: 2 (file_loader.py:104)
+2024-09-01 17:30:21 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1038)
+2024-09-01 17:30:21 [    INFO] content='Here is the list of transactions extracted from the statement in JSON format:\n\n```json\n[\n  {\n    "date": "Apr 2023",\n    "description": "Management fee",\n    "amount": 164.32,\n    "includedTax": 21.44\n  },\n  {\n    "date": "Apr 2023",\n    "description": "Rent",\n    "amount": 2600.00\n  },\n  {\n    "date": "Apr 2023",\n    "description": "Water usage",\n    "amount": 80.00\n  },\n  {\n    "date": "May 2023",\n    "description": "Management fee",\n    "amount": 205.40,\n    "includedTax": 26.80\n  },\n  {\n    "date": "May 2023",\n    "description": "Rent",\n    "amount": 3250.00\n  },\n  {\n    "date": "May 2023",\n    "description": "Water rates",\n    "amount": 248.50\n  },\n  {\n    "date": "May 2023",\n    "description": "Water usage",\n    "amount": 203.15\n  },\n  {\n    "date": "Jun 2023",\n    "description": "Management fee",\n    "amount": 164.32,\n    "includedTax": 21.44\n  },\n  {\n    "date": "Jun 2023",\n    "description": "Rent",\n    "amount": 2600.00\n  },\n  {\n    "date": "Jun 2023",\n    "description": "Water usage",\n    "amount": 80.00\n  },\n  {\n    "date": "Jul 2023",\n    "description": "Management fee",\n    "amount": 164.32,\n    "includedTax": 21.44\n  },\n  {\n    "date": "Jul 2023",\n    "description": "Rent",\n    "amount": 2600.00\n  },\n  {\n    "date": "Jul 2023",\n    "description": "Water rates",\n    "amount": 173.37\n  },\n  {\n    "date": "Jul 2023",\n    "description": "Water usage",\n    "amount": 180.00\n  },\n  {\n    "date": "Aug 2023",\n    "description": "Council rates",\n    "amount": 552.83\n  },\n  {\n    "date": "Aug 2023",\n    "description": "Letting fee",\n    "amount": 431.25,\n    "includedTax": 56.25\n  },\n  {\n    "date": "Aug 2023",\n    "description": "Management fee",\n    "amount": 188.69,\n    "includedTax": 24.61\n  },\n  {\n    "date": "Aug 2023",\n    "description": "Plumbing",\n    "amount": 149.50,\n    "includedTax": 19.50\n  },\n  {\n    "date": "Aug 2023",\n    "description": "Rent",\n    "amount": 2985.71\n  },\n  {\n    "date": "Aug 2023",\n    "description": "Water rates",\n    "amount": 87.48\n  },\n  {\n    "date": "Aug 2023",\n    "description": "Water usage",\n    "amount": 257.35\n  },\n  {\n    "date": "Sep 2023",\n    "description": "Management fee",\n    "amount": 189.60,\n    "includedTax": 24.72\n  },\n  {\n    "date": "Sep 2023",\n    "description": "Rent",\n    "amount": 3000.00\n  },\n  {\n    "date": "Sep 2023",\n    "description": "Water rates",\n    "amount": 31.64\n  }\n]\n```' response_metadata={'id': 'msg_01FTKQKRUuYb93KJxd6Ywq3Y', 'model': 'claude-3-5-sonnet-20240620', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 1619, 'output_tokens': 979}} id='run-1f7cec9f-0014-4e5a-9899-553c636d1268-0' usage_metadata={'input_tokens': 1619, 'output_tokens': 979, 'total_tokens': 2598} (file_loader.py:127)
+2024-09-01 17:30:30 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1038)
+2024-09-01 17:30:30 [    INFO] content='Here is the list of transactions extracted from the statement in JSON format:\n\n```json\n[\n  {\n    "date": "Nov 2023",\n    "transactions": [\n      {\n        "description": "Council rates",\n        "amount": 552.83,\n        "type": "Money Out"\n      },\n      {\n        "description": "Management fee",\n        "amount": 189.60,\n        "type": "Money Out",\n        "includedTax": 24.72\n      },\n      {\n        "description": "Rent",\n        "amount": 3000.00,\n        "type": "Money In"\n      },\n      {\n        "description": "Water rates",\n        "amount": 63.27,\n        "type": "Money Out"\n      }\n    ]\n  },\n  {\n    "date": "Dec 2023",\n    "transactions": [\n      {\n        "description": "Management fee",\n        "amount": 189.60,\n        "type": "Money Out",\n        "includedTax": 24.72\n      },\n      {\n        "description": "Rent",\n        "amount": 3000.00,\n        "type": "Money In"\n      },\n      {\n        "description": "Water rates",\n        "amount": 63.27,\n        "type": "Money Out"\n      }\n    ]\n  },\n  {\n    "date": "Jan 2024",\n    "transactions": [\n      {\n        "description": "Management fee",\n        "amount": 47.40,\n        "type": "Money Out",\n        "includedTax": 6.18\n      },\n      {\n        "description": "Rent",\n        "amount": 3750.00,\n        "type": "Money In"\n      }\n    ]\n  },\n  {\n    "date": "Feb 2024",\n    "transactions": [\n      {\n        "description": "Council rates",\n        "amount": 552.83,\n        "type": "Money Out"\n      },\n      {\n        "description": "Management fee",\n        "amount": 379.20,\n        "type": "Money Out",\n        "includedTax": 49.44\n      },\n      {\n        "description": "Rent",\n        "amount": 3000.00,\n        "type": "Money In"\n      },\n      {\n        "description": "Water rates",\n        "amount": 75.92,\n        "type": "Money Out"\n      },\n      {\n        "description": "Water usage",\n        "amount": 278.40,\n        "type": "Money In"\n      }\n    ]\n  },\n  {\n    "date": "Mar 2024",\n    "transactions": [\n      {\n        "description": "Management fee",\n        "amount": 110.60,\n        "type": "Money Out",\n        "includedTax": 14.42\n      },\n      {\n        "description": "Rent",\n        "amount": 3750.00,\n        "type": "Money In"\n      },\n      {\n        "description": "Water rates",\n        "amount": 134.37,\n        "type": "Money Out"\n      }\n    ]\n  }\n]\n```' response_metadata={'id': 'msg_014sv6Vi317bXvSTUbi7pEpo', 'model': 'claude-3-5-sonnet-20240620', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 1619, 'output_tokens': 799}} id='run-fca0a396-10ff-496c-af38-c4464997362d-0' usage_metadata={'input_tokens': 1619, 'output_tokens': 799, 'total_tokens': 2418} (file_loader.py:127)

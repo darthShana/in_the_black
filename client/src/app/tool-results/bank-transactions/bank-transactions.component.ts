@@ -1,6 +1,6 @@
 import {LiveAnnouncer} from '@angular/cdk/a11y';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
-import {Component, inject, Input, OnDestroy, OnInit, signal} from '@angular/core';
+import {Component, inject, Input, OnChanges, OnDestroy, OnInit, signal, SimpleChanges} from '@angular/core';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import {Subject, takeUntil} from "rxjs";
 import {AssistantService} from "../../service/assistant.service";
@@ -64,8 +64,9 @@ export interface Filter {
     ]),
   ],
 })
-export class BankTransactionsComponent implements OnInit, OnDestroy{
+export class BankTransactionsComponent implements OnInit, OnChanges, OnDestroy{
 
+  @Input() transactions!: Record<string, any>;
   unsubscribe: Subject<void> = new Subject();
   originalDataSource: Record<string, any>[] = [];
   filteredDataSource: MatTableDataSource<any, MatPaginator> = new MatTableDataSource<any, MatPaginator>();
@@ -91,19 +92,7 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
   }
 
   async ngOnInit() {
-    this.assistantService.toolResultsSubject
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(transactions => {
-        console.log('transactions: ', transactions, 'property name: ', Object.getOwnPropertyNames(transactions['bank_transactions'][0]));
-        this.originalDataSource = transactions['bank_transactions'];
-        this.filteredDataSource = new MatTableDataSource(transactions['bank_transactions']);
-        if(transactions['available_transaction_types']){
-          this.availableTransactionTypes = transactions['available_transaction_types']
-        }
-        this.columnsToDisplay = Object.getOwnPropertyNames(transactions['bank_transactions'][0])
-        this.columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
-        // console.log('transactions: ', transactions, 'dataSource', this.dataSource, 'displayedColumns: ', this.displayedColumns)
-      })
+    this.extractTransactionData(this.transactions);
 
     this.assistantService.toolProgressSubject
       .pipe(takeUntil(this.unsubscribe))
@@ -128,7 +117,23 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
       .subscribe(( command => {
         this.assistantService.updateTransactions(this.filterMaps(this.originalDataSource, this.filters()), command)
       }))
+  }
 
+  async ngOnChanges(changes: SimpleChanges){
+    if (changes['transactions']){
+      this.extractTransactionData(changes['transactions'].currentValue)
+    }
+  }
+
+  private extractTransactionData(transactions: any) {
+    console.log('transactions: ', transactions, 'property name: ', Object.getOwnPropertyNames(transactions['bank_transactions'][0]));
+    this.originalDataSource = transactions['bank_transactions'];
+    this.filteredDataSource = new MatTableDataSource(transactions['bank_transactions']);
+    if (transactions['available_transaction_types']) {
+      this.availableTransactionTypes = transactions['available_transaction_types']
+    }
+    this.columnsToDisplay = Object.getOwnPropertyNames(transactions['bank_transactions'][0])
+    this.columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
   }
 
   private filterMaps(maps: Record<string, any>[], filters: Filter[]): Record<string, any>[] {
@@ -152,7 +157,6 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
         }
       }
 
-      // If no filters matched, include the item by default
       return false;
     });
   }
@@ -161,12 +165,9 @@ export class BankTransactionsComponent implements OnInit, OnDestroy{
     const value = (event.value || '').trim();
     let split = value.split(":")
 
-    // Add our fruit
     if (value) {
       this.filters.update(filters => [...filters, {column: split[0], text: split[1], include: true, enabled: true}]);
     }
-
-    // Clear the input value
     event.chipInput!.clear();
   }
 

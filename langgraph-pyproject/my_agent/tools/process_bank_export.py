@@ -12,11 +12,10 @@ from langchain_core.utils.json import parse_json_markdown
 from langgraph.prebuilt import InjectedState
 from pydantic.v1 import BaseModel, Field
 
-from my_agent.model.transaction import BankAccountTypeEnum, Transaction
+from my_agent.model.transaction import BankAccountTypeEnum
 from my_agent.retrievers.bank_statement_retriever import BankStatementRetriever, available_transaction_types
-from my_agent.retrievers.file_loader import AWSFileLoader
+from my_agent.retrievers.file_loader import AWSCSVFileLoader, AWSPDFFileLoader
 from my_agent.retrievers.get_user import UserRetriever
-from my_agent.retrievers.header_filter import HeaderFilter
 
 from my_agent.tools.templates import dto_mapping_example_template, dto_mapping_prefix, dto_mapping_examples
 
@@ -37,7 +36,7 @@ def to_dynamo_items(customer_number: str, to_map: list[dict], bank_account_type:
         {
            "CustomID": "a unique transaction id"
         }, {
-           "TransactionDate": "the date of this transaction"
+           "TransactionDate": "the date of this transaction in format 'YYYY/MM/DD"
         }, {
            "TransactionAmount": "the amount of this transaction"
         }
@@ -52,7 +51,7 @@ def to_dynamo_items(customer_number: str, to_map: list[dict], bank_account_type:
             So given 
             transactions: 
             {{transactions}}. 
-            Extract the result in json format marking the json as ```json:""",
+            Extract the result in json format list marking the json as ```json:""",
     )
 
     prompt = FewShotPromptWithTemplates(
@@ -70,7 +69,8 @@ def to_dynamo_items(customer_number: str, to_map: list[dict], bank_account_type:
     batch_size = 20
     for i in range(0, len(to_map), batch_size):
         out = chain.invoke({"mandatory_values": mandatory_values, "transactions": to_map[i:i + batch_size]})
-        mapped.extend(parse_json_markdown(out.content))
+        markdown = parse_json_markdown(out.content)
+        mapped.extend(markdown)
 
     log.info(f"mandatory values from bank statement: {len(mapped)}")
 
@@ -96,14 +96,19 @@ def load_transactions(file_name: str) -> dict[str, List[dict]]:
     log.info(f"loading transactions: {file_name}")
     user = UserRetriever.get_user("in here test")
 
-    file_loader = AWSFileLoader(
-        client=s3,
-        bucket="black-transactions-8e8f04a",
-        key=f"{user.user_id}/{file_name}")
+    if file_name.endswith(".csv"):
+        file_loader = AWSCSVFileLoader(
+            client=s3,
+            bucket="black-transactions-8e8f04a",
+            key=f"{user.user_id}/{file_name}")
+    else:
+        file_loader = AWSPDFFileLoader(
+            client=s3,
+            bucket="black-transactions-8e8f04a",
+            key=f"{user.user_id}/{file_name}")
 
-    header_filter = HeaderFilter(file_loader)
-    df = header_filter.extract_transactions()
-    return {'bank_transactions': df.to_dict("records")}
+    transactions = file_loader.extract_transactions()
+    return {'bank_transactions': transactions}
 
 
 load_transactions_tool_name = "load_transactions"

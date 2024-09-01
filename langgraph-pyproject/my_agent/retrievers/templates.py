@@ -1,6 +1,8 @@
 transaction_classification_prefix = """
 Given the following list of transactions for a residential property investment company. Classify each transaction
-to one of the available transaction types bellow for book keeping purposes.
+to one of the available transaction types bellow for book keeping purposes. 
+Positive amounts are deposits such as revenue or cash from capital or loans.
+Negative amounts are payments for expenses or withdrawals of funds.
 
 Available Transaction Types:
 {{transaction_types}}
@@ -18,37 +20,35 @@ result:
 transaction_classification_examples = [
     {
         "transaction": """
-            {
-                "date": "2023/04/01",
-                "id": "2023040101",
-                "transaction_type": "LOAN INT",
-                "payee": "LOAN - INTEREST",
-                "memo": "12-3273-0018314-92 001 INTEREST",
-                "amount": "-796.92"
-            }
-        """,
-        "result": """
-            {
-                "Unique Id": "2023040101",
-                "transaction_type": "loan interest"
-            }
-        """
-    },
-    {
-        "transaction": """
         {
-            "date": "2023/04/28",
-            "id": "2023042801",
-            "transaction_type": "D/C",
-            "payee": "D/C FROM KAINGA ORA",
-            "memo": "3HLRPR 864878",
-            "amount": "1903.66"
+            "date": "2023/04/01", "id": "2023040101", "transaction_type": "LOAN INT", "payee": "LOAN - INTEREST", "memo": "12-3273-0018314-92 001 INTEREST", "amount": "-796.92"
         }
         """,
         "result": """
         {
-            "Unique Id": "2023042801",
-            "transaction_type": "rental income"
+            "Unique Id": "2023040101", "transaction_type": "loan interest"
+        }
+        """
+    }, {
+        "transaction": """
+        {
+            "date": "2023/04/28", "id": "2023042801", "transaction_type": "D/C", "payee": "D/C FROM KAINGA ORA", "memo": "3HLRPR 864878", "amount": "1903.66"
+        }
+        """,
+        "result": """
+        {
+            "Unique Id": "2023042801", "transaction_type": "rental income"
+        }
+        """
+    }, {
+        "transaction": """
+        {
+            "Date": "31/03/2024", "Details": "Loan Payment", "Amount": "1496.83", "PrincipalBalance": "555217.82"
+        }
+        """,
+        "result": """
+        {
+            "Unique Id": "31032024", "transaction_type": "capital deposit"
         }
         """
     }
@@ -96,38 +96,3 @@ header_filter_examples = [
     }
 ]
 
-transaction_filter_prefix = """
-Given the following json filter, Generate am equivalent python regular expression that can filter transactions in a bank statement. 
-The regex should match the field names as well as the values specified.  
-"""
-
-transaction_filter_example_template = """
-Here is an example:
-<example>
-Filter:
-{filter}
-Result:
-{result}
-"""
-
-
-transaction_filter_examples = [
-    {
-        "filter": """{
-            '$or': [
-                {
-                    '$and': [
-                        {'Payee': {'$eq': 'AUCKLAND COUNCIL'}},
-                        {'Memo': {'$contain': '34 Nicholas'}}
-                    ]
-                }, {'Memo': {'$eq': 'D/D 5398975-01 WATERCARE'}
-                }, {'Payee': {'$eq': 'ASB BANK Insurance'}
-                }
-            ]
-        }
-        """,
-        "result": """{
-            'regex': '(?:(?=.*(?:Payee:.*AUCKLAND COUNCIL|Memo:.*34 Nicholas).*(?:Payee:.*AUCKLAND COUNCIL|Memo:.*34 Nicholas))|(?=.*Memo:.*D/D 5398975-01 WATERCARE)|(?=.*Payee:.*ASB BANK Insurance))'
-        }"""
-    }
-]

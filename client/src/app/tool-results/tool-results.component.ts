@@ -16,10 +16,9 @@ import {EndOfYearReportsComponent} from "./end-of-year-reports/end-of-year-repor
 export class ToolResultsComponent implements OnInit, OnDestroy{
 
   unsubscribe: Subject<void> = new Subject();
-  protected directToolResult: any = {};
   protected showEndOfYearReports: boolean = false;
   protected showTransactions: boolean = false;
-  protected eoyReports: any;
+  protected toolResult: any;
 
   constructor(private assistantService: AssistantService) {
   }
@@ -29,17 +28,7 @@ export class ToolResultsComponent implements OnInit, OnDestroy{
   }
 
   async ngOnInit() {
-    this.assistantService.toolContentSubject
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(json => {
-        json = json.substring(json.indexOf("```json") + 7)
-        if (json.indexOf("```") != -1) {
-          json = json.substring(0, json.lastIndexOf("```"))
-        }
-        const fixJson = untruncateJson(json)
-        this.directToolResult = JSON.parse(fixJson)
-      })
-
+    
     this.assistantService.toolProgressSubject
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(completedTool => {
@@ -63,7 +52,7 @@ export class ToolResultsComponent implements OnInit, OnDestroy{
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(json => {
         const modifiedString = json.replace(/'/g, '"').replace(/Decimal\(/g, '').replace(/\)/g, '');
-        this.eoyReports = JSON.parse(modifiedString, this.decimalReviver);
+        this.toolResult = JSON.parse(modifiedString, this.decimalReviver);
       })
 
   }

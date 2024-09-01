@@ -1,0 +1,2 @@
+2024-08-31 07:47:49 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1038)
+2024-08-31 07:47:49 [    INFO] mandatory values from bank statement: 1 (process_bank_export.py:76)

@@ -1,2 +1,2 @@
-<app-bank-transactions *ngIf="showTransactions"></app-bank-transactions>
-<app-end-of-year-reports *ngIf="showEndOfYearReports" [eoyReports]="eoyReports"></app-end-of-year-reports>
+<app-bank-transactions *ngIf="showTransactions" [transactions]="toolResult"></app-bank-transactions>
+<app-end-of-year-reports *ngIf="showEndOfYearReports" [eoyReports]="toolResult"></app-end-of-year-reports>

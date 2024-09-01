@@ -6,5 +6,7 @@ class UserRetriever:
     @staticmethod
     def get_user(access_token: str) -> UserInfo:
         return UserInfo(
-            user_id='b5c7f883-eb98-4ef0-a744-1496510552c2'
+            # user_id='b5c7f883-eb98-4ef0-a744-1496510552c2'
+            user_id='d3b0c891-41c6-49ba-95ee-4c33bf17cd3f'
+
         )

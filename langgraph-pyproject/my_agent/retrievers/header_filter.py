@@ -1,10 +1,8 @@
-import pandas as pd
 from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import PromptTemplate, FewShotPromptWithTemplates
 from langchain_core.utils.json import parse_json_markdown
 
 from my_agent.retrievers.bank_statement_retriever import BankStatementRetriever
-from my_agent.retrievers.file_loader import FileLoader
 from my_agent.retrievers.templates import header_filter_example_template, header_filter_examples, header_filter_prefix
 
 
@@ -16,15 +14,7 @@ class HeaderFilter:
         input_variables=["content", "result"], template=header_filter_example_template
     )
 
-    def __init__(self, file_loader: FileLoader):
-        self.file_loader = file_loader
-
-    def extract_transactions(self):
-        f = self.lines_to_skip()
-        return self.file_loader.load_data_frame(f['line_number'])
-
-    def lines_to_skip(self):
-        head = self.file_loader.load_head(20)
+    def lines_to_skip(self, head):
 
         prefix = PromptTemplate(
             input_variables=[], template=header_filter_prefix

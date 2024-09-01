@@ -19,6 +19,11 @@
             (click)="continue(option)"
             mat-flat-button>
           {{option}}</button>
+          <button *ngIf="!$any(thought['content'])[0]['options'] || $any(thought['content'])[0]['options'].length === 0"
+                  (click)="continue('confirm')"
+                  mat-flat-button>
+            continue
+          </button>
       </div>
       </mat-card-content>
     </mat-card>

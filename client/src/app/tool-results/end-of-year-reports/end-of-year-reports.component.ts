@@ -29,6 +29,7 @@ export class EndOfYearReportsComponent implements OnInit{
 
   ngOnInit(): void {
 
+    console.log("calculating statement_of_profit_or_loss")
     let profitOrLoss = this.eoyReports['statement_of_profit_or_loss']
 
     this.reportLines.push({description: "Revenue", amount:undefined, subtitle:true})

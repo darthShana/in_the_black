@@ -1,11 +1,8 @@
-import re
-
 from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import PromptTemplate, FewShotPromptWithTemplates
 from langchain_core.utils.json import parse_json_markdown
 from langsmith import traceable
-from my_agent.retrievers.templates import transaction_classification_example_template, transaction_classification_prefix, transaction_classification_examples, \
-    transaction_filter_example_template, transaction_filter_prefix, transaction_filter_examples
+from my_agent.retrievers.templates import transaction_classification_example_template, transaction_classification_prefix, transaction_classification_examples
 
 import logging
 
@@ -14,7 +11,7 @@ log = logging.getLogger(__name__)
 
 available_transaction_types = [{
         "name": "loan interest",
-        "description": "interest paid on loans (mortgages) used for the rental properties"
+        "description": "interest payments on loans (mortgages) used for the rental properties"
     }, {
         "name": "rental income",
         "description": "rental income received from rental properties"
@@ -57,9 +54,6 @@ class BankStatementRetriever:
     CLASSIFICATION_EXAMPLE_PROMPT = PromptTemplate(
         input_variables=["transaction", "result"], template=transaction_classification_example_template
     )
-    FILTER_EXAMPLE_PROMPT = PromptTemplate(
-        input_variables=["transaction", "filter", 'result'], template=transaction_filter_example_template
-    )
 
     @traceable
     def classify_transactions(self, transactions: list):
@@ -92,36 +86,3 @@ class BankStatementRetriever:
             output.extend(parse_json_markdown(out.content))
 
         return output
-
-    def filter_transactions(self, transactions: list, statement_filter):
-        prefix = PromptTemplate(
-            input_variables=[], template=transaction_filter_prefix
-        )
-
-        suffix = PromptTemplate(
-            input_variables=["filter"],
-            template="""
-                                    So given 
-                                    filter: 
-                                    {{filter}}. 
-                                    Extract the regex and respond in json format marking the json as ```json:""",
-        )
-
-        prompt = FewShotPromptWithTemplates(
-            suffix=suffix,
-            prefix=prefix,
-            input_variables=["filter"],
-            examples=BankStatementRetriever.escape_examples(transaction_filter_examples),
-            example_prompt=self.FILTER_EXAMPLE_PROMPT,
-            example_separator="\n",
-        )
-
-        chain = prompt | self.chat
-        output = chain.invoke({"filter": statement_filter})
-        regex = parse_json_markdown(output.content)['regex']
-        log.info(regex)
-
-        return [transaction for transaction in transactions
-                if re.search(regex, ' '.join(f"{k}:{v}" for k, v in transaction.items()), re.IGNORECASE)]
-
-

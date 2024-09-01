@@ -4,6 +4,8 @@ import json
 import pulumi
 import pulumi_aws as aws
 from pulumi_aws import s3
+from pdf_converter import create_pdf_converter
+
 
 # Create an AWS resource (S3 Bucket)
 bucket = s3.Bucket('black-transactions')
@@ -109,3 +111,7 @@ pulumi.export("user_name", langgraph_user.name)
 pulumi.export("access_key_id", langgraph_user_access_key.id)
 pulumi.export("secret_access_key", langgraph_user_access_key.secret)
 
+pdf_converter_outputs = create_pdf_converter()
+
+# Export values if needed
+pulumi.export("apigatewayv2-http-endpoint", pdf_converter_outputs["apigatewayv2-http-endpoint"])

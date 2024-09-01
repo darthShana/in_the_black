@@ -154,18 +154,17 @@ export class AssistantService {
     if (parts.type === "tool" && (['classify_transactions', 'load_transactions', 'generate_end_of_year_reports'].includes(parts.name))) {
       console.log('handleComplete')
       console.log(parts.content)
-      if (parts.content && (typeof parts.content === 'string') && (parts.content as string).startsWith("{\"bank_transactions\"")) {
+      if (parts.content && (typeof parts.content === 'string') && (parts.name==="load_transactions" || parts.name==="classify_transactions")) {
         console.log("bank_transactions------")
-        const transactions = JSON.parse(parts.content)
-        this.toolResultsSubject.next(transactions)
+        this.toolResultsSubject.next(parts.content)
       }
-      if (parts.content && (typeof parts.content === 'string') && parts.name === "generate_end_of_year_reports") {
+      if (parts.content && (typeof parts.content === 'string') && (parts.name === "generate_end_of_year_reports")) {
         console.log("end_of_year_reports------")
         this.toolResultsSubject.next(parts.content)
       }
     }
 
-    if (parts.type === "ai" && parts.tool_calls){
+    if (parts.type === "ai" && parts.tool_calls && parts.tool_calls.length > 0){
       if(parts.tool_calls[0].name === "AskHuman"){
         console.log('ask human subject.....')
         console.log(data)

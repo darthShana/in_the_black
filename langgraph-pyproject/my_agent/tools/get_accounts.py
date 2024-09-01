@@ -17,6 +17,7 @@ def get_accounts(start: datetime, end: datetime) -> Dict[str, Account]:
     chart_of_accounts = default_chart_of_accounts
 
     transactions = get_transactions(user.user_id, start, end)
+    log.info(f"Retrieved transactions:{len(transactions)}")
 
     for transaction in transactions:
         transaction_type = transaction.transaction_type
