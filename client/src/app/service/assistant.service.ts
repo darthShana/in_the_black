@@ -143,6 +143,8 @@ export class AssistantService {
     }
   }
 
+  private toolsWithViews   = new Set(['load_bank_transactions', 'classify_bank_transactions', 'load_vendor_transactions', 'classify_vendor_transactions', 'generate_end_of_year_reports']);
+
   handleComplete(data: any) {
     let parts = data.at(-1)
 
@@ -151,15 +153,11 @@ export class AssistantService {
       this.toolProgressSubject.next(parts.name)
     }
 
-    if (parts.type === "tool" && (['classify_transactions', 'load_transactions', 'generate_end_of_year_reports'].includes(parts.name))) {
+    if (parts.type === "tool" && (this.toolsWithViews.has(parts.name))) {
       console.log('handleComplete')
       console.log(parts.content)
-      if (parts.content && (typeof parts.content === 'string') && (parts.name==="load_transactions" || parts.name==="classify_transactions")) {
-        console.log("bank_transactions------")
-        this.toolResultsSubject.next(parts.content)
-      }
-      if (parts.content && (typeof parts.content === 'string') && (parts.name === "generate_end_of_year_reports")) {
-        console.log("end_of_year_reports------")
+      if (parts.content && (typeof parts.content === 'string')) {
+        console.log('show tool result')
         this.toolResultsSubject.next(parts.content)
       }
     }
@@ -217,7 +215,7 @@ export class AssistantService {
     }
     await this.client.threads.updateState(this.thread['thread_id'],
       {
-        values:{"transactions": {'bank_transactions': filterMaps}},
+        values:{"transactions": {'transactions': filterMaps}},
         asNode: "ask_human"
       });
     console.log("transactions updated")

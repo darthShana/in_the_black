@@ -28,7 +28,7 @@ export interface Filter {
 }
 
 @Component({
-  selector: 'app-bank-transactions',
+  selector: 'app-transactions',
   standalone: true,
   imports: [
     CommonModule,
@@ -54,8 +54,8 @@ export interface Filter {
     MatCheckbox,
     FormsModule,
   ],
-  templateUrl: './bank-transactions.component.html',
-  styleUrl: './bank-transactions.component.scss',
+  templateUrl: './transactions.component.html',
+  styleUrl: './transactions.component.scss',
   animations: [
     trigger('detailExpand', [
       state('collapsed,void', style({height: '0px', minHeight: '0'})),
@@ -64,7 +64,7 @@ export interface Filter {
     ]),
   ],
 })
-export class BankTransactionsComponent implements OnInit, OnChanges, OnDestroy{
+export class TransactionsComponent implements OnInit, OnChanges, OnDestroy{
 
   @Input() transactions!: Record<string, any>;
   unsubscribe: Subject<void> = new Subject();
@@ -126,13 +126,13 @@ export class BankTransactionsComponent implements OnInit, OnChanges, OnDestroy{
   }
 
   private extractTransactionData(transactions: any) {
-    console.log('transactions: ', transactions, 'property name: ', Object.getOwnPropertyNames(transactions['bank_transactions'][0]));
-    this.originalDataSource = transactions['bank_transactions'];
-    this.filteredDataSource = new MatTableDataSource(transactions['bank_transactions']);
+    console.log('transactions: ', transactions, 'property name: ', Object.getOwnPropertyNames(transactions['transactions'][0]));
+    this.originalDataSource = transactions['transactions'];
+    this.filteredDataSource = new MatTableDataSource(transactions['transactions']);
     if (transactions['available_transaction_types']) {
       this.availableTransactionTypes = transactions['available_transaction_types']
     }
-    this.columnsToDisplay = Object.getOwnPropertyNames(transactions['bank_transactions'][0])
+    this.columnsToDisplay = Object.getOwnPropertyNames(transactions['transactions'][0])
     this.columnsToDisplayWithExpand = [...this.columnsToDisplay, 'expand'];
   }
 

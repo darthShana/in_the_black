@@ -2,8 +2,9 @@ from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import PromptTemplate, FewShotPromptWithTemplates
 from langchain_core.utils.json import parse_json_markdown
 
-from my_agent.retrievers.bank_statement_retriever import BankStatementRetriever
+from my_agent.retrievers.transaction_retriever import TransactionRetriever
 from my_agent.retrievers.templates import header_filter_example_template, header_filter_examples, header_filter_prefix
+from my_agent.retrievers.utils import escape_examples
 
 
 class HeaderFilter:
@@ -32,7 +33,7 @@ class HeaderFilter:
             suffix=suffix,
             prefix=prefix,
             input_variables=["content"],
-            examples=BankStatementRetriever.escape_examples(header_filter_examples),
+            examples=escape_examples(header_filter_examples),
             example_prompt=self.EXAMPLE_PROMPT2,
             example_separator="\n",
         )

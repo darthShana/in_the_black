@@ -1,15 +1,14 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {Subject, takeUntil} from "rxjs";
 import {AssistantService} from "../service/assistant.service";
-import untruncateJson from "untruncate-json";
 import {CommonModule} from "@angular/common";
-import {BankTransactionsComponent} from "./bank-transactions/bank-transactions.component";
+import {TransactionsComponent} from "./transactions/transactions.component";
 import {EndOfYearReportsComponent} from "./end-of-year-reports/end-of-year-reports.component";
 
 @Component({
   selector: 'app-tool-results',
   standalone: true,
-  imports: [CommonModule, BankTransactionsComponent, EndOfYearReportsComponent],
+  imports: [CommonModule, TransactionsComponent, EndOfYearReportsComponent],
   templateUrl: './tool-results.component.html',
   styleUrl: './tool-results.component.scss'
 })
@@ -27,20 +26,16 @@ export class ToolResultsComponent implements OnInit, OnDestroy{
     this.unsubscribe.complete();
   }
 
+  private transactionTools = new Set(['load_bank_transactions', 'classify_bank_transactions', 'load_vendor_transactions', 'classify_vendor_transactions']);
   async ngOnInit() {
-    
+
     this.assistantService.toolProgressSubject
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(completedTool => {
         console.log("completed tool in tool results:"+completedTool)
-        if(completedTool === "load_transactions"){
+        if(this.transactionTools.has(completedTool)){
           this.showTransactions = true;
-        }
-        if(completedTool === "classify_transactions"){
-          this.showTransactions = true;
-        }
-        if(completedTool === "save_transactions"){
-          this.showTransactions = true;
+          this.showEndOfYearReports = false
         }
         if(completedTool === "generate_end_of_year_reports"){
           this.showTransactions = false;

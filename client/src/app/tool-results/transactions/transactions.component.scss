@@ -4,14 +4,28 @@ table {
 
 tr.example-detail-row {
   height: 0;
+
+  &:not(.example-expanded-row):hover {
+    background: whitesmoke;
+  }
+
+  &:not(.example-expanded-row):active {
+    background: #efefef;
+  }
 }
 
-tr.example-element-row:not(.example-expanded-row):hover {
-  background: whitesmoke;
-}
+tr.bg-warning {
+  background-color: rgba(220, 53, 69, 0.10);
 
-tr.example-element-row:not(.example-expanded-row):active {
-  background: #efefef;
+  &:not(.example-expanded-row):hover {
+    background-color: rgba(220, 53, 69, 0.25);
+  }
+}
+warning-row {
+  background: lightcoral;
+  &:hover {
+    background-color: darken(lightcoral, 10%);
+  }
 }
 
 .example-element-row td {

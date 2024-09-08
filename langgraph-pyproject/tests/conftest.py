@@ -3,12 +3,8 @@ import logging
 
 import pandas as pd
 import pytest
-from boto3.dynamodb.conditions import Key
 
 from my_agent.model.chart_of_accounts import default_chart_of_accounts
-from my_agent.model.transaction import BankAccountTypeEnum
-from tests.test_process_bank_export import customer_number
-from my_agent.tools.process_bank_export import save_classified_transactions, classify_transactions
 
 log = logging.getLogger(__name__)
 dynamodb = boto3.resource('dynamodb')
@@ -60,21 +56,5 @@ def chart_of_accounts():
     return default_chart_of_accounts
 
 
-@pytest.fixture(scope='session')
-def transaction_filter():
-    return {
-        '$or': [
-            {
-                '$and': [
-                    {'Payee': {'$contain': 'AUCKLAND COUNCIL'}},
-                    {'Memo': {'$contain': '34 Nicholas'}}
-                ]
-            }, {
-                'Memo': {'$contain': 'D/D 5398975-01 WATERCARE'}
-            }, {
-                'Payee': {'$contain': 'ASB BANK Insurance'}
-            }
-        ]
-    }
 
 

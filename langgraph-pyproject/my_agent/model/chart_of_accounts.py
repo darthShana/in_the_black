@@ -19,16 +19,22 @@ default_chart_of_accounts = ChartOfAccounts(
             'water': {'display_name': 'Water', 'account_type': AccountTypeEnum.EXPENSES},
             'rates': {'display_name': 'Rates', 'account_type': AccountTypeEnum.EXPENSES},
             'insurance': {'display_name': 'Insurance', 'account_type': AccountTypeEnum.EXPENSES},
-            'loans': {'display_name': 'loans', 'account_type': AccountTypeEnum.LIABILITY}
+            'loans': {'display_name': 'loans', 'account_type': AccountTypeEnum.LIABILITY},
+            'management_fees': {'display_name': 'Management_Fees', 'account_type': AccountTypeEnum.EXPENSES},
+            'maintenance_expenses': {'display_name': 'Maintenance Expenses', 'account_type': AccountTypeEnum.EXPENSES}
         },
         transaction_map={
             'loan interest': {'debit': 'mortgage_interest', 'credit': 'bank_account'},
             'rental income': {'debit': 'bank_account', 'credit': 'rental_revenue'},
             'water': {'debit': 'water', 'credit': 'bank_account'},
+            'water refund': {'debit': 'bank_account', 'credit': 'water'},
             'rates': {'debit': 'rates', 'credit': 'bank_account'},
             'insurance': {'debit': 'insurance', 'credit': 'bank_account'},
+            'property management': {'debit': 'management_fees', 'credit': 'bank_account'},
+            'property maintenance': {'debit': 'maintenance_expenses', 'credit': 'bank_account'},
             'capital withdrawal':  {'debit': 'capital', 'credit': 'bank_account'},
             'capital deposit':  {'debit': 'bank_account', 'credit': 'capital'},
+            'capital deposit reversal':  {'debit': 'capital', 'credit': 'bank_account'},
             'loan deposit':  {'debit': 'bank_account', 'credit': 'loans'}
         }
     )
