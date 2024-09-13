@@ -7,7 +7,7 @@ from pulumi import AssetArchive
 import pulumi_docker as docker
 
 
-def create_property_valuation(cognito):
+def create_property_valuation(api):
 
     # IAM role for Lambda
     lambda_role = aws.iam.Role("property-valuation-lambda-role",
@@ -85,48 +85,21 @@ def create_property_valuation(cognito):
         opts=pulumi.ResourceOptions(depends_on=[image])
     )
 
-    http_endpoint = aws.apigatewayv2.Api("property-valuation-http",
-        protocol_type="HTTP"
-    )
-
     property_valuation_lambda_backend = aws.apigatewayv2.Integration("property-valuation",
-        api_id=http_endpoint.id,
+        api_id=api['gateway'].id,
         integration_type="AWS_PROXY",
         description="property-valuation lambda integration",
         integration_method="POST",
         integration_uri=property_valuation_lambda.arn
     )
 
-    # Create Authorizer
-    authorizer = aws.apigatewayv2.Authorizer("property-valuation-authorizer",
-        api_id=http_endpoint.id,
-        authorizer_type="JWT",
-        identity_sources=["$request.header.Authorization"],
-        name="cognito-authorizer",
-        jwt_configuration={
-            "audience": [cognito['user_pool_client'].id],
-            "issuer": cognito['user_pool'].endpoint.apply(lambda endpoint: f"https://{endpoint}")
-        }
-    )
-
-    http_route = aws.apigatewayv2.Route("example-route",
-        api_id=http_endpoint.id,
-        route_key="ANY /{proxy+}",
+    http_route = aws.apigatewayv2.Route(
+        "valuation",
+        api_id=api['gateway'].id,
+        route_key="ANY /valuation",
         target=property_valuation_lambda_backend.id.apply(lambda target_url: "integrations/" + target_url),
         authorization_type="JWT",
-        authorizer_id=authorizer.id,
-    )
-
-    http_stage = aws.apigatewayv2.Stage("stage",
-        api_id=http_endpoint.id,
-        route_settings= [
-            {
-                "route_key": http_route.route_key,
-                "throttling_burst_limit": 1,
-                "throttling_rate_limit": 0.5,
-            }
-        ],
-        auto_deploy=True,
+        authorizer_id=api['authorizer'].id,
     )
 
     # Give permissions from API Gateway to invoke the Lambda
@@ -134,10 +107,10 @@ def create_property_valuation(cognito):
         action="lambda:invokeFunction",
         function=property_valuation_lambda.name,
         principal="apigateway.amazonaws.com",
-        source_arn=http_endpoint.execution_arn.apply(lambda arn: arn + "*/*"),
+        source_arn=api['gateway'].execution_arn.apply(lambda arn: arn + "*/*"),
     )
 
     # Output the CloudFront distribution URL and API Gateway URL
     return {
-        "apigatewayv2-http-endpoint": pulumi.Output.all(http_endpoint.api_endpoint, http_stage.name).apply(lambda values: values[0] + '/' + values[1] + '/')
+        "apigatewayv2-http-endpoint": pulumi.Output.all(api['gateway'].api_endpoint, api['stage'].name).apply(lambda values: values[0] + '/' + values[1] + '/')
     }

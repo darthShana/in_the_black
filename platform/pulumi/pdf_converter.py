@@ -4,7 +4,7 @@ import json
 from pulumi import AssetArchive, FileAsset
 
 
-def create_pdf_converter():
+def create_pdf_converter(api):
 
     # IAM role for Lambda
     lambda_role = aws.iam.Role("in-the-black-pdf-converter-lambda-role",
@@ -62,12 +62,8 @@ def create_pdf_converter():
         memory_size=256
     )
 
-    http_endpoint = aws.apigatewayv2.Api("in-the-black-pdf-converter",
-        protocol_type="HTTP"
-    )
-
     http_lambda_backend = aws.apigatewayv2.Integration("pdf-converter-integration",
-        api_id=http_endpoint.id,
+        api_id=api['gateway'].id,
         integration_type="AWS_PROXY",
         connection_type="INTERNET",
         description="Lambda example",
@@ -76,25 +72,11 @@ def create_pdf_converter():
         passthrough_behavior="WHEN_NO_MATCH"
     )
 
-    url = http_lambda_backend.integration_uri
-
-    http_route = aws.apigatewayv2.Route("route",
-        api_id=http_endpoint.id,
-        route_key="ANY /{proxy+}",
-        target=http_lambda_backend.id.apply(lambda targetUrl: "integrations/" + targetUrl)
-    )
-
-    http_stage = aws.apigatewayv2.Stage("example-stage",
-        api_id=http_endpoint.id,
-        route_settings= [
-            {
-                "route_key": http_route.route_key,
-                "throttling_burst_limit": 1,
-                "throttling_rate_limit": 0.5,
-            }
-        ],
-        auto_deploy=True,
-
+    http_route = aws.apigatewayv2.Route(
+        "convert_pdf_to_image",
+        api_id=api['gateway'].id,
+        route_key="ANY /convert_pdf_to_image",
+        target=http_lambda_backend.id.apply(lambda target_url: "integrations/" + target_url)
     )
 
     # Give permissions from API Gateway to invoke the Lambda
@@ -102,10 +84,10 @@ def create_pdf_converter():
         action="lambda:invokeFunction",
         function=pdf_to_image_lambda.name,
         principal="apigateway.amazonaws.com",
-        source_arn=http_endpoint.execution_arn.apply(lambda arn: arn + "*/*"),
+        source_arn=api['gateway'].execution_arn.apply(lambda arn: arn + "*/*"),
     )
 
     # Output the CloudFront distribution URL and API Gateway URL
     return {
-        "apigatewayv2-http-endpoint": pulumi.Output.all(http_endpoint.api_endpoint, http_stage.name).apply(lambda values: values[0] + '/' + values[1] + '/')
+        "apigatewayv2-http-endpoint": pulumi.Output.all(api['gateway'].api_endpoint, api['stage'].name).apply(lambda values: values[0] + '/' + values[1] + '/')
     }

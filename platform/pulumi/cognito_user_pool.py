@@ -23,8 +23,8 @@ def create_cognito():
     
     # Add this after creating the User Pool
     resource_server = aws.cognito.ResourceServer(
-        "property-valuation-resource-server",
-        identifier="property-valuation",
+        "api-resource-server",
+        identifier="api",
         name="Property Valuation Resource Server",
         scopes=[{
             "scope_name": "read",
@@ -38,7 +38,7 @@ def create_cognito():
         user_pool_id=user_pool.id,
         generate_secret=True,
         allowed_oauth_flows=["client_credentials"],
-        allowed_oauth_scopes=["property-valuation/read"],
+        allowed_oauth_scopes=["api/read"],
         allowed_oauth_flows_user_pool_client=True,
         supported_identity_providers=["COGNITO"],
         explicit_auth_flows=["ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_ADMIN_USER_PASSWORD_AUTH"]

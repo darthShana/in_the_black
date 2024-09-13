@@ -5,6 +5,7 @@ import pulumi
 import pulumi_aws as aws
 from pulumi_aws import s3
 
+from api_gateway import create_api_gateway
 from cognito_user_pool import create_cognito
 from pdf_converter import create_pdf_converter
 from property_valuation import create_property_valuation
@@ -114,8 +115,9 @@ pulumi.export("access_key_id", langgraph_user_access_key.id)
 pulumi.export("secret_access_key", langgraph_user_access_key.secret)
 
 cognito_outputs = create_cognito()
-pdf_converter_outputs = create_pdf_converter()
-property_valuation_outputs = create_property_valuation(cognito_outputs)
+gateway = create_api_gateway(cognito_outputs)
+pdf_converter_outputs = create_pdf_converter(gateway)
+property_valuation_outputs = create_property_valuation(gateway)
 
 # Export values if needed
 pulumi.export("pdf-converter-http-endpoint", pdf_converter_outputs["apigatewayv2-http-endpoint"])
