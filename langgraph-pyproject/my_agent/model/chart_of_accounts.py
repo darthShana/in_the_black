@@ -20,7 +20,7 @@ default_chart_of_accounts = ChartOfAccounts(
             'rates': {'display_name': 'Rates', 'account_type': AccountTypeEnum.EXPENSES},
             'insurance': {'display_name': 'Insurance', 'account_type': AccountTypeEnum.EXPENSES},
             'loans': {'display_name': 'loans', 'account_type': AccountTypeEnum.LIABILITY},
-            'management_fees': {'display_name': 'Management_Fees', 'account_type': AccountTypeEnum.EXPENSES},
+            'management_fees': {'display_name': 'Management Fees', 'account_type': AccountTypeEnum.EXPENSES},
             'maintenance_expenses': {'display_name': 'Maintenance Expenses', 'account_type': AccountTypeEnum.EXPENSES}
         },
         transaction_map={

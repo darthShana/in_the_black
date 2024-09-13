@@ -4,8 +4,10 @@ import json
 import pulumi
 import pulumi_aws as aws
 from pulumi_aws import s3
-from pdf_converter import create_pdf_converter
 
+from cognito_user_pool import create_cognito
+from pdf_converter import create_pdf_converter
+from property_valuation import create_property_valuation
 
 # Create an AWS resource (S3 Bucket)
 bucket = s3.Bucket('black-transactions')
@@ -111,7 +113,10 @@ pulumi.export("user_name", langgraph_user.name)
 pulumi.export("access_key_id", langgraph_user_access_key.id)
 pulumi.export("secret_access_key", langgraph_user_access_key.secret)
 
+cognito_outputs = create_cognito()
 pdf_converter_outputs = create_pdf_converter()
+property_valuation_outputs = create_property_valuation(cognito_outputs)
 
 # Export values if needed
-pulumi.export("apigatewayv2-http-endpoint", pdf_converter_outputs["apigatewayv2-http-endpoint"])
+pulumi.export("pdf-converter-http-endpoint", pdf_converter_outputs["apigatewayv2-http-endpoint"])
+pulumi.export("property-valuation-http-endpoint", pdf_converter_outputs["apigatewayv2-http-endpoint"])

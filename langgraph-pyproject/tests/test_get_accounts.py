@@ -13,11 +13,15 @@ log = logging.getLogger(__name__)
 
 
 def to_transaction(row, transaction_type):
+    amount_ = row['Amount']
+    if amount_ < 0:
+        amount_ = amount_ * -1
+
     return Transaction(
         transaction_id=str(uuid.uuid4()),
         date=datetime.strptime(row['Date'], '%Y/%m/%d'),
         transaction_type=transaction_type['transaction_type'],
-        amount=row['Amount'],
+        amount=amount_,
         custom_id=row['Unique Id'],
         bank_account_type=BankAccountTypeEnum.COMPANY_ACCOUNT
     )
@@ -63,7 +67,7 @@ def test_get_accounts_expense(chart_of_accounts, monkeypatch):
         transaction_id=str(uuid.uuid4()),
         date=datetime.strptime('2024/02/20', '%Y/%m/%d'),
         transaction_type='water',
-        amount=-45,
+        amount=45,
         custom_id='2345',
         bank_account_type=BankAccountTypeEnum.PERSONAL_ACCOUNT
     )]
@@ -78,7 +82,7 @@ def test_get_accounts_expense(chart_of_accounts, monkeypatch):
         transaction_id=str(uuid.uuid4()),
         date=datetime.strptime('2024/01/20', '%Y/%m/%d'),
         transaction_type='water',
-        amount=-45,
+        amount=45,
         custom_id='2345',
         bank_account_type=BankAccountTypeEnum.COMPANY_ACCOUNT
     )]

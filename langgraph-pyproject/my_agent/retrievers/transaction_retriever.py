@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 class TransactionRetriever:
 
-    chat = ChatAnthropic(model="claude-3-5-sonnet-20240620")
+    chat = ChatAnthropic(model="claude-3-5-sonnet-20240620", max_tokens=4096)
 
     CLASSIFICATION_EXAMPLE_PROMPT = PromptTemplate(
         input_variables=["transaction", "result"], template=transaction_classification_example_template
@@ -40,30 +40,35 @@ class TransactionRetriever:
     def _extract_from_image(self, images_base64: list[str]) -> list[dict]:
         log.info(f"loaded images: {len(images_base64)}")
 
-        transactions = []
+        images_prompt = []
+        images_data = {}
 
+        counter = 1
         for image in images_base64:
-            prompt = ChatPromptTemplate.from_messages(
-                [
-                    ("system", self.statement_extraction_prefix),
-                    (
-                        "user", [
-                            {
-                                "type": "image_url",
-                                "image_url": {"url": "data:image/png;base64,{image_data}"},
-                            }
-                        ]
+            images_prompt.append({
+                "type": "image_url",
+                "image_url": {"url": f"data:image/jpeg;base64,{{image_data{counter}}}"}
+            })
+            images_data[f"image_data{counter}"] = image
+            counter = counter + 1
 
-                    ),
-                ]
-            )
-            chain = prompt | self.chat
-            response = chain.invoke({"image_data": image})
-            log.info(response)
-            markdown = parse_json_markdown(response.content)
-            transactions.extend(markdown)
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", self.statement_extraction_prefix),
+                (
+                    "user", images_prompt
+                ),
+            ]
+        )
+        chain = prompt | self.chat
+        response = chain.invoke(images_data)
+        log.info(response)
 
+        transactions = []
+        markdown = parse_json_markdown(response.content)
+        transactions.extend(markdown)
         return transactions
+
 
     def _extract_from_dataframe(self, data_frame: pd.DataFrame) -> list[dict]:
         return data_frame.to_dict("records")
@@ -93,7 +98,7 @@ class TransactionRetriever:
 
         chain = prompt | self.chat
         output = []
-        batch_size = 20
+        batch_size = 80
         for i in range(0, len(transactions), batch_size):
             out = chain.invoke({"transaction_types": available_transaction_types, "transactions": transactions[i:i + batch_size]})
             parsed_result = parse_json_markdown(out.content)
@@ -117,7 +122,7 @@ class TransactionRetriever:
                     "user", [
                         {
                             "type": "image_url",
-                            "image_url": {"url": "data:image/png;base64,{image_data}"},
+                            "image_url": {"url": "data:image/jpeg;base64,{image_data}"},
                         }
                     ]
 

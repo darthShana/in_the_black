@@ -17,11 +17,12 @@ transaction_retriever = TransactionRetriever()
 
 class ClassifyTransactionsInput(BaseModel):
     file_name: str = Field(description="file name of the statement with transactions to be classified")
+    filter_transactions: bool = Field(description="have the unwanted transactions been filtered out")
     state: Annotated[dict, InjectedState] = Field(description="current state")
 
 
-def classify_vendor_transactions(file_name: str, state: Annotated[dict, InjectedState]) -> dict[str, List[dict]]:
-    log.info(f"loading vendor transactions: {file_name}")
+def classify_vendor_transactions(file_name: str, filter_transactions: bool, state: Annotated[dict, InjectedState]) -> dict[str, List[dict]]:
+    log.info(f"loading vendor transactions: {file_name} filter_transactions: {filter_transactions}")
     user = UserRetriever.get_user("in here test")
 
     file_loader = AWSPDFFileLoader(

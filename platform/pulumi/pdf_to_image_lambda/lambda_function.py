@@ -14,11 +14,11 @@ def handler(event, context):
 
         images_strings = []
         for img in images:
-
+            img = img.convert('RGB')
             # Save the image to a BytesIO object
             buffered = BytesIO()
-            img.save(buffered, format="PNG")
-            images_strings.append(base64.b64encode(buffered.getvalue()).decode())
+            img.save(buffered, format="JPEG", quality=85, optimize=True)
+            images_strings.append(base64.b64encode(buffered.getvalue()).decode("utf-8"))
 
         return {
             'statusCode': 200,

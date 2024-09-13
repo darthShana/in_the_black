@@ -7,7 +7,7 @@ from pulumi import AssetArchive, FileAsset
 def create_pdf_converter():
 
     # IAM role for Lambda
-    lambda_role = aws.iam.Role("lambda-role",
+    lambda_role = aws.iam.Role("in-the-black-pdf-converter-lambda-role",
        assume_role_policy=json.dumps({
            "Version": "2012-10-17",
            "Statement": [{
@@ -19,7 +19,7 @@ def create_pdf_converter():
                "Sid": ""
            }]
        })
-       )
+    )
     
     lambda_policy = aws.iam.RolePolicy("lambdaPolicy",
         role=lambda_role.id,
@@ -53,7 +53,7 @@ def create_pdf_converter():
     # Define the Lambda function
     pdf_to_image_lambda = aws.lambda_.Function(
         "pdfToImageLambda",
-        runtime="python3.8",
+        runtime="python3.12",
         handler="lambda_function.handler",
         role=lambda_role.arn,
         code=create_lambda_asset(),
@@ -62,11 +62,11 @@ def create_pdf_converter():
         memory_size=256
     )
 
-    http_endpoint = aws.apigatewayv2.Api("http-api-pulumi-example",
+    http_endpoint = aws.apigatewayv2.Api("in-the-black-pdf-converter",
         protocol_type="HTTP"
     )
 
-    http_lambda_backend = aws.apigatewayv2.Integration("example",
+    http_lambda_backend = aws.apigatewayv2.Integration("pdf-converter-integration",
         api_id=http_endpoint.id,
         integration_type="AWS_PROXY",
         connection_type="INTERNET",
@@ -78,7 +78,7 @@ def create_pdf_converter():
 
     url = http_lambda_backend.integration_uri
 
-    http_route = aws.apigatewayv2.Route("example-route",
+    http_route = aws.apigatewayv2.Route("route",
         api_id=http_endpoint.id,
         route_key="ANY /{proxy+}",
         target=http_lambda_backend.id.apply(lambda targetUrl: "integrations/" + targetUrl)

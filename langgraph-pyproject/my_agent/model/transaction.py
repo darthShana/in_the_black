@@ -49,8 +49,8 @@ available_transaction_types = [{
 
 
 class BankAccountTypeEnum(str, Enum):
-    COMPANY_ACCOUNT = 'company_account'
-    PERSONAL_ACCOUNT = 'personal_account'
+    COMPANY_ACCOUNT = 'company account'
+    PERSONAL_ACCOUNT = 'personal account'
 
 
 class Transaction(BaseModel):

@@ -75,7 +75,7 @@ class AWSPDFFileLoader(FileLoader):
         self.bucket = bucket
         self.key = key
         self.s3 = client
-        self.api_url = "https://9x3mpoyac7.execute-api.us-east-1.amazonaws.com/example-stage-c964138/convert"
+        self.api_url = "https://dutstfzmo0.execute-api.us-east-1.amazonaws.com/example-stage-c6f1078/convert"
 
     def load_content(self) -> list[str]:
         response = self.s3.get_object(Bucket=self.bucket, Key=self.key)

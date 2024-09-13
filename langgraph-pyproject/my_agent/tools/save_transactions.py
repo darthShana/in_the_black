@@ -89,15 +89,15 @@ def to_dynamo_items(customer_number: str, to_map: list[dict], bank_account_type:
 
 class SaveClassifiedTransactionsInput(BaseModel):
     state: Annotated[dict, InjectedState] = Field(description="current state")
-    bank_account_type: BankAccountTypeEnum = Field(description="The kind of bank account this statement is for")
+    account_type: BankAccountTypeEnum = Field(description="The kind of account this statement is for")
     confirm_save: bool = Field(description="has the human confirmed saving these transactions")
 
 
-def save_classified_transactions(state: Annotated[dict, InjectedState], bank_account_type: BankAccountTypeEnum, confirm_save: bool) -> bool:
+def save_classified_transactions(state: Annotated[dict, InjectedState], account_type: BankAccountTypeEnum, confirm_save: bool) -> bool:
     log.info(f"confirm_save is {confirm_save}")
     user = UserRetriever.get_user("in here test")
     transactions = state['transactions']['transactions']
-    mapped = to_dynamo_items(user.user_id, transactions, bank_account_type)
+    mapped = to_dynamo_items(user.user_id, transactions, account_type)
 
     for item in mapped:
         dynamo.put_item(TableName="Transactions", Item=item)

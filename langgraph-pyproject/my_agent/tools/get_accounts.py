@@ -46,10 +46,6 @@ def get_accounts(start: datetime, end: datetime) -> Dict[str, Account]:
                 account_type=credit_account['account_type']
             )
 
-        if (accounts[credit_account_name].account_type in [AccountTypeEnum.ASSET, AccountTypeEnum.EQUITY, AccountTypeEnum.LIABILITY] and
-                transaction.amount < 0):
-            transaction.amount = -transaction.amount
-
         # Add debit transaction
         accounts[debit_account_name].debit(transaction)
 

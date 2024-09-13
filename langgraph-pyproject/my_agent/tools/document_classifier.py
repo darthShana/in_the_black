@@ -26,7 +26,7 @@ def classify_document(file_name: str) -> DocumentTypeEnum:
     document_type_selection_prompt = """Given some document content, select the most appropriate document type from document types provided.
                 Document types:
                 bank_statement: a statement containing transactions from a bank with revenue going in as positive amounts and expenses going out as negative amounts"
-                property_manager_statement: a statement containing transactions from a property manager collecting rental revenue and paying expenses on the companies behalf"
+                property_management_statement: a statement containing transactions from a property manager collecting rental revenue and paying expenses on the companies behalf"
                 vendor_statement: a statement containing charges from a vendor with payments being made for a service"
                 Extract the result in json format with the answer in property document_type, marking the json as ```json:
                 """
@@ -59,14 +59,14 @@ def classify_document(file_name: str) -> DocumentTypeEnum:
                     "user", [
                         {
                             "type": "image_url",
-                            "image_url": {"url": "data:image/png;base64,{image_data}"},
+                            "image_url": {"url": "data:image/jpeg;base64,{image_data}"},
                         }
                     ]
                 ),
             ]
         )
         chain = prompt | chat
-        response = chain.invoke({"image_data": file_loader.load_as_image()[0]})
+        response = chain.invoke({"image_data": file_loader.load_content()[0]})
         result = parse_json_markdown(response.content)
 
     if result['document_type'] == 'vendor_statement':

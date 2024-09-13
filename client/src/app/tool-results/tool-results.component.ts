@@ -4,11 +4,14 @@ import {AssistantService} from "../service/assistant.service";
 import {CommonModule} from "@angular/common";
 import {TransactionsComponent} from "./transactions/transactions.component";
 import {EndOfYearReportsComponent} from "./end-of-year-reports/end-of-year-reports.component";
+import {BarChartComponent} from "../bar-chart/bar-chart.component";
+import {PieChartComponent} from "../pie-chart/pie-chart.component";
+import {MatIconModule} from "@angular/material/icon";
 
 @Component({
   selector: 'app-tool-results',
   standalone: true,
-  imports: [CommonModule, TransactionsComponent, EndOfYearReportsComponent],
+  imports: [CommonModule, TransactionsComponent, EndOfYearReportsComponent, BarChartComponent, PieChartComponent, MatIconModule],
   templateUrl: './tool-results.component.html',
   styleUrl: './tool-results.component.scss'
 })
@@ -26,7 +29,7 @@ export class ToolResultsComponent implements OnInit, OnDestroy{
     this.unsubscribe.complete();
   }
 
-  private transactionTools = new Set(['load_bank_transactions', 'classify_bank_transactions', 'load_vendor_transactions', 'classify_vendor_transactions']);
+  private transactionTools = new Set(['load_transactions', 'classify_bank_transactions', 'classify_property_management_transactions', 'classify_vendor_transactions']);
   async ngOnInit() {
 
     this.assistantService.toolProgressSubject
