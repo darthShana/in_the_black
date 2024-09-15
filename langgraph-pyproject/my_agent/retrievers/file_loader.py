@@ -12,6 +12,8 @@ import pandas as pd
 from pandas import DataFrame
 
 from my_agent.retrievers.header_filter import HeaderFilter
+from my_agent.retrievers.utils import get_cognito_token
+
 log = logging.getLogger(__name__)
 
 
@@ -75,15 +77,18 @@ class AWSPDFFileLoader(FileLoader):
         self.bucket = bucket
         self.key = key
         self.s3 = client
-        self.api_url = "https://dutstfzmo0.execute-api.us-east-1.amazonaws.com/example-stage-c6f1078/convert"
+        self.api_url = "https://dutstfzmo0.execute-api.us-east-1.amazonaws.com/example-stage-c6f1078/convert_pdf_to_image"
 
     def load_content(self) -> list[str]:
         response = self.s3.get_object(Bucket=self.bucket, Key=self.key)
         pdf_bytes = response['Body'].read()
         pdf_base64 = base64.b64encode(pdf_bytes).decode('utf-8')
         payload = json.dumps({"body": pdf_base64})
+        token = get_cognito_token()
+
         headers = {
             'Content-Type': 'application/json',
+            "Authorization": f"Bearer {token}"
         }
         response = requests.post(self.api_url, data=payload, headers=headers)
         log.info('response form image conversion')

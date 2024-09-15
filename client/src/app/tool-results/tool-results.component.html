@@ -1,43 +1,5 @@
 <app-transactions *ngIf="showTransactions" [transactions]="toolResult"></app-transactions>
 <app-end-of-year-reports *ngIf="showEndOfYearReports" [eoyReports]="toolResult"></app-end-of-year-reports>
-<div class="header">
-  <div class="lg-icon-wrapper">
-    <mat-icon
-      aria-hidden="false"
-      aria-label="Example home icon"
-      fontIcon="house"
-      class="icon-large ucla-blue"
-    ></mat-icon>
-  </div>
-</div>
-<div class="grid-charts">
-  <div>
-    <h2>Yield</h2>
-    <div class="flex-results h2">
-      <p>3.95%</p>
-      <mat-icon
-        aria-hidden="false"
-        aria-label="Example home icon"
-        fontIcon="arrow_upward"
-        class="icon-display ucla-blue"
-      ></mat-icon>
-      <p>4.2%</p>
-    </div>
-    <p>Your yield is porcupine</p>
-  </div>
-  <div>
-    <h2>Profit/loss</h2>
-    <div class="flex-results h2">
-      <p>7k</p>
-      <mat-icon
-        aria-hidden="false"
-        aria-label="Example home icon"
-        fontIcon="arrow_upward"
-        class="icon-display ucla-blue"
-      ></mat-icon>
-      <p>6k (2024)</p>
-    </div>
-  </div>
-  <app-bar-chart></app-bar-chart>
-  <app-pie-chart></app-pie-chart>
-</div>
+<app-company-overview *ngIf="showCompanyOverview" [companyOverview]="toolResult"></app-company-overview>
+
+

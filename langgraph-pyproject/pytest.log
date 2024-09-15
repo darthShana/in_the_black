@@ -1,24 +1,89 @@
-2024-09-11 10:54:06 [    INFO] Month: April 2023 (company_overview.py:18)
-2024-09-11 10:54:10 [    INFO] Retrieved transactions:13 (get_accounts.py:20)
-2024-09-11 10:54:10 [    INFO] Month: May 2023 (company_overview.py:18)
-2024-09-11 10:54:14 [    INFO] Retrieved transactions:12 (get_accounts.py:20)
-2024-09-11 10:54:14 [    INFO] Month: June 2023 (company_overview.py:18)
-2024-09-11 10:54:15 [    INFO] Retrieved transactions:12 (get_accounts.py:20)
-2024-09-11 10:54:15 [    INFO] Month: July 2023 (company_overview.py:18)
-2024-09-11 10:54:17 [    INFO] Retrieved transactions:12 (get_accounts.py:20)
-2024-09-11 10:54:17 [    INFO] Month: August 2023 (company_overview.py:18)
-2024-09-11 10:54:19 [    INFO] Retrieved transactions:13 (get_accounts.py:20)
-2024-09-11 10:54:19 [    INFO] Month: September 2023 (company_overview.py:18)
-2024-09-11 10:54:21 [    INFO] Retrieved transactions:9 (get_accounts.py:20)
-2024-09-11 10:54:21 [    INFO] Month: October 2023 (company_overview.py:18)
-2024-09-11 10:54:23 [    INFO] Retrieved transactions:12 (get_accounts.py:20)
-2024-09-11 10:54:23 [    INFO] Month: November 2023 (company_overview.py:18)
-2024-09-11 10:54:26 [    INFO] Retrieved transactions:12 (get_accounts.py:20)
-2024-09-11 10:54:26 [    INFO] Month: December 2023 (company_overview.py:18)
-2024-09-11 10:54:28 [    INFO] Retrieved transactions:8 (get_accounts.py:20)
-2024-09-11 10:54:28 [    INFO] Month: January 2024 (company_overview.py:18)
-2024-09-11 10:54:29 [    INFO] Retrieved transactions:7 (get_accounts.py:20)
-2024-09-11 10:54:29 [    INFO] Month: February 2024 (company_overview.py:18)
-2024-09-11 10:54:29 [    INFO] Retrieved transactions:9 (get_accounts.py:20)
-2024-09-11 10:54:29 [    INFO] Month: March 2024 (company_overview.py:18)
-2024-09-11 10:54:32 [    INFO] Retrieved transactions:8 (get_accounts.py:20)
+2024-09-15 09:34:44 [    INFO] Month: April 2023 (company_overview.py:22)
+2024-09-15 09:34:44 [    INFO] Retrieved transactions:13 (get_accounts.py:20)
+2024-09-15 09:34:44 [    INFO] Month: May 2023 (company_overview.py:22)
+2024-09-15 09:34:45 [    INFO] Retrieved transactions:12 (get_accounts.py:20)
+2024-09-15 09:34:45 [    INFO] Month: June 2023 (company_overview.py:22)
+2024-09-15 09:34:45 [    INFO] Retrieved transactions:12 (get_accounts.py:20)
+2024-09-15 09:34:45 [    INFO] Month: July 2023 (company_overview.py:22)
+2024-09-15 09:34:45 [    INFO] Retrieved transactions:12 (get_accounts.py:20)
+2024-09-15 09:34:45 [    INFO] Month: August 2023 (company_overview.py:22)
+2024-09-15 09:34:46 [    INFO] Retrieved transactions:13 (get_accounts.py:20)
+2024-09-15 09:34:46 [    INFO] Month: September 2023 (company_overview.py:22)
+2024-09-15 09:34:46 [    INFO] Retrieved transactions:9 (get_accounts.py:20)
+2024-09-15 09:34:46 [    INFO] Month: October 2023 (company_overview.py:22)
+2024-09-15 09:34:46 [    INFO] Retrieved transactions:12 (get_accounts.py:20)
+2024-09-15 09:34:46 [    INFO] Month: November 2023 (company_overview.py:22)
+2024-09-15 09:34:47 [    INFO] Retrieved transactions:12 (get_accounts.py:20)
+2024-09-15 09:34:47 [    INFO] Month: December 2023 (company_overview.py:22)
+2024-09-15 09:34:47 [    INFO] Retrieved transactions:8 (get_accounts.py:20)
+2024-09-15 09:34:47 [    INFO] Month: January 2024 (company_overview.py:22)
+2024-09-15 09:34:47 [    INFO] Retrieved transactions:7 (get_accounts.py:20)
+2024-09-15 09:34:47 [    INFO] Month: February 2024 (company_overview.py:22)
+2024-09-15 09:34:48 [    INFO] Retrieved transactions:9 (get_accounts.py:20)
+2024-09-15 09:34:48 [    INFO] Month: March 2024 (company_overview.py:22)
+2024-09-15 09:34:48 [    INFO] Retrieved transactions:8 (get_accounts.py:20)
+2024-09-15 09:34:49 [    INFO] Retrieved transactions:127 (get_accounts.py:20)
+2024-09-15 09:34:49 [    INFO] <h1>Statement of Profit or Loss</h1>
+
+For the year ended 
+
+<table>
+    <tr>
+        <th></th>
+        <th></th>
+    </tr>
+    <tr>
+        <td>Trading income</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Rental Revenue</td>
+        <td>16415.98</td>
+    </tr>
+    <tr>
+        <td>Total Trading Income</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Gross Profit</td>
+        <td>16415.98</td>
+    </tr>
+    <tr>
+        <td>Expenses</td>
+        <td></td>
+    </tr>
+    <tr>
+        <td>Management Fees</td>
+        <td>2228.50</td>
+    </tr>
+    <tr>
+        <td>Water</td>
+        <td>7142.29</td>
+    </tr>
+    <tr>
+        <td>Mortgage Interest</td>
+        <td>30411.17</td>
+    </tr>
+    <tr>
+        <td>Insurance</td>
+        <td>1978.23</td>
+    </tr>
+    <tr>
+        <td>Maintenance Expenses</td>
+        <td>149.5</td>
+    </tr>
+    <tr>
+        <td>Rates</td>
+        <td>3831.23</td>
+    </tr>
+    <tr>
+        <td>Total Expenses</td>
+        <td>45740.92</td>
+    </tr>
+</table> (statement_of_profit_or_loss.py:33)
+2024-09-15 09:34:50 [    INFO] Successfully obtained JWT token (property_valuation.py:40)
+2024-09-15 09:34:50 [    INFO] {"address1": "22 Fort Lincoln Loop,", "suburb": "Karaka", "city": "Papakura", "property_type": "House", "bedrooms": "3"} (property_valuation.py:23)
+2024-09-15 09:35:12 [    INFO] API Response: (property_valuation.py:44)
+2024-09-15 09:35:12 [    INFO] estimated_value=Decimal('750000') market_rental=Decimal('700') (company_overview.py:34)
+2024-09-15 09:35:12 [    INFO] 16106.24452830188679245283019 (company_overview.py:41)
+2024-09-15 09:35:12 [    INFO] {'monthly_expenses': [{'period': 'April 2023', 'expenses': {'Management Fees': Decimal('164.32'), 'Water': Decimal('-80'), 'Mortgage Interest': Decimal('2594.99'), 'Insurance': Decimal('165.61')}}, {'period': 'May 2023', 'expenses': {'Water': Decimal('45.35'), 'Management Fees': Decimal('205.4'), 'Mortgage Interest': Decimal('2507.55'), 'Insurance': Decimal('165.61')}}, {'period': 'June 2023', 'expenses': {'Mortgage Interest': Decimal('2587.84'), 'Water': Decimal('-80'), 'Management Fees': Decimal('164.32'), 'Insurance': Decimal('165.61')}}, {'period': 'July 2023', 'expenses': {'Mortgage Interest': Decimal('2500.94'), 'Water': Decimal('-6.63'), 'Management Fees': Decimal('164.32'), 'Insurance': Decimal('165.61')}}, {'period': 'August 2023', 'expenses': {'Maintenance Expenses': Decimal('149.5'), 'Management Fees': Decimal('619.94'), 'Mortgage Interest': Decimal('2581.08'), 'Rates': Decimal('552.83'), 'Insurance': Decimal('165.61')}}, {'period': 'September 2023', 'expenses': {'Water': Decimal('-2810.4'), 'Mortgage Interest': Decimal('2577.64'), 'Management Fees': Decimal('31.64'), 'Insurance': Decimal('165.61')}}, {'period': 'October 2023', 'expenses': {'Mortgage Interest': Decimal('2490.67'), 'Water': Decimal('3000'), 'Management Fees': Decimal('88.59'), 'Insurance': Decimal('165.61')}}, {'period': 'November 2023', 'expenses': {'Management Fees': Decimal('63.27'), 'Water': Decimal('189.6'), 'Rates': Decimal('3000'), 'Mortgage Interest': Decimal('2570.56'), 'Insurance': Decimal('165.61')}}, {'period': 'December 2023', 'expenses': {'Mortgage Interest': Decimal('2484.36'), 'Management Fees': Decimal('63.27'), 'Water': Decimal('3000'), 'Insurance': Decimal('165.61')}}, {'period': 'January 2024', 'expenses': {'Water': Decimal('3750'), 'Mortgage Interest': Decimal('2564.08'), 'Insurance': Decimal('162.48')}}, {'period': 'February 2024', 'expenses': {'Rates': Decimal('278.4'), 'Mortgage Interest': Decimal('2559.46'), 'Management Fees': Decimal('552.83'), 'Insurance': Decimal('162.63')}}, {'period': 'March 2024', 'expenses': {'Water': Decimal('134.37'), 'Mortgage Interest': Decimal('2392.0'), 'Management Fees': Decimal('110.6'), 'Insurance': Decimal('162.63')}}], 'p&l': Decimal('-29324.94'), 'yield': Decimal('0.02147499270440251572327044025'), 'market_yield': Decimal('0.04853333333333333333333333333'), 'expenses': [{'display_name': 'Management Fees', 'balance': Decimal('2228.50')}, {'display_name': 'Water', 'balance': Decimal('7142.29')}, {'display_name': 'Mortgage Interest', 'balance': Decimal('30411.17')}, {'display_name': 'Insurance', 'balance': Decimal('1978.23')}, {'display_name': 'Maintenance Expenses', 'balance': Decimal('149.5')}, {'display_name': 'Rates', 'balance': Decimal('3831.23')}]} (test_company_overview.py:11)

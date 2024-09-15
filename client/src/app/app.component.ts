@@ -12,21 +12,23 @@ import {
 import { delay } from 'rxjs';
 import {ChatBubbleComponent} from "./chat/chat-bubble/chat-bubble.component";
 import {ToolResultsComponent} from "./tool-results/tool-results.component";
+import {MatIcon} from "@angular/material/icon";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [
-    RouterOutlet,
-    CommonModule,
-    ChatBubbleComponent,
-    FormsModule,
-    MatInput,
-    MatFormField,
-    ChatComponent,
-    ToolResultsComponent,
-    MatBottomSheetModule,
-  ],
+    imports: [
+        RouterOutlet,
+        CommonModule,
+        ChatBubbleComponent,
+        FormsModule,
+        MatInput,
+        MatFormField,
+        ChatComponent,
+        ToolResultsComponent,
+        MatBottomSheetModule,
+        MatIcon,
+    ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })

@@ -1,28 +1,57 @@
 import logging
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
+from math import ceil
+
+from langchain_core.tools import StructuredTool
+from pydantic.v1 import BaseModel, Field
 
 from my_agent.model.account import AccountTypeEnum
 from my_agent.retrievers.get_user import UserRetriever
-from my_agent.tools.get_accounts import get_accounts
+from my_agent.retrievers.property_valuation import get_market_data
+from my_agent.tools.generate_end_of_year_reports import generate_end_of_year_reports
+from my_agent.tools.get_accounts import get_accounts, monthly_expenses
 
 log = logging.getLogger(__name__)
+
+
+class CompanyOverviewInput(BaseModel):
+    start_date: datetime = Field(description="get company overview after this date and time")
+    end_date: datetime = Field(description="get company overview before this date and time")
 
 
 def company_overview(start_date: datetime, end_date: datetime) -> dict:
     current_date = start_date.replace(day=1)
 
-    monthly_expenses = []
-    while current_date <= end_date:
-        last_day = (current_date + relativedelta(months=1, days=-1)).day
-        log.info(f"Month: {current_date.strftime('%B %Y')}")
-        accounts = get_accounts(current_date, current_date.replace(day=last_day))
-        month = {
-            'period': current_date.strftime('%B %Y'),
-            'expenses': {account.display_name: account.balance() for account in accounts.values() if account.account_type == AccountTypeEnum.EXPENSES}
-        }
-        monthly_expenses.append(month)
+    user = UserRetriever.get_user("in here test")
 
-        current_date += relativedelta(months=1)
+    monthly = monthly_expenses(current_date, end_date)
 
-    return {'monthly_expenses': monthly_expenses}
+    all_accounts = generate_end_of_year_reports(start_date, end_date)
+    market_info = get_market_data(user.properties[0])
+    log.info(market_info)
+
+    # Calculate the number of weeks
+    diff = end_date - start_date
+    weeks = ceil(diff.days / 7)
+
+    annual_rental_revenue = next(item['balance'] for item in all_accounts['statement_of_profit_or_loss']['revenue_items'] if item['display_name'] == 'Rental Revenue') * 52 / weeks
+    log.info(annual_rental_revenue)
+
+    return {
+        'monthly_expenses': monthly,
+        'p&l': all_accounts['statement_of_profit_or_loss']['gross_profit'] - all_accounts['statement_of_profit_or_loss']['expenses_total'],
+        'yield': annual_rental_revenue / market_info.estimated_value,
+        'market_yield': market_info.market_rental * 52 / market_info.estimated_value,
+        'expenses': all_accounts['statement_of_profit_or_loss']['expenses_items'],
+    }
+
+
+company_overview_tool_name = "company_overview"
+company_overview_tool = StructuredTool.from_function(
+    func=company_overview,
+    name=company_overview_tool_name,
+    description="""
+        Useful to get an overview of the companies performance
+        """,
+    args_schema=CompanyOverviewInput,
+)

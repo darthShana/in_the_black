@@ -143,7 +143,7 @@ export class AssistantService {
     }
   }
 
-  private toolsWithViews   = new Set(['load_transactions', 'classify_bank_transactions', 'classify_property_management_transactions', 'load_vendor_transactions', 'classify_vendor_transactions', 'generate_end_of_year_reports']);
+  private toolsWithViews   = new Set(['load_transactions', 'classify_bank_transactions', 'classify_property_management_transactions', 'load_vendor_transactions', 'classify_vendor_transactions', 'generate_end_of_year_reports', 'company_overview']);
 
   handleComplete(data: any) {
     let parts = data.at(-1)

@@ -46,9 +46,13 @@ def extract_number(text: str) -> int:
 
 def handler(event, context):
     body = json.loads(event['body'])
-    address = body.get('address', '')
+    address1 = body.get('address1', '')
+    suburb = body.get('suburb', '')
+    city = body.get('city', '')
+    property_type = body.get('property_type', '')
+    bedrooms = body.get('bedrooms', '')
 
-    if not address:
+    if not address1 or not suburb or not city or not bedrooms or not property_type:
         return {
             'statusCode': 400,
             'body': json.dumps({'error': 'Address not provided'})
@@ -57,59 +61,110 @@ def handler(event, context):
     driver = initialise_driver()
 
     try:
-        driver.get('https://www.qv.co.nz/property-search/#')
+        estimated_value = get_property_value(address1, driver)
+        market_rental = get_rental_income(suburb, city, bedrooms, property_type, driver)
 
-        # Wait for the input field to be present
-        input_field = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, 'c-address_search__field'))
-        )
-
-        # Enter text into the input field
-        input_field.send_keys(address)
-
-        # Wait for autofill options to appear
-        autofill_container = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, 'c-address_search__results'))  # Replace with the actual class of the container holding the autofill options
-        )
-
-        # Find all autofill options within the container
-        autofill_options = autofill_container.find_elements(By.CLASS_NAME, 'c-address_search__result_item')
-
-        # Select the first autofill option if any exist
-        if autofill_options:
-            autofill_options[0].click()
-
-            # Wait for the page to load
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.CLASS_NAME, "c-property_estimate__est"))
-            )
-
-            # Find the div with the specified class
-            estimate_div = driver.find_element(By.CLASS_NAME, "c-property_estimate__est")
-
-            # Get the text from the div
-            estimate_text = estimate_div.text
-            print("Estimated:", estimate_text)
-
-            driver.quit()
-
-            return {
-                'statusCode': 200,
-                'body': json.dumps({
-                    'address': address,
-                    'estimated_value': extract_number(estimate_text)
-                })
-            }
-
-        else:
-            print("No autofill options found")
-            return {
-                'statusCode': 404,
-                'body': json.dumps({'error': 'No results found for the given address'})
-            }
+        return {
+            'statusCode': 200,
+            'body': json.dumps({
+                'address': address1,
+                'estimated_value': estimated_value,
+                'market_rental': market_rental
+            })
+        }
+    except Exception as e:
+        return {
+            'statusCode': 404,
+            'body': json.dumps({'error': e})
+        }
     finally:
         driver.quit()
 
 
+def get_rental_income(suburb, city, bedrooms, property_type, driver):
+
+    rental_request = f"https://www.tenancy.govt.nz/rent-bond-and-bills/market-rent/?location={city}+-+{suburb.replace(' ', '+')}&period=17&action_doSearchValues=Find+Rent"
+    driver.get(rental_request)
+
+    # Wait for the table to be present
+    table = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, f"//table[@class='css-table-tuck'][.//h5[text()='{property_type}']]"))
+    )
+
+    # Find the row for 3 bedrooms
+    rows = table.find_elements(By.TAG_NAME, "tr")
+    for row in rows:
+        cells = row.find_elements(By.TAG_NAME, "td")
+        if len(cells) > 0 and cells[0].text == f"{bedrooms} bedrooms":
+            # The Median Rent is in the 4th column (index 3)
+            median_rent = cells[3].text
+            print(f"The Median Rent for the house is: {median_rent}")
+            return extract_number(median_rent)
+    else:
+        print("bedroom house data not found in the table.")
+        raise Exception('No rental results found for the given address')
+
+
+def get_property_value(address1, driver):
+
+    driver.get('https://www.qv.co.nz/property-search/#')
+    # Wait for the input field to be present
+    input_field = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, 'c-address_search__field'))
+    )
+    # Enter text into the input field
+    input_field.send_keys(address1)
+    # Wait for autofill options to appear
+    autofill_container = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.CLASS_NAME, 'c-address_search__results'))  # Replace with the actual class of the container holding the autofill options
+    )
+    # Find all autofill options within the container
+    autofill_options = autofill_container.find_elements(By.CLASS_NAME, 'c-address_search__result_item')
+    # Select the first autofill option if any exist
+    if autofill_options:
+        autofill_options[0].click()
+
+        # Wait for the page to load
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CLASS_NAME, "c-property_estimate__est"))
+        )
+
+        # Find the div with the specified class
+        estimate_div = driver.find_element(By.CLASS_NAME, "c-property_estimate__est")
+
+        # Get the text from the div
+        estimate_text = estimate_div.text
+        print("Estimated:", estimate_text)
+        return extract_number(estimate_text)
+
+    else:
+        print("No autofill options found")
+        raise Exception('No autofill options found for the given address')
+
+
 if __name__ == '__main__':
-    handler({}, None)
+    handler(
+        {
+            'body': json.dumps(
+                {
+                    'action': 'RENTAL_INCOME',
+                    'suburb': 'Karaka',
+                    'city': 'Papakura',
+                    'property_type': 'House',
+                    'bedrooms': 3
+                 }
+            )
+        }, None)
+
+    # handler({
+    #     'body': json.dumps(
+    #             {
+    #                 'action': 'RENTAL_INCOME',
+    #                 'suburb': 'One Tree Hill',
+    #                 'city': 'Auckland',
+    #                 'property_type': 'House',
+    #                 'bedrooms': 3
+    #             }
+    #         )
+    #     }, None
+    #     )

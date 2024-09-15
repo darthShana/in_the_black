@@ -1,0 +1,32 @@
+<div class="grid-charts">
+  <div>
+    <h2>Yield</h2>
+    <div class="flex-results h2">
+      <p>{{ companyOverview['yield'] | percent:'1.2-2' }}</p>
+      <mat-icon
+        *ngIf="companyOverview['yield'] >= companyOverview['market_yield']"
+        aria-hidden="false"
+        aria-label="Example home icon"
+        fontIcon="arrow_upward"
+        class="icon-display ucla-blue"
+      ></mat-icon>
+      <mat-icon
+        *ngIf="companyOverview['yield'] < companyOverview['market_yield']"
+        aria-hidden="false"
+        aria-label="Example home icon"
+        fontIcon="arrow_downward"
+        class="icon-display ucla-blue"
+      ></mat-icon>
+      <p>{{ companyOverview['market_yield'] | percent:'1.2-2' }}</p>
+    </div>
+    <p>Your yield compared to similar properties in the area</p>
+  </div>
+  <div>
+    <h2>Profit/loss</h2>
+    <div class="flex-results h2">
+      <p>{{ companyOverview['p&l'] | currency:'NZD':'symbol':'1.2-2' }}</p>
+    </div>
+  </div>
+  <app-bar-chart [expenses]="companyOverview['monthly_expenses']"></app-bar-chart>
+  <app-pie-chart [expenses]="companyOverview['expenses']"></app-pie-chart>
+</div>
