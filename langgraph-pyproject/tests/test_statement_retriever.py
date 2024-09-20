@@ -35,25 +35,6 @@ def expected_simple_transaction_results() -> list[dict]:
     return data
 
 
-@pytest.fixture
-def simple_transactions_with_balance() -> list[dict]:
-    file = open("tests/data/transactions_with_balance.csv", "r")
-    data = list(csv.DictReader(file, delimiter=","))
-    file.close()
-    return data
-
-
-@pytest.fixture(scope='session')
-def property_management_transactions() -> dict[str, list[dict]]:
-    mock_user = UserInfo(
-        user_id='d3b0c891-41c6-49ba-95ee-4c33bf17cd3f'
-    )
-    def mock_get_user(username):
-        return mock_user
-
-    return load_transactions('F Rental Statement.pdf')
-
-
 @unit
 def test_bank_statement_retriever(simple_transactions, expected_simple_transaction_results):
     bank_statement_retriever = TransactionRetriever()

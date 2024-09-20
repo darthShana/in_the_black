@@ -3,6 +3,7 @@ import csv
 import io
 import json
 import logging
+from datetime import datetime
 from typing import Union
 
 import requests
@@ -77,13 +78,14 @@ class AWSPDFFileLoader(FileLoader):
         self.bucket = bucket
         self.key = key
         self.s3 = client
-        self.api_url = "https://dutstfzmo0.execute-api.us-east-1.amazonaws.com/example-stage-c6f1078/convert_pdf_to_image"
+        self.api_url = "https://jtk21yuyi2.execute-api.us-east-1.amazonaws.com/prod-9c56ae7/convert_pdf_to_image"
 
     def load_content(self) -> list[str]:
         response = self.s3.get_object(Bucket=self.bucket, Key=self.key)
         pdf_bytes = response['Body'].read()
         pdf_base64 = base64.b64encode(pdf_bytes).decode('utf-8')
         payload = json.dumps({"body": pdf_base64})
+
         token = get_cognito_token()
 
         headers = {
@@ -91,7 +93,6 @@ class AWSPDFFileLoader(FileLoader):
             "Authorization": f"Bearer {token}"
         }
         response = requests.post(self.api_url, data=payload, headers=headers)
-        log.info('response form image conversion')
         log.info(response.headers)
         result = json.loads(response.text)
         return result['images']

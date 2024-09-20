@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 
 @unit
-def test_generate_profit_or_loss(sample_transaction_types, sample_transaction_file, sample_transaction_file2, monkeypatch):
+def test_generate_profit_or_loss_dharsh(sample_transaction_types, sample_transaction_file, sample_transaction_file2, monkeypatch):
     transactions = [to_transaction(row, transaction_type) for row, transaction_type in zip(
         sample_transaction_file.to_dict('records'),
         sample_transaction_types.to_dict('records'))]

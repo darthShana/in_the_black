@@ -18,7 +18,7 @@ from my_agent.tools.templates import dto_mapping_example_template, dto_mapping_p
 
 log = logging.getLogger(__name__)
 
-chat = ChatAnthropic(model="claude-3-5-sonnet-20240620")
+chat = ChatAnthropic(model="claude-3-5-sonnet-20240620", max_tokens=4096)
 dynamo = boto3.client('dynamodb')
 
 EXAMPLE_PROMPT2 = PromptTemplate(
@@ -29,11 +29,11 @@ EXAMPLE_PROMPT2 = PromptTemplate(
 def to_dynamo_items(customer_number: str, to_map: list[dict], bank_account_type: BankAccountTypeEnum) -> list[dict]:
     mandatory_values = [
         {
-           "CustomID": "a unique transaction id"
+           "UniqueID": "a unique transaction id, if none present, generate one using the date and other details"
         }, {
            "TransactionDate": "the date of this transaction in format 'YYYY/MM/DD"
         }, {
-           "TransactionAmount": "the amount of this transaction"
+           "TransactionAmount": "the amount of this transaction, extracted as a positive amount"
         }
     ]
 
@@ -61,13 +61,17 @@ def to_dynamo_items(customer_number: str, to_map: list[dict], bank_account_type:
     chain = prompt | chat
 
     mapped = []
-    batch_size = 20
+    batch_size = 40
     for i in range(0, len(to_map), batch_size):
         out = chain.invoke({"mandatory_values": mandatory_values, "transactions": to_map[i:i + batch_size]})
         markdown = parse_json_markdown(out.content)
-        mapped.extend(markdown)
+        if isinstance(markdown, list):
+            mapped.extend(markdown)
+        else:
+            mapped.append(markdown)
 
     log.info(f"mandatory values from bank statement: {len(mapped)}")
+    log.info(mapped[0])
 
     ret = []
     for mand, orig in zip(mapped, to_map):
@@ -77,7 +81,7 @@ def to_dynamo_items(customer_number: str, to_map: list[dict], bank_account_type:
             'TransactionDate': {'S': mand['TransactionDate']},
             'TransactionType': {'S': orig['transaction_type']},
             'TransactionAmount': {'S': str(mand['TransactionAmount'])},
-            'CustomID': {'S': str(mand['CustomID'])},
+            'CustomID': {'S': str(mand['UniqueID'])},
             'BankAccountType': {'S': json.dumps(bank_account_type)},
             'content': {
                 'S': str(orig)
@@ -99,8 +103,13 @@ def save_classified_transactions(state: Annotated[dict, InjectedState], account_
     transactions = state['transactions']['transactions']
     mapped = to_dynamo_items(user.user_id, transactions, account_type)
 
+    log.info(f"saving records to dynamo:{len(mapped)}")
     for item in mapped:
-        dynamo.put_item(TableName="Transactions", Item=item)
+        try:
+            dynamo.put_item(TableName="Transactions", Item=item)
+        except Exception as e:
+            log.error(e)
+
     return True
 
 

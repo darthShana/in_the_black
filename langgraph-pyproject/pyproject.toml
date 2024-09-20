@@ -23,6 +23,8 @@ bs4 = "^0.0.2"
 html5lib = "^1.1"
 pytest-mock = "^3.14.0"
 poetry-plugin-dotenv = "^2.2.3"
+langsmith = {extras = ["vcr"], version = "^0.1.124"}
+vcrpy = "^6.0.1"
 
 
 [build-system]

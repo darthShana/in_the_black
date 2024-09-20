@@ -53,13 +53,13 @@ def create_pdf_converter(api):
     # Define the Lambda function
     pdf_to_image_lambda = aws.lambda_.Function(
         "pdfToImageLambda",
-        runtime="python3.12",
+        runtime="python3.8",
         handler="lambda_function.handler",
         role=lambda_role.arn,
         code=create_lambda_asset(),
         layers=[poppler_layer.arn, "arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p38-Pillow:10"],
         timeout=30,
-        memory_size=256
+        memory_size=1024
     )
 
     http_lambda_backend = aws.apigatewayv2.Integration("pdf-converter-integration",
@@ -76,7 +76,9 @@ def create_pdf_converter(api):
         "convert_pdf_to_image",
         api_id=api['gateway'].id,
         route_key="ANY /convert_pdf_to_image",
-        target=http_lambda_backend.id.apply(lambda target_url: "integrations/" + target_url)
+        target=http_lambda_backend.id.apply(lambda target_url: "integrations/" + target_url),
+        authorization_type="JWT",
+        authorizer_id=api['authorizer'].id
     )
 
     # Give permissions from API Gateway to invoke the Lambda

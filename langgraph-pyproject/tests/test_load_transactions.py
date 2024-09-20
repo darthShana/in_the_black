@@ -8,7 +8,8 @@ from my_agent.tools.process_transactions import load_transactions
 @unit
 def test_load_vendor_transactions(monkeypatch):
     mock_user = UserInfo(
-        user_id='d3b0c891-41c6-49ba-95ee-4c33bf17cd3f'
+        user_id='d3b0c891-41c6-49ba-95ee-4c33bf17cd3f',
+        properties=[]
     )
 
     def mock_get_user(username):
@@ -17,12 +18,12 @@ def test_load_vendor_transactions(monkeypatch):
     monkeypatch.setattr(UserRetriever, 'get_user', mock_get_user)
 
     transactions = load_transactions("A Tower Insurance Confirmation.pdf")
-    assert len(transactions['transactions']) == 12
+    assert len(transactions['transactions']) == 24
 
 
 @unit
 def test_load_management_statement(property_management_transactions):
-    assert len(property_management_transactions['transactions']) == 35
+    assert len(property_management_transactions['transactions']) == 44
     for transaction in property_management_transactions['transactions']:
         assert 'date' in transaction
         assert 'moneyOut' in transaction

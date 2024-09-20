@@ -16,15 +16,14 @@ def monthly_expenses(current_date, end_date):
     monthly = []
     while current_date <= end_date:
         last_day = (current_date + relativedelta(months=1, days=-1)).day
-        log.info(f"Month: {current_date.strftime('%B %Y')}")
         accounts = get_accounts(current_date, current_date.replace(day=last_day))
         month = {
             'period': current_date.strftime('%B %Y'),
             'expenses': {account.display_name: account.balance() for account in accounts.values() if account.account_type == AccountTypeEnum.EXPENSES}
         }
         monthly.append(month)
-
         current_date += relativedelta(months=1)
+
     return monthly
 
 
