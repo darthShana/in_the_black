@@ -16,6 +16,7 @@ from langgraph.graph.message import AnyMessage, add_messages
 from langgraph.checkpoint.memory import MemorySaver
 
 from my_agent.tools.ask_human import AskHuman
+from my_agent.tools.asset_maintenance import add_asset_tool
 from my_agent.tools.company_overview import company_overview_tool
 from my_agent.tools.document_classifier import document_classifier_tool
 from my_agent.tools.generate_end_of_year_reports import generate_end_of_year_reports_tool
@@ -116,7 +117,8 @@ tools = [
     classify_vendor_transactions_tool,
     save_classified_transactions_tool,
     generate_end_of_year_reports_tool,
-    company_overview_tool
+    company_overview_tool,
+    add_asset_tool
 ]
 
 

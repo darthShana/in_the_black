@@ -1,10 +1,9 @@
-import {Component, Input, OnDestroy, OnInit} from '@angular/core';
-import {Subject, takeUntil} from "rxjs";
+import {Component, Input, OnInit} from '@angular/core';
 import {AssistantService} from "../../service/assistant.service";
-import {TransactionsService} from "../../service/transactions.service";
 import {CommonModule, JsonPipe} from "@angular/common";
-import untruncateJson from "untruncate-json";
 import {MatTableModule} from '@angular/material/table';
+import {MatIconModule} from "@angular/material/icon";
+import {MatButtonModule, MatFabButton} from "@angular/material/button";
 
 interface ReportLine {
   description: string;
@@ -16,7 +15,8 @@ interface ReportLine {
   standalone: true,
   imports: [
     JsonPipe,
-    MatTableModule, CommonModule
+    MatIconModule,
+    MatTableModule, CommonModule, MatFabButton, MatButtonModule
   ],
   templateUrl: './end-of-year-reports.component.html',
   styleUrl: './end-of-year-reports.component.scss'
@@ -24,29 +24,39 @@ interface ReportLine {
 export class EndOfYearReportsComponent implements OnInit{
 
   @Input() eoyReports!: Record<string, any>;
-  protected reportLines: ReportLine[] = []
-  displayedColumns: string[] = ['description', 'amount'];
+  protected profitOrLoss: ReportLine[] = []
+  protected depreciation: ReportLine[] = []
+  protected financialPosition: ReportLine[] = []
+  profitOrLossDisplayedColumns: string[] = ['description', 'amount'];
+  financialPositionColumns: string[] = ['description', 'amount'];
+  depreciationDisplayedColumns: string[] = ['Asset', 'Date Purchased', 'Cost', 'Opening adjusted tax value', 'Rate', 'Method', 'Depreciation', 'Closing adjusted tax value'];
+
+  constructor(private assistantService: AssistantService){}
 
   ngOnInit(): void {
 
     console.log("calculating statement_of_profit_or_loss")
-    let profitOrLoss = this.eoyReports['statement_of_profit_or_loss']
+    let pOrL = this.eoyReports['statement_of_profit_or_loss']
 
-    this.reportLines.push({description: "Revenue", amount:undefined, subtitle:true})
+    this.profitOrLoss.push({description: "Revenue", amount:undefined, subtitle:true})
 
-    for (let revenueItem of profitOrLoss['revenue_items']){
-      this.reportLines.push({description: revenueItem['display_name'], amount:revenueItem['balance'], subtitle:false})
+    for (let revenueItem of pOrL['revenue_items']){
+      this.profitOrLoss.push({description: revenueItem['display_name'], amount:revenueItem['balance'], subtitle:false})
     }
-    this.reportLines.push({description: "Total Trading Income", amount:profitOrLoss['gross_profit'], subtitle:true})
+    this.profitOrLoss.push({description: "Total Trading Income", amount:pOrL['gross_profit'], subtitle:true})
 
-    for (let expenseItem of profitOrLoss['expenses_items']){
-      this.reportLines.push({description: expenseItem['display_name'], amount:expenseItem['balance'], subtitle:false})
+    for (let expenseItem of pOrL['expenses_items']){
+      this.profitOrLoss.push({description: expenseItem['display_name'], amount:expenseItem['balance'], subtitle:false})
     }
-    this.reportLines.push({description: "Total Expenses", amount:profitOrLoss['expenses_total'], subtitle:true})
+    this.profitOrLoss.push({description: "Total Expenses", amount:pOrL['expenses_total'], subtitle:true})
+
 
   }
 
-
+  addAsset(){
+    console.log("in here test!!!!")
+    this.assistantService.stream("Add asset to my property").then(r => {})
+  }
 
 
 

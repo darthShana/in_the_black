@@ -1,6 +1,5 @@
 <h6>Statement of Profit Or Loss</h6>
-
-<table mat-table [dataSource]="reportLines" class="mat-elevation-z8">
+<table mat-table [dataSource]="profitOrLoss" class="mat-elevation-z8">
 
   <ng-container matColumnDef="description">
     <th mat-header-cell *matHeaderCellDef></th>
@@ -16,6 +15,14 @@
       <p *ngIf="!element.subtitle">{{element.amount}}</p>
     </td>
   </ng-container>
-  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  <tr mat-header-row *matHeaderRowDef="profitOrLossDisplayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: profitOrLossDisplayedColumns;"></tr>
 </table>
+
+<h6>Rental Tax</h6>
+Depreciation of Assets
+<div class="example-button-container">
+  <button mat-icon-button aria-label="Add an asset to depreciate" (click)="addAsset()">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>

@@ -21,17 +21,13 @@ class AssetInput(BaseModel):
     installation_value: Decimal = Field(description="value of the asset at the time of installation")
 
 
-def add_asset(state: Annotated[dict, InjectedState], property_id: str, asset_type: str, installation_date: date, installation_value: Decimal):
+def add_asset(state: Annotated[dict, InjectedState], asset_type: str, installation_date: date, installation_value: Decimal):
     user = UserRetriever.get_user("in here test")
-
-    matching = next((property1 for property1 in user.properties if property1.property_id == property_id), None)
-    if matching is None:
-        raise ValueError("Property Not found..")
 
     dynamo.put_item({
             'CustomerAssetsID': {'S': str(uuid.uuid4())},
             'CustomerNumber': {'S': user.user_id},
-            'PropertyID': {'S': property_id},
+            'PropertyID': {'S': user.properties[0]},
             'AssetType': {'S': asset_type},
             'InstallationDate': {'S': installation_date.strftime("%Y/%m/%d")},
             'InstallationValue': {'S': str(installation_value)},
@@ -39,7 +35,7 @@ def add_asset(state: Annotated[dict, InjectedState], property_id: str, asset_typ
 
 
 add_asset_tool_name = "add_asset"
-save_classified_transactions_tool = StructuredTool.from_function(
+add_asset_tool = StructuredTool.from_function(
     func=add_asset,
     name=add_asset_tool_name,
     description="""
