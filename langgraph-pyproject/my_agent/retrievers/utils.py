@@ -10,8 +10,8 @@ refresh_token = None
 token_expiry = 0
 
 COGNITO_DOMAIN = "in-the-black-auth.auth.us-east-1.amazoncognito.com"
-CLIENT_ID = os.environ["CLIENT_ID"]
-CLIENT_SECRET = os.environ["CLIENT_SECRET"]
+COGNITO_CLIENT_ID = os.environ["COGNITO_CLIENT_ID"]
+COGNITO_CLIENT_SECRET = os.environ["COGNITO_CLIENT_SECRET"]
 
 
 def escape_f_string(text):
@@ -33,7 +33,7 @@ def refresh_cognito_token():
 
     body = {
         "grant_type": "refresh_token",
-        "client_id": CLIENT_ID,
+        "client_id": COGNITO_CLIENT_ID,
         "refresh_token": refresh_token
     }
 
@@ -74,7 +74,7 @@ def get_cognito_token():
     token_url = f"https://{COGNITO_DOMAIN}/oauth2/token"
 
     # Encode client_id and client_secret
-    client_credentials = f"{CLIENT_ID}:{CLIENT_SECRET}"
+    client_credentials = f"{COGNITO_CLIENT_ID}:{COGNITO_CLIENT_SECRET}"
     encoded_credentials = base64.b64encode(client_credentials.encode('utf-8')).decode('utf-8')
 
     headers = {

@@ -8,6 +8,7 @@ import {BarChartComponent} from "../bar-chart/bar-chart.component";
 import {PieChartComponent} from "../pie-chart/pie-chart.component";
 import {MatIconModule} from "@angular/material/icon";
 import {CompanyOverviewComponent} from "./company-overview/company-overview.component";
+import {decimalReviver} from "../utils/decimal-utils";
 
 @Component({
   selector: 'app-tool-results',
@@ -59,18 +60,11 @@ export class ToolResultsComponent implements OnInit, OnDestroy{
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(json => {
         const modifiedString = json.replace(/'/g, '"').replace(/Decimal\(/g, '').replace(/\)/g, '');
-        this.toolResult = JSON.parse(modifiedString, this.decimalReviver);
+        this.toolResult = JSON.parse(modifiedString, decimalReviver);
       })
 
   }
 
-// Custom reviver function to handle Decimal values
-  private decimalReviver(key: string, value: any): any {
-    if (typeof value === 'string' && value.startsWith('Decimal(')) {
-      const decimalValue = value.replace(/Decimal\('?([^']+)'?\)/, '$1');
-      return parseFloat(decimalValue);
-    }
-    return value;
-  }
+
 
 }

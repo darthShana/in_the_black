@@ -38,7 +38,6 @@ export class BarChartComponent {
         label: e,
         data: periods.map(p => {
           const expensesForPeriod = this.expenses.find(month=>month['period']==p) as Record<string, any>
-          console.log(expensesForPeriod)
           return expensesForPeriod && expensesForPeriod['expenses'][e]?expensesForPeriod['expenses'][e]:0
         }),
         backgroundColor: colors.get(e)

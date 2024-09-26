@@ -1,8 +1,9 @@
+from datetime import date
 from decimal import Decimal
 from enum import Enum
 from typing import List
 
-from pydantic.v1 import Field, BaseModel
+from pydantic import Field, BaseModel
 
 
 class PropertyTypeEnum(str, Enum):
@@ -10,12 +11,20 @@ class PropertyTypeEnum(str, Enum):
     Flat = "Flat"
 
 
+class Asset(BaseModel):
+    asset_id: str = Field(description="a unique id for this asset")
+    asset_type: str = Field(description="type of asset")
+    installation_date: date = Field(description="date of installation")
+    installation_value: Decimal = Field(description="value of the asset at the time of installation")
+
+
 class Property(BaseModel):
+    property_id: str = Field(description="unique property id")
     address1: str = Field(description="first line of the property address")
     suburb: str = Field(description="suburb of the property")
     city: str = Field(description="city of the property")
     property_type: PropertyTypeEnum = Field(description="type of property")
-    bedrooms: str = Field(description="number of bedrooms in the property")
+    bedrooms: int = Field(description="number of bedrooms in the property")
 
 
 class Valuation(BaseModel):
@@ -25,4 +34,4 @@ class Valuation(BaseModel):
 
 class UserInfo(BaseModel):
     user_id: str = Field(description="user identifier")
-    properties: List[Property]
+    properties: List[Property] = Field(description="list of properties for this user")

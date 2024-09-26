@@ -3,6 +3,21 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+h1,
+.h1,
+h2,
+.h2,
+h3,
+.h3 {
+  font-weight: 600;
+}
+h3,
+.h3 {
+  font-size: 1.5rem;
+}
+
+
+
 .bottom-sheet-overlay {
   @apply cdk-overlay-transparent-backdrop;
 

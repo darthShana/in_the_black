@@ -1,0 +1,16 @@
+<div class="header-wrapper">
+  <div class="lg-icon-wrapper">
+    <mat-icon
+      aria-hidden="false"
+      aria-label="Example home icon"
+      fontIcon="house"
+      class="icon-large ucla-blue"
+    ></mat-icon>
+  </div>
+  <div class="h3 address-wrapper" *ngIf="property['property_details']">
+    {{property['property_details']['address1']}}
+    {{property['property_details']['suburb']}}
+    {{property['property_details']['city']}}
+  </div>
+
+</div>

@@ -8,35 +8,11 @@ from pulumi_aws import s3
 from api_gateway import create_api_gateway
 from cognito_user_pool import create_cognito
 from pdf_converter import create_pdf_converter
+from persistance import create_dbs
 from property_valuation import create_property_valuation
 
 # Create an AWS resource (S3 Bucket)
 bucket = s3.Bucket('black-transactions')
-
-basic_dynamodb_table = aws.dynamodb.Table("black_transactions",
-    name="Transactions",
-    billing_mode="PAY_PER_REQUEST",
-    hash_key="TransactionID",
-    attributes=[
-        {
-            "name": "TransactionID",
-            "type": "S",
-        },
-        {
-            "name": "CustomerNumber",
-            "type": "S",
-        }
-    ],
-    global_secondary_indexes=[{
-        "name": "CustomerIndex",
-        "hash_key": "CustomerNumber",
-        "projection_type": "ALL"
-    }],
-    tags={
-        "Name": "dynamodb-table-1",
-        "Environment": "production",
-    })
-
 
 langgraph_user = aws.iam.User("langgraph_user",
     name="langgraph_user",
@@ -62,8 +38,10 @@ secret_version = aws.secretsmanager.SecretVersion("langgraph-user-credentials-ve
     )
 )
 
+dbs = create_dbs()
+
 # Define the policy document
-langgraph_user_policy_document = pulumi.Output.all(bucket.arn, basic_dynamodb_table.arn).apply(
+langgraph_user_policy_document = pulumi.Output.all(bucket.arn, dbs['transactions'].arn, dbs['customer_assets'].arn).apply(
     lambda args: {
         "Version": "2012-10-17",
         "Statement": [{
@@ -76,7 +54,7 @@ langgraph_user_policy_document = pulumi.Output.all(bucket.arn, basic_dynamodb_ta
             ],
             "Resource": [
                 f"{args[0]}/*",
-                args[0]
+                args[0],
             ]
         }, {
             "Effect": "Allow",
@@ -92,7 +70,9 @@ langgraph_user_policy_document = pulumi.Output.all(bucket.arn, basic_dynamodb_ta
             ],
             "Resource": [
                 args[1],
-                f"{args[1]}/index/*"
+                f"{args[1]}/index/*",
+                args[2],
+                f"{args[2]}/index/*"
             ]
         }]
     }
@@ -106,7 +86,8 @@ user_policy = aws.iam.UserPolicy("langgraph-s3-policy",
 
 # Export the name of the bucket
 pulumi.export('bucket_id', bucket.id)
-pulumi.export('dynamodb_table_id', basic_dynamodb_table.id)
+pulumi.export('db_transactions', dbs['transactions'].id)
+pulumi.export('db_customer_assets', dbs['customer_assets'].id)
 
 # Export the bucket name and user credentials
 pulumi.export("bucket_name", bucket.id)
