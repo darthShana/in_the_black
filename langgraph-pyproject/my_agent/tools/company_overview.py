@@ -28,7 +28,7 @@ def company_overview(state: Annotated[dict, InjectedState], start_date: datetime
 
     monthly = monthly_expenses(current_date, end_date)
 
-    all_accounts = generate_end_of_year_reports(start_date, end_date)
+    all_accounts = generate_end_of_year_reports(state, start_date, end_date)
     market_info = get_market_data(user.properties[0])
     log.info(market_info)
 

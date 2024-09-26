@@ -26,13 +26,13 @@ export class AssistantService {
   public toolProgressSubject: Subject<string> = new Subject()
 
 
-  client = new Client()
-  // client = new Client({
-  //   apiUrl: "https://in-the-black-deployment1-868b23288fc75ff39ea9e5d8aa6b5c27.default.us.langgraph.app",
-  //   defaultHeaders: {
-  //     'x-api-key': 'ls__46f92d1f04484620a7602442d163936c',
-  //   },
-  // });
+  // client = new Client()
+  client = new Client({
+    apiUrl: "https://ht-another-propane-44-77e8f9bf34eb5c32ab43c5c4e6bfba05.default.us.langgraph.app",
+    defaultHeaders: {
+      'x-api-key': 'ls__46f92d1f04484620a7602442d163936c',
+    },
+  });
   thread?: Thread;
   assistant?: Assistant;
 
