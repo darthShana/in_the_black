@@ -1,4 +1,4 @@
-//host:host {
+//:host {
 //  position: absolute;
 //  right: 20px;
 //  bottom: 0;
@@ -22,3 +22,9 @@
 //.full-width {
 //  width: 100%;
 //}
+
+.sub-flex {
+  display: flex;
+  justify-content: flex-end;
+  margin: -10px -12px;
+}

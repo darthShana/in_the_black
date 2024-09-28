@@ -18,7 +18,8 @@ h3,
 
 
 
-.bottom-sheet-overlay {
+.bottom-sheet-overlay { // no currently used for chat as we have set background to false, can be removed unless we want to use it elsewhere?
+  
   @apply cdk-overlay-transparent-backdrop;
 
   + .cdk-global-overlay-wrapper {

@@ -10,10 +10,11 @@ import {
   MatBottomSheetModule,
 } from '@angular/material/bottom-sheet';
 import { delay } from 'rxjs';
-import {ChatBubbleComponent} from "./chat/chat-bubble/chat-bubble.component";
-import {ToolResultsComponent} from "./tool-results/tool-results.component";
-import {MatIcon} from "@angular/material/icon";
-import {HeaderComponent} from "./header/header/header.component";
+import { ChatBubbleComponent } from './chat/chat-bubble/chat-bubble.component';
+import { ToolResultsComponent } from './tool-results/tool-results.component';
+import { MatIcon } from '@angular/material/icon';
+import { HeaderComponent } from './header/header/header.component';
+import { MatButton, MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-root',
@@ -30,6 +31,8 @@ import {HeaderComponent} from "./header/header/header.component";
     MatBottomSheetModule,
     MatIcon,
     HeaderComponent,
+    MatButton,
+    MatButtonModule,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -42,10 +45,14 @@ export class AppComponent {
     this.isOpen = true;
     const sheetRef = this.bottomSheet.open(ChatComponent, {
       backdropClass: 'bottom-sheet-overlay',
+      hasBackdrop: false,
     });
 
-    sheetRef.backdropClick().pipe(delay(200)).subscribe(() => {
-      this.isOpen = false;
-    })
+    sheetRef
+      .backdropClick()
+      .pipe(delay(200))
+      .subscribe(() => {
+        this.isOpen = false;
+      });
   }
 }
