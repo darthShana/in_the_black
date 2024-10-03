@@ -1,22 +1,47 @@
-import {Component, Input, OnInit} from '@angular/core';
+import {Component, Input, OnInit, inject, viewChild} from '@angular/core';
 import {AssistantService} from "../../service/assistant.service";
-import {CommonModule, JsonPipe} from "@angular/common";
+import {CommonModule, JsonPipe, NgForOf, NgIf} from "@angular/common";
 import {MatTableModule} from '@angular/material/table';
 import {MatIconModule} from "@angular/material/icon";
+import {MatFormFieldModule} from '@angular/material/form-field';
+import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import {MatInputModule} from '@angular/material/input';
+import {MatSelectChange, MatSelectModule} from '@angular/material/select';
 import {MatButtonModule, MatFabButton} from "@angular/material/button";
+import {
+  MatDialog,
+  MatDialogTitle,
+  MatDialogContent,
+} from '@angular/material/dialog';
+import {MatMenuModule, MatMenuTrigger} from "@angular/material/menu";
+import {ProfileService} from "../../service/profile.service";
+import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from "@angular/material/datepicker";
+import {provideNativeDateAdapter} from '@angular/material/core';
 
-interface ReportLine {
+interface ProfitOrLossReportLine {
   description: string;
   amount?: string;
   subtitle: boolean;
 }
+
+interface DepreciationReportLine {
+  asset: string;
+  date_purchase: string;
+  cost: string;
+  opening_value: string;
+  rate: string;
+  method: string;
+  depreciation: string;
+  closing_value: string;
+}
+
 @Component({
   selector: 'app-end-of-year-reports',
   standalone: true,
   imports: [
     JsonPipe,
     MatIconModule,
-    MatTableModule, CommonModule, MatFabButton, MatButtonModule
+    MatTableModule, CommonModule, MatFabButton, MatButtonModule, MatMenuModule
   ],
   templateUrl: './end-of-year-reports.component.html',
   styleUrl: './end-of-year-reports.component.scss'
@@ -24,19 +49,25 @@ interface ReportLine {
 export class EndOfYearReportsComponent implements OnInit{
 
   @Input() eoyReports!: Record<string, any>;
-  protected profitOrLoss: ReportLine[] = []
-  protected depreciation: ReportLine[] = []
-  protected financialPosition: ReportLine[] = []
+
+  readonly menuTrigger = viewChild.required(MatMenuTrigger);
+  readonly dialog = inject(MatDialog);
+
+
+  protected profitOrLoss: ProfitOrLossReportLine[] = []
+  protected depreciation: DepreciationReportLine[] = []
+  protected financialPosition: ProfitOrLossReportLine[] = []
   profitOrLossDisplayedColumns: string[] = ['description', 'amount'];
   financialPositionColumns: string[] = ['description', 'amount'];
-  depreciationDisplayedColumns: string[] = ['Asset', 'Date Purchased', 'Cost', 'Opening adjusted tax value', 'Rate', 'Method', 'Depreciation', 'Closing adjusted tax value'];
+  depreciationDisplayedColumns: string[] = ['asset', 'date_purchase', 'cost', 'opening_value', 'rate', 'method', 'depreciation', 'closing_value'];
 
   constructor(private assistantService: AssistantService){}
 
   ngOnInit(): void {
 
-    console.log("calculating statement_of_profit_or_loss")
+    console.log("display statement_of_profit_or_loss")
     let pOrL = this.eoyReports['statement_of_profit_or_loss']
+    let tax = this.eoyReports['tax']
 
     this.profitOrLoss.push({description: "Revenue", amount:undefined, subtitle:true})
 
@@ -51,13 +82,48 @@ export class EndOfYearReportsComponent implements OnInit{
     this.profitOrLoss.push({description: "Total Expenses", amount:pOrL['expenses_total'], subtitle:true})
 
 
+    console.log("display depreciation")
+    for (let item of tax['depreciation']){
+      this.depreciation.push({asset: item['asset'], date_purchase: item['date_purchase'], cost: item['cost'], opening_value: item['opening_value'], rate: item['rate'], method: item['method'], depreciation: item['depreciation'], closing_value: item['closing_value']})
+    }
+
+
   }
 
-  addAsset(){
-    console.log("in here test!!!!")
-    this.assistantService.stream("Add asset to my property").then(r => {})
+  openDialog() {
+    this.dialog.open(AddAssetDialog);
   }
 
+}
 
+@Component({
+  selector: 'add-asset-dialog',
+  templateUrl: 'add-asset-dialog.html',
+  standalone: true,
+  providers: [provideNativeDateAdapter()],
+  imports: [ReactiveFormsModule, CommonModule, MatDialogTitle, MatDialogContent, MatFormFieldModule, MatInputModule, MatSelectModule, NgForOf, NgIf, MatDatepickerInput, MatDatepickerToggle, MatDatepicker],
+})
+export class AddAssetDialog {
 
+  data = {
+    available_asset_types: []
+  }
+  assetFrom = new FormGroup({
+    assetType: new FormControl(''),
+    installDate: new FormControl(''),
+    installValue: new FormControl('')
+  })
+
+  constructor(private profileService: ProfileService, private assistantService: AssistantService) {
+    this.data.available_asset_types = profileService.metadata['available_asset_types'];
+  }
+
+  addAsset() {
+    console.log(this.assetFrom.value.assetType)
+    console.log(this.assetFrom.value.installDate)
+    console.log(this.assetFrom.value.installValue)
+    this.assistantService.stream(`add the following asset to my property.
+    asset_type:${this.assetFrom.value.assetType}, installation_date:${this.assetFrom.value.installDate}, installation_value:${this.assetFrom.value.installValue}`)
+      .then(r => console.log("done adding asset"))
+  }
 }

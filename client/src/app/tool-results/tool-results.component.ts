@@ -35,10 +35,16 @@ export class ToolResultsComponent implements OnInit, OnDestroy{
   private transactionTools = new Set(['load_transactions', 'classify_bank_transactions', 'classify_property_management_transactions', 'classify_vendor_transactions']);
   async ngOnInit() {
 
-    this.assistantService.toolProgressSubject
+    this.assistantService.toolResultsSubject
       .pipe(takeUntil(this.unsubscribe))
-      .subscribe(completedTool => {
+      .subscribe(event => {
+        let completedTool = event.name
         console.log("completed tool in tool results:"+completedTool)
+
+        let json = event.content
+        const modifiedString = json.replace(/'/g, '"').replace(/Decimal\(/g, '').replace(/\)/g, '');
+        this.toolResult = JSON.parse(modifiedString, decimalReviver);
+
         if(this.transactionTools.has(completedTool)){
           this.showTransactions = true;
           this.showEndOfYearReports = false
@@ -54,13 +60,6 @@ export class ToolResultsComponent implements OnInit, OnDestroy{
           this.showEndOfYearReports = false
           this.showCompanyOverview = true
         }
-      })
-
-    this.assistantService.toolResultsSubject
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(json => {
-        const modifiedString = json.replace(/'/g, '"').replace(/Decimal\(/g, '').replace(/\)/g, '');
-        this.toolResult = JSON.parse(modifiedString, decimalReviver);
       })
 
   }

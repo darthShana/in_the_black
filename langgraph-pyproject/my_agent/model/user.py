@@ -11,9 +11,63 @@ class PropertyTypeEnum(str, Enum):
     Flat = "Flat"
 
 
+class AssetTypeEnum(Enum):
+    DEFAULT = "Chattels(default class)"
+    AIR_CONDITIONERS = "Air conditioners and heat pumps (through wall or window type)"
+    AIR_VENTILATION = "Air ventilation systems( in roof cavity)"
+    ALARMS = "Alarms(burglar / smoke, wired or wireless)"
+    APPLIANCES_SMALL = "Appliances(small)"
+    AWNINGS = "Awnings"
+    BEDDING = "Bedding"
+    BLINDS = "Blinds"
+    CARPETS = "Carpets"
+    CLOTHESLINES = "Clotheslines"
+    CROCKERY = "Crockery"
+    CURTAINS = "Curtains"
+    CUTLERY = "Cutlery"
+    DEHUMIDIFIERS = "Dehumidifiers(portable)"
+    DISHWASHERS = "Dishwashers"
+    DRAPES = "Drapes"
+    DRYERS = "Dryers(clothes, domestic type)"
+    FREEZERS = "Freezers(domestic type)"
+    FURNITURE = "Furniture(loose)"
+    GLASSWARE = "Glassware"
+    HEATERS_ELECTRIC = "Heaters(electric)"
+    HEATERS_OTHER = "Heaters(gas, portable and not flued)"
+    LAWNMOWERS = "Lawn mowers"
+    LIGHT_SHADES = "Light shades / fashion items affixed to a standard light fitting*"
+    LINEN = "Linen"
+    MAILBOXES = "Mailboxes"
+    MICROWAVE_OVENS = "Microwave ovens"
+    OVENS = "Ovens"
+    REFRIGERATORS = "Refrigerators(domestic type)"
+    SATELLITE_DISHES = "Satellite receiving dishes"
+    STEREOS = "Stereos"
+    STOVES = "Stoves"
+    TELEVISIONS = "Televisions"
+    UTENSILS = "Utensils(including pots and pans)"
+    VACUUM_CLEANERS = "Vacuum cleaners(domestic type)"
+    WASHING_MACHINES = "Washing machines(domestic type)"
+    WASTE_DISPOSAL_UNITS = "Waste disposal units(domestic type)"
+    WATER_HEATERS_HEAT_PUMP = "Water heaters(heat pump type)"
+    WATER_HEATERS_OVER_SINK = "Water heaters(over - sink type)"
+    WATER_HEATERS_OTHER = "Water heaters(other eg, electric or gas hot water cylinders)"
+    WATER_HEATERS_SOLAR = "Water heaters(solar type)"
+
+    def __str__(self):
+        return self.value
+
+    @classmethod
+    def from_string(cls, string_value):
+        try:
+            return cls[string_value]
+        except KeyError:
+            raise ValueError(f"'{string_value}' is not a valid {cls.__name__}")
+
+
 class Asset(BaseModel):
     asset_id: str = Field(description="a unique id for this asset")
-    asset_type: str = Field(description="type of asset")
+    asset_type: AssetTypeEnum = Field(description="type of asset")
     installation_date: date = Field(description="date of installation")
     installation_value: Decimal = Field(description="value of the asset at the time of installation")
 

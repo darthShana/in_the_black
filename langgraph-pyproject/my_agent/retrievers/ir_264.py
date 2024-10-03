@@ -66,15 +66,17 @@ def calculate_depreciation(asset: Asset, year: int) -> dict:
     prompt_template = PromptTemplate.from_template("""
     Given the following Rules:
     {rules}
+    
     Answer the query:
     calculate the depreciation on a {asset_type} which occurred in the specific tax year ending March {year_to_calculate}? (Not cumulative)
     It was installed in {installation_date}, at the time of installation it was valued at ${installation_value}, round to 2 decimal places at each step
-    Extract the result in json format with the 
+    
+    Extract the result in json format marking the json as ```json with: 
     depreciation in a field 'depreciation', 
     the opening residual value of the asset in a filed 'opening_value',
     the rate used for depreciation in a field 'rate'
     any explanation in the field 'reasoning'. 
-    mark the json as ```json:
+    :
     """)
     chain = prompt_template | llm
     result = chain.invoke({

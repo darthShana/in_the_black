@@ -7,10 +7,10 @@
       class="icon-large ucla-blue"
     ></mat-icon>
   </div>
-  <div class="h3 address-wrapper" *ngIf="property['property_details']">
-    {{property['property_details']['address1']}}
-    {{property['property_details']['suburb']}}
-    {{property['property_details']['city']}}
+  <div class="h3 address-wrapper" *ngIf="profileService.property_details">
+    {{profileService.property_details['address1']}}
+    {{profileService.property_details['suburb']}}
+    {{profileService.property_details['city']}}
   </div>
 
 </div>

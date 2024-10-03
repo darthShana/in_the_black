@@ -1,3 +1,4 @@
+import json
 import uuid
 from datetime import date
 from decimal import Decimal
@@ -15,7 +16,6 @@ dynamo = boto3.client('dynamodb')
 
 class AssetInput(BaseModel):
     state: Annotated[dict, InjectedState] = Field(description="current state")
-    property_id: str = Field(description="property this asset is installed in")
     asset_type: str = Field(description="type of asset")
     installation_date: date = Field(description="date of installation")
     installation_value: Decimal = Field(description="value of the asset at the time of installation")
@@ -24,11 +24,11 @@ class AssetInput(BaseModel):
 def add_asset(state: Annotated[dict, InjectedState], asset_type: str, installation_date: date, installation_value: Decimal):
     user = UserRetriever.get_user("in here test")
 
-    dynamo.put_item({
+    dynamo.put_item(TableName="CustomerAssets", Item={
             'CustomerAssetsID': {'S': str(uuid.uuid4())},
             'CustomerNumber': {'S': user.user_id},
-            'PropertyID': {'S': user.properties[0]},
-            'AssetType': {'S': asset_type},
+            'PropertyID': {'S': user.properties[0].property_id},
+            'AssetType': {'S': json.dumps(asset_type)},
             'InstallationDate': {'S': installation_date.strftime("%Y/%m/%d")},
             'InstallationValue': {'S': str(installation_value)},
         })
