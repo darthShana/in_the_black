@@ -44,8 +44,9 @@ export class AppComponent {
   open(): void {
     this.isOpen = true;
     const sheetRef = this.bottomSheet.open(ChatComponent, {
-      backdropClass: 'bottom-sheet-overlay',
+      panelClass: 'bottom-sheet-right',
       hasBackdrop: false,
+      disableClose: false,
     });
 
     sheetRef

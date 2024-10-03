@@ -1,30 +1,24 @@
-//:host {
-//  position: absolute;
-//  right: 20px;
-//  bottom: 0;
-//  width: 460px;
-//  //max-width: 40vw;
-//  //max-height: 40vh;
-//}
-//
-//.chatbox-outter {
-//  overflow: scroll;
-//  height: 100%;
-//  max-height: 100vh;
-//}
-
-//.chatbox-inner {
-//  display: flex;
-//  flex-direction: column;
-//  gap: 1rem;
-//}
-
-//.full-width {
-//  width: 100%;
-//}
-
-.sub-flex {
+.close-inner-wrapper {
   display: flex;
   justify-content: flex-end;
-  margin: -10px -12px;
+}
+
+.close-outter-wrapper {
+  position: sticky;
+  top: 0;
+  background-color: rgb(245, 243, 247);
+  z-index: 1;
+  padding: 4px;
+}
+
+.chat-wrapper {
+  position: relative;
+  overflow: hidden;
+  height: 100%;
+}
+
+.inner-chat-wrapper {
+  max-height: calc(100% - 36px); 
+  overflow: auto;
+  padding: 0 16px;
 }

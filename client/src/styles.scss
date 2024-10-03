@@ -16,24 +16,13 @@ h3,
   font-size: 1.5rem;
 }
 
+.bottom-sheet-right {
+  display: flex !important;
+  width: 100% !important;
+  justify-content: end;
+  padding-right: 12px;
 
-
-.bottom-sheet-overlay { // no currently used for chat as we have set background to false, can be removed unless we want to use it elsewhere?
-  
-  @apply cdk-overlay-transparent-backdrop;
-
-  + .cdk-global-overlay-wrapper {
-
-    .cdk-overlay-pane {
-      display: flex !important;
-      width: 100% !important;
-      justify-content: end !important;
-      padding-right: 12px !important;
-
-      mat-bottom-sheet-container {
-        overflow: hidden;
-        padding: 0;
-      }
-    }
+  .mat-bottom-sheet-container {
+    padding: 0;
   }
 }
