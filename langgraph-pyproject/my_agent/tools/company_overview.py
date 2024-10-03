@@ -8,6 +8,7 @@ from langgraph.prebuilt import InjectedState
 from pydantic import BaseModel, Field
 
 from my_agent.retrievers.get_user import UserRetriever
+from my_agent.retrievers.metadata import get_metadata
 from my_agent.retrievers.property_valuation import get_market_data
 from my_agent.tools.generate_end_of_year_reports import generate_end_of_year_reports
 from my_agent.tools.get_accounts import monthly_expenses
@@ -26,6 +27,8 @@ def company_overview(state: Annotated[dict, InjectedState], start_date: datetime
 
     user = UserRetriever.get_user("in here test")
 
+    metadata = get_metadata()
+
     monthly = monthly_expenses(current_date, end_date)
 
     all_accounts = generate_end_of_year_reports(state, start_date, end_date)
@@ -43,6 +46,7 @@ def company_overview(state: Annotated[dict, InjectedState], start_date: datetime
     property_dict['property_type'] = property_dict['property_type'].value
 
     return {
+        'metadata': metadata,
         'property_details': property_dict,
         'monthly_expenses': monthly,
         'p&l': all_accounts['statement_of_profit_or_loss']['gross_profit'] - all_accounts['statement_of_profit_or_loss']['expenses_total'],

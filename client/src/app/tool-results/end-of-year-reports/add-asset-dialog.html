@@ -1,0 +1,28 @@
+<h2 mat-dialog-title>Add an asset in your property</h2>
+<mat-dialog-content>
+  <form [formGroup]="assetFrom" *ngIf="data" (submit)="addAsset()">
+
+    <mat-form-field >
+      <mat-label>Asset Type</mat-label>
+      <mat-select formControlName="assetType">
+        <mat-option *ngFor="let item of data.available_asset_types" value="{{item['name']}}">{{item['description']}}</mat-option>
+      </mat-select>
+      <mat-hint align="end">what kind of asset is it ^</mat-hint>
+    </mat-form-field>
+    <mat-form-field>
+      <mat-label>Choose a date</mat-label>
+      <input matInput [matDatepicker]="picker" formControlName="installDate">
+      <mat-hint>MM/DD/YYYY</mat-hint>
+      <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+      <mat-datepicker #picker></mat-datepicker>
+    </mat-form-field>
+    <mat-form-field floatLabel="always">
+      <mat-label>Install Value</mat-label>
+      <input matInput type="number" placeholder="0" formControlName="installValue"/>
+      <span matTextPrefix>$&nbsp;</span>
+      <span matTextSuffix>.00</span>
+    </mat-form-field>
+    <button type="submit" class="primary">Add</button>
+  </form>
+
+</mat-dialog-content>
