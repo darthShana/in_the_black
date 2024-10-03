@@ -14,11 +14,11 @@
 .chat-wrapper {
   position: relative;
   overflow: hidden;
-  height: 100%;
+  height: calc(100% - 4px);;
 }
 
 .inner-chat-wrapper {
-  max-height: calc(100% - 36px); 
+  max-height: calc(100% - 46px); 
   overflow: auto;
   padding: 0 16px;
 }

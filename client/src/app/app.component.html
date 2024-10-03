@@ -1,20 +1,21 @@
 
-<app-header></app-header>
 <main class="main">
+  <app-header></app-header>
   <app-tool-results></app-tool-results>
   <router-outlet />
-</main>
 
-<div class="chat-button-wrapper">
-  <button 
-    mat-icon-button 
-    aria-label="Open chat"
-    (click)="open()"
-    >
-    <mat-icon
-        aria-hidden="true"
-        fontIcon="chat"
-    ></mat-icon>
-  </button>
-</div>
+  <div class="chat-button-wrapper">
+    <button 
+      mat-icon-button 
+      aria-label="Open chat"
+      (click)="open()"
+      >
+      <mat-icon
+          aria-hidden="true"
+          fontIcon="chat"
+      ></mat-icon>
+    </button>
+  </div>
+  
+</main>
 
