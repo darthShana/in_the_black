@@ -1,12 +1,19 @@
 import json
+from datetime import datetime, timedelta
+from decimal import Decimal
 from tempfile import mkdtemp
 
+import boto3
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
+
+# Initialize DynamoDB client
+dynamodb = boto3.resource('dynamodb')
+table = dynamodb.Table('PropertyValuesCache')
 
 
 def initialise_driver():
@@ -35,6 +42,7 @@ def initialise_driver():
         service=service,
         options=chrome_options
     )
+    # driver = webdriver.Chrome()
 
     return driver
 
@@ -58,18 +66,37 @@ def handler(event, context):
             'body': json.dumps({'error': 'Address not provided'})
         }
 
+    # Create a unique key for the cache
+    cache_key = f"{address1}|{suburb}|{city}|{property_type}|{bedrooms}"
+
+    # Try to get the cached value
+    cached_value = get_cached_value(cache_key)
+    print(cached_value)
+    if cached_value:
+        return {
+            'statusCode': 200,
+            'body': json.dumps(cached_value)
+        }
+
     driver = initialise_driver()
 
     try:
         estimated_value = get_property_value(address1, driver)
         market_rental = get_rental_income(suburb, city, bedrooms, property_type, driver)
+        store_in_cache(cache_key, {
+            'address': address1,
+            'estimated_value': estimated_value,
+            'market_rental': market_rental,
+            'source': 'cache'
+        })
 
         return {
             'statusCode': 200,
             'body': json.dumps({
                 'address': address1,
                 'estimated_value': estimated_value,
-                'market_rental': market_rental
+                'market_rental': market_rental,
+                'source': 'calculation'
             })
         }
     except Exception as e:
@@ -142,29 +169,52 @@ def get_property_value(address1, driver):
         raise Exception('No autofill options found for the given address')
 
 
+def get_cached_value(cache_key):
+    try:
+        response = table.get_item(Key={'cache_key': cache_key})
+        item = response.get('Item')
+        if item:
+            timestamp = datetime.fromisoformat(item['timestamp'])
+            if datetime.now() - timestamp < timedelta(weeks=1):
+                # Convert the values using DecimalEncoder
+                return json.loads(json.dumps(item['values'], cls=DecimalEncoder))
+    except Exception as e:
+        print(f"Error retrieving from cache: {str(e)}")
+    return None
+
+
+def store_in_cache(cache_key, values):
+    try:
+        table.put_item(
+            Item={
+                'cache_key': cache_key,
+                'values': values,
+                'timestamp': datetime.now().isoformat()
+            }
+        )
+    except Exception as e:
+        print(f"Error storing in cache: {str(e)}")
+
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, Decimal):
+            return float(o)
+        return super(DecimalEncoder, self).default(o)
+
+
 if __name__ == '__main__':
-    handler(
+    result = handler(
         {
             'body': json.dumps(
                 {
-                    'action': 'RENTAL_INCOME',
-                    'suburb': 'Karaka',
-                    'city': 'Papakura',
+                    'address1': '54b Tawa Road',
+                    'suburb': 'One Tree Hill',
+                    'city': 'Auckland',
                     'property_type': 'House',
                     'bedrooms': 3
                  }
             )
         }, None)
+    print(result)
 
-    # handler({
-    #     'body': json.dumps(
-    #             {
-    #                 'action': 'RENTAL_INCOME',
-    #                 'suburb': 'One Tree Hill',
-    #                 'city': 'Auckland',
-    #                 'property_type': 'House',
-    #                 'bedrooms': 3
-    #             }
-    #         )
-    #     }, None
-    #     )

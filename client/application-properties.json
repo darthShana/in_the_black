@@ -1,0 +1,5 @@
+{
+  "endpoint": "your-local-endpoint",
+  "clientID": "your-local-client-id",
+  "pool": "your-local-pool"
+}

@@ -122,8 +122,13 @@ export class AddAssetDialog {
     console.log(this.assetFrom.value.assetType)
     console.log(this.assetFrom.value.installDate)
     console.log(this.assetFrom.value.installValue)
-    this.assistantService.stream(`add the following asset to my property.
-    asset_type:${this.assetFrom.value.assetType}, installation_date:${this.assetFrom.value.installDate}, installation_value:${this.assetFrom.value.installValue}`)
+    this.assistantService.stream(
+      `add the following asset to my property.
+      asset_type:${this.assetFrom.value.assetType},
+      installation_date:${this.assetFrom.value.installDate},
+      installation_value:${this.assetFrom.value.installValue}`,
+      false
+    )
       .then(r => console.log("done adding asset"))
   }
 }

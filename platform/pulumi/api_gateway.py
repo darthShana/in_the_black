@@ -15,7 +15,7 @@ def create_api_gateway(cognito):
         identity_sources=["$request.header.Authorization"],
         name="cognito-authorizer",
         jwt_configuration={
-            "audience": [cognito['user_pool_client'].id],
+            "audience": [cognito['api_user_pool_client'].id],
             "issuer": cognito['user_pool'].endpoint.apply(lambda endpoint: f"https://{endpoint}")
         }
     )

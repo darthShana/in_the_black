@@ -17,6 +17,7 @@ import { ChatBubbleComponent } from './chat-bubble/chat-bubble.component';
 import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { MatIcon } from '@angular/material/icon';
 import { MatButton, MatButtonModule } from '@angular/material/button';
+import {AuthService} from "../service/auth.service";
 
 @Component({
   selector: 'app-chat',
@@ -66,19 +67,15 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   async ngOnInit() {
     console.log('INIT');
 
-    await this.assistantService.initialize(this.user_id);
-
     this.assistantService.conversationOrderSubject
       .pipe(takeUntil(this.unsubscribe))
       .subscribe((result) => {
-        console.log(result);
         this.conversationOrder = result;
       });
 
     this.assistantService.streamResultsSubject
       .pipe(takeUntil(this.unsubscribe))
       .subscribe((result) => {
-        // console.log(result);
         this.conversationMap = result;
       });
   }
@@ -86,7 +83,6 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {
     const observer = new ResizeObserver((entries) => {
       entries.forEach((entry) => {
-        // console.log("scroll", entry);
         if (this.textChainWrapperRef) {
           this.textChainWrapperRef.nativeElement.scrollTop =
             this.textChainWrapperRef?.nativeElement.scrollHeight;
@@ -98,7 +94,7 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   protected stream(query: string) {
-    this.assistantService.stream(query).then((r) => console.log('stream done'));
+    this.assistantService.stream(query, true).then((r) => console.log('stream done'));
   }
 
   closeBottomSheet(): void {

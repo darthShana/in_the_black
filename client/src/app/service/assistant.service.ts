@@ -13,8 +13,6 @@ export class AssistantService {
     this.conversationOrder
   );
 
-  public toolContentSubject: Subject<string> = new Subject();
-
   public streamResults: Map<
     string,
     Record<string, unknown & { content: { text: string }[] } & any>
@@ -38,7 +36,7 @@ export class AssistantService {
 
   constructor() {}
 
-  async stream(prompt: string) {
+  async stream(prompt: string, showQuestion: boolean) {
     const input = {
       messages: [{ role: 'user', content: prompt }],
     };
@@ -54,7 +52,7 @@ export class AssistantService {
     )) {
       const data = event.data as Record<string, unknown & { content: { text: string }[] } & any>;
 
-      if (event.event === 'metadata') {
+      if (event.event === 'metadata' && showQuestion) {
         this.handleMetadata(data, prompt);
       } else if (event.event === 'messages/partial') {
         this.handlePartial(data);
@@ -123,14 +121,6 @@ export class AssistantService {
       unknown & { content: { text: string }[] } & any
     >[]) {
 
-      // Handle tool call
-      if (
-        dataItem['content'] &&
-        (dataItem['content'] as string).indexOf('```json') != -1
-      ) {
-        this.toolContentSubject.next(dataItem['content'])
-      } else
-
       if (dataItem['content'] && dataItem['content'][0] && dataItem['content'][0]['text']) {
         if (this.conversationOrder.indexOf(dataItem['id'] + '-b') === -1) {
           this.conversationOrder.push(dataItem['id'] + '-b');
@@ -147,7 +137,6 @@ export class AssistantService {
 
   handleComplete(data: any) {
     let parts = data.at(-1)
-
     if (parts.type === "tool"){
       console.log('completed tool: ', parts.name)
       this.toolProgressSubject.next(parts.name)

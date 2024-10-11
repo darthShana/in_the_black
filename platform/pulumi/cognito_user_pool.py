@@ -34,7 +34,7 @@ def create_cognito():
     )
 
     # Create Cognito User Pool Client
-    user_pool_client = aws.cognito.UserPoolClient("property-valuation-user-pool-client",
+    user_pool_client = aws.cognito.UserPoolClient("property-valuation-api-client",
         user_pool_id=user_pool.id,
         generate_secret=True,
         allowed_oauth_flows=["client_credentials"],
@@ -44,9 +44,27 @@ def create_cognito():
         explicit_auth_flows=["ALLOW_REFRESH_TOKEN_AUTH", "ALLOW_ADMIN_USER_PASSWORD_AUTH"]
     )
 
+    # Create Cognito User Pool Client for user authentication
+    user_auth_pool_client = aws.cognito.UserPoolClient("user-auth-client",
+        user_pool_id=user_pool.id,
+        generate_secret=False,  # Set to True if you need a client secret
+        allowed_oauth_flows=["implicit", "code"],
+        allowed_oauth_scopes=["email", "openid", "profile"],
+        allowed_oauth_flows_user_pool_client=True,
+        supported_identity_providers=["COGNITO"],
+        callback_urls=["http://localhost:4200/signin-callback"],  # Replace with your actual callback URL
+        logout_urls=["http://localhost:4200/logout"],  # Replace with your actual logout URL
+        explicit_auth_flows=[
+            "ALLOW_USER_SRP_AUTH",
+            "ALLOW_REFRESH_TOKEN_AUTH",
+            "ALLOW_USER_PASSWORD_AUTH"
+        ]
+    )
+
     return {
         "user_pool": user_pool,
-        "user_pool_client": user_pool_client
+        "api_user_pool_client": user_pool_client,
+        "user_auth_pool_client": user_auth_pool_client
     }
 
 

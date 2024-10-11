@@ -1,4 +1,5 @@
 import base64
+import time
 
 import pulumi
 import pulumi_aws as aws
@@ -8,6 +9,22 @@ import pulumi_docker as docker
 
 
 def create_property_valuation(api):
+
+    lambda_cache = aws.dynamodb.Table("property-valuation-lambda-cache",
+        name="PropertyValuesCache",
+        billing_mode="PAY_PER_REQUEST",
+        hash_key="cache_key",
+        attributes=[
+            {
+                "name": "cache_key",
+                "type": "S",
+            }
+        ],
+        tags={
+            "Name": "dynamodb-table-1",
+            "Environment": "production",
+        }
+    )
 
     # IAM role for Lambda
     lambda_role = aws.iam.Role("property-valuation-lambda-role",
@@ -23,27 +40,68 @@ def create_property_valuation(api):
            }]
        })
        )
-    
+
     lambda_policy = aws.iam.RolePolicy("property-valuation-lambda-policy",
         role=lambda_role.id,
-        policy=json.dumps({
-            "Version": "2012-10-17",
-            "Statement": [{
-                "Effect": "Allow",
-                "Action": [
-                    "logs:CreateLogGroup",
-                    "logs:CreateLogStream",
-                    "logs:PutLogEvents"
-                ],
-                "Resource": "arn:aws:logs:*:*:*"
-            }]
-        })
+        policy=pulumi.Output.all(lambda_cache.arn).apply(
+            lambda args: json.dumps({
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Action": [
+                            "logs:CreateLogGroup",
+                            "logs:CreateLogStream",
+                            "logs:PutLogEvents"
+                        ],
+                        "Resource": "arn:aws:logs:*:*:*"
+                    },
+                    {
+                        "Effect": "Allow",
+                        "Action": [
+                            "dynamodb:GetItem",
+                            "dynamodb:PutItem",
+                            "dynamodb:UpdateItem",
+                            "dynamodb:DeleteItem",
+                            "dynamodb:Query",
+                            "dynamodb:Scan"
+                        ],
+                        "Resource": args[0]
+                    }
+                ]
+            }
+            )
+        )
     )
 
     # Define the ECR repository
-    repo = aws.ecr.Repository("my-ecr-repo",
-      name="my-lambda-container-repo",
-      force_delete=True
+    repo = aws.ecr.Repository("property-valuation-repo",
+      name="property-valuation-repo",
+      image_tag_mutability="MUTABLE",
+    )
+
+    # Define the lifecycle policy
+    lifecycle_policy = {
+        "rules": [
+            {
+                "rulePriority": 1,
+                "description": "Keep last 3 images",
+                "selection": {
+                    "tagStatus": "any",
+                    "countType": "imageCountMoreThan",
+                    "countNumber": 3
+                },
+                "action": {
+                    "type": "expire"
+                }
+            }
+        ]
+    }
+
+    # Attach the lifecycle policy to the repository
+    repo_policy = aws.ecr.LifecyclePolicy("property-valuation-lifecycle-policy",
+        repository=repo.name,
+        policy=json.dumps(lifecycle_policy)
     )
 
     # Create a function to get ECR credentials
@@ -59,13 +117,15 @@ def create_property_valuation(api):
     # Use apply to handle the Output
     ecr_credentials = repo.registry_id.apply(get_ecr_credentials)
 
+    unique_tag = f"build-{int(time.time())}"
+
     # Build and push the Docker image
     image = docker.Image("my-lambda-image",
          build=docker.DockerBuildArgs(
              context="./property_valuation_lambda",
              dockerfile="property_valuation_lambda/Dockerfile"
          ),
-         image_name=repo.repository_url,
+         image_name=pulumi.Output.concat(repo.repository_url, ":", unique_tag),
          registry=docker.RegistryArgs(
              server=repo.repository_url,
              username=ecr_credentials.apply(lambda creds: creds["username"]),
@@ -76,7 +136,7 @@ def create_property_valuation(api):
     # Define the Lambda function
     property_valuation_lambda = aws.lambda_.Function(
         "property-valuation-lambda",
-        image_uri=image.image_name.apply(lambda name: f"{name}:latest"),
+        image_uri=image.image_name,
         package_type="Image",
         role=lambda_role.arn,
         publish=True,

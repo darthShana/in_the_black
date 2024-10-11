@@ -42,7 +42,7 @@ def get_market_data(property_data: Property) -> Valuation:
         # Call the API
         result = call_api(token, property_data)
         log.info("API Response:", result)
-        return Valuation.parse_obj(result)
+        return Valuation.model_validate(result)
 
     except Exception as e:
         log.error(f"An error occurred: {str(e)}")
