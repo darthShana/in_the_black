@@ -49,7 +49,7 @@ export class HomeComponent implements OnInit{
               this.assistantService.stream(
                 "provide a greeting for a returning user with a short company overview from 1st April 2023 to 31st March 2024, " +
                 "Start your response with the welcome addressing the user",
-                false)
+                false).then(r => console.log('done'))
             }
           );
         } else {

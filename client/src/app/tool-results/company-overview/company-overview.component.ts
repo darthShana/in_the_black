@@ -4,6 +4,16 @@ import {MatIcon} from "@angular/material/icon";
 import {PieChartComponent} from "../../pie-chart/pie-chart.component";
 import {PercentPipe} from "@angular/common";
 import {CommonModule} from "@angular/common";
+import {
+  MatCell,
+  MatCellDef, MatColumnDef,
+  MatHeaderCell, MatHeaderCellDef,
+  MatHeaderRow,
+  MatHeaderRowDef,
+  MatRow,
+  MatRowDef, MatTable
+} from "@angular/material/table";
+import {MatIconButton} from "@angular/material/button";
 
 @Component({
   selector: 'app-company-overview',
@@ -13,7 +23,18 @@ import {CommonModule} from "@angular/common";
     MatIcon,
     PieChartComponent,
     PercentPipe,
-    CommonModule
+    CommonModule,
+    MatCell,
+    MatCellDef,
+    MatHeaderCell,
+    MatHeaderRow,
+    MatHeaderRowDef,
+    MatIconButton,
+    MatRow,
+    MatRowDef,
+    MatTable,
+    MatColumnDef,
+    MatHeaderCellDef
   ],
   templateUrl: './company-overview.component.html',
   styleUrl: './company-overview.component.scss'
@@ -21,5 +42,6 @@ import {CommonModule} from "@angular/common";
 export class CompanyOverviewComponent {
 
   @Input() companyOverview!: Record<string, any>;
+  depreciationDisplayedColumns: Iterable<string> = ['date_purchase', 'asset', 'cost', 'closing_value'];
 
 }

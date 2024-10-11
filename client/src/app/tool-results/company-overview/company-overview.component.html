@@ -27,6 +27,27 @@
       <p>{{ companyOverview['p&l'] | currency:'NZD':'symbol':'1.2-2' }}</p>
     </div>
   </div>
+  <div>
+    <h2>Property Assets</h2>
+    <table mat-table [dataSource]="companyOverview['property_assets']" class="mat-elevation-z8">
+      @for (column of depreciationDisplayedColumns; track column) {
+        <ng-container [matColumnDef]="column">
+          <th mat-header-cell *matHeaderCellDef> {{column}}</th>
+          <td mat-cell *matCellDef="let element">
+            {{element[column]}}
+          </td>
+        </ng-container>
+      }
+
+      <tr mat-header-row *matHeaderRowDef="depreciationDisplayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: depreciationDisplayedColumns;"></tr>
+    </table>
+<!--    <div class="example-button-container">-->
+<!--      <button mat-icon-button aria-label="Add an asset to depreciate" (click)="openDialog()">-->
+<!--        <mat-icon>add</mat-icon>-->
+<!--      </button>-->
+<!--    </div>-->
+  </div>
   <app-bar-chart [expenses]="companyOverview['monthly_expenses']"></app-bar-chart>
   <app-pie-chart [expenses]="companyOverview['expenses']"></app-pie-chart>
 </div>

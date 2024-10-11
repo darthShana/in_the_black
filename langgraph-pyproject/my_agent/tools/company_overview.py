@@ -42,12 +42,15 @@ def company_overview(state: Annotated[dict, InjectedState], start_date: datetime
     annual_rental_revenue = next(item['balance'] for item in all_accounts['statement_of_profit_or_loss']['revenue_items'] if item['display_name'] == 'Rental Revenue') * 52 / weeks
     log.info(annual_rental_revenue)
 
+    property_assets = [asset for asset in all_accounts['tax']['depreciation']]
+
     property_dict = user.properties[0].model_dump()
     property_dict['property_type'] = property_dict['property_type'].value
 
     return {
         'metadata': metadata,
         'property_details': property_dict,
+        'property_assets': property_assets,
         'monthly_expenses': monthly,
         'p&l': all_accounts['statement_of_profit_or_loss']['gross_profit'] - all_accounts['statement_of_profit_or_loss']['expenses_total'],
         'yield': annual_rental_revenue / market_info.estimated_value,
