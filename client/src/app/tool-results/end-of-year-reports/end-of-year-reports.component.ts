@@ -6,7 +6,7 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatFormFieldModule} from '@angular/material/form-field';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import {MatInputModule} from '@angular/material/input';
-import {MatSelectChange, MatSelectModule} from '@angular/material/select';
+import {MatSelectModule} from '@angular/material/select';
 import {MatButtonModule, MatFabButton} from "@angular/material/button";
 import {
   MatDialog,
@@ -22,6 +22,11 @@ interface ProfitOrLossReportLine {
   description: string;
   amount?: string;
   subtitle: boolean;
+}
+
+interface IncomeReportLine {
+  description: string;
+  amount: string
 }
 
 interface DepreciationReportLine {
@@ -55,10 +60,9 @@ export class EndOfYearReportsComponent implements OnInit{
 
 
   protected profitOrLoss: ProfitOrLossReportLine[] = []
+  protected taxableIncome: IncomeReportLine[] = []
   protected depreciation: DepreciationReportLine[] = []
-  protected financialPosition: ProfitOrLossReportLine[] = []
   profitOrLossDisplayedColumns: string[] = ['description', 'amount'];
-  financialPositionColumns: string[] = ['description', 'amount'];
   depreciationDisplayedColumns: string[] = ['asset', 'date_purchase', 'cost', 'opening_value', 'rate', 'method', 'depreciation', 'closing_value'];
 
   constructor(private assistantService: AssistantService){}
@@ -86,7 +90,9 @@ export class EndOfYearReportsComponent implements OnInit{
     for (let item of tax['depreciation']){
       this.depreciation.push({asset: item['asset'], date_purchase: item['date_purchase'], cost: item['cost'], opening_value: item['opening_value'], rate: item['rate'], method: item['method'], depreciation: item['depreciation'], closing_value: item['closing_value']})
     }
-
+    this.taxableIncome.push({description: 'Total Rents', amount: tax['income']['total_rents']})
+    this.taxableIncome.push({description: `Other Income (${tax['income']['other_income_description']})`, amount: tax['income']['total_income']})
+    this.taxableIncome.push({description: 'Total Income', amount: tax['income']['total_income']})
 
   }
 

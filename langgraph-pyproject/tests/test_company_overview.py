@@ -2,12 +2,14 @@ import logging
 from datetime import datetime
 from decimal import Decimal
 
+from langsmith import unit
+
 from my_agent.tools.company_overview import company_overview
 log = logging.getLogger(__name__)
 
-
+@unit
 def test_company_overview():
-    overview = company_overview(datetime(2023, 4, 1), datetime(2024, 3, 31))
+    overview = company_overview({}, datetime(2023, 4, 1), datetime(2024, 3, 31))
     log.info(overview)
 
     monthly_expense_ = overview['monthly_expenses']

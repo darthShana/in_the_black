@@ -21,7 +21,7 @@ def generate_end_of_year_reports(state: Annotated[dict, InjectedState], start: d
     user = UserRetriever.get_user("in here test")
     accounts = get_accounts(start, end)
     statement_of_profit_or_loss = generate_statement_of_profit_or_loss(accounts)
-    tax_statement = generate_tax_statement(user.user_id, user.properties, end.year)
+    tax_statement = generate_tax_statement(user.user_id, user.properties, end.year, accounts)
     return {
         "statement_of_profit_or_loss": statement_of_profit_or_loss,
         "tax": tax_statement

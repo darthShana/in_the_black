@@ -14,6 +14,21 @@
 </table>
 
 <h6>Rental Tax</h6>
+Income
+<table mat-table [dataSource]="taxableIncome" class="mat-elevation-z8">
+  @for (column of profitOrLossDisplayedColumns; track column) {
+    <ng-container [matColumnDef]="column">
+      <th mat-header-cell *matHeaderCellDef> {{column}}</th>
+      <td mat-cell *matCellDef="let element">
+        {{element[column]}}
+      </td>
+    </ng-container>
+  }
+
+  <tr mat-header-row *matHeaderRowDef="profitOrLossDisplayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: profitOrLossDisplayedColumns;"></tr>
+</table>
+
 Depreciation of Assets
 <table mat-table [dataSource]="depreciation" class="mat-elevation-z8">
   @for (column of depreciationDisplayedColumns; track column) {

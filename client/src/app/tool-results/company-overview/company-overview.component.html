@@ -42,11 +42,11 @@
       <tr mat-header-row *matHeaderRowDef="depreciationDisplayedColumns"></tr>
       <tr mat-row *matRowDef="let row; columns: depreciationDisplayedColumns;"></tr>
     </table>
-<!--    <div class="example-button-container">-->
-<!--      <button mat-icon-button aria-label="Add an asset to depreciate" (click)="openDialog()">-->
-<!--        <mat-icon>add</mat-icon>-->
-<!--      </button>-->
-<!--    </div>-->
+    <div class="example-button-container">
+      <button mat-icon-button aria-label="Add an asset to depreciate" (click)="openDialog()">
+        <mat-icon>add</mat-icon>
+      </button>
+    </div>
   </div>
   <app-bar-chart [expenses]="companyOverview['monthly_expenses']"></app-bar-chart>
   <app-pie-chart [expenses]="companyOverview['expenses']"></app-pie-chart>

@@ -6,6 +6,7 @@ from typing import List
 import boto3
 from boto3.dynamodb.conditions import Key, Attr
 
+from my_agent.model.account import Account, AccountTypeEnum
 from my_agent.model.user import Property, Asset, AssetTypeEnum
 from my_agent.retrievers.ir_264 import calculate_depreciation
 
@@ -25,7 +26,20 @@ def to_asset(item: dict) -> Asset:
     )
 
 
-def generate_tax_statement(customer_id: str, properties: List[Property], year: int):
+def get_other_revenue(accounts):
+    filtered_accounts = []
+    total_balance = 0
+
+    for key, account in accounts.items():
+        if (account.account_type == AccountTypeEnum.EXPENSES and account.balance() < 0) or \
+                (account.account_type == AccountTypeEnum.REVENUE and account.balance() > 0 and 'rental_revenue' != key):
+            filtered_accounts.append(account.display_name)
+            total_balance += abs(account.balance())
+
+    return ', '.join(filtered_accounts), total_balance
+
+
+def generate_tax_statement(customer_id: str, properties: List[Property], year: int, accounts: dict[str, Account]):
     table = dynamodb.Table('CustomerAssets')
 
     property_attr = boto3.dynamodb.conditions.Attr('PropertyID')
@@ -50,6 +64,16 @@ def generate_tax_statement(customer_id: str, properties: List[Property], year: i
             'closing_value': dep['opening_value'] - dep['depreciation'],
         })
 
+    (other_revenue_description, other_revenue) = get_other_revenue(accounts)
+
+    income = {
+        'total_rents': accounts['rental_revenue'].balance(),
+        'other_income': other_revenue,
+        'other_income_description': other_revenue_description,
+        'total_income': accounts['rental_revenue'].balance() + other_revenue,
+    }
+
     return {
-        'depreciation': depreciation
+        'depreciation': depreciation,
+        'income': income
     }
