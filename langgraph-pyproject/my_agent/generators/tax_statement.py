@@ -66,12 +66,15 @@ def generate_tax_statement(customer_id: str, properties: List[Property], year: i
 
     (other_revenue_description, other_revenue) = get_other_revenue(accounts)
 
-    income = {
-        'total_rents': accounts['rental_revenue'].balance(),
-        'other_income': other_revenue,
-        'other_income_description': other_revenue_description,
-        'total_income': accounts['rental_revenue'].balance() + other_revenue,
-    }
+    income = {}
+    if 'rental_revenue' in accounts:
+        income['total_rents'] = accounts['rental_revenue'].balance()
+    if other_revenue is not None:
+        income['other_income'] = other_revenue
+    if other_revenue_description is not None:
+        income['other_income_description'] = other_revenue_description
+    if 'rental_revenue' in accounts and other_revenue is not None:
+        income['total_income'] = accounts['rental_revenue'].balance() + other_revenue
 
     return {
         'depreciation': depreciation,

@@ -10,8 +10,8 @@ refresh_token = None
 token_expiry = 0
 
 COGNITO_DOMAIN = "in-the-black-auth.auth.us-east-1.amazoncognito.com"
-COGNITO_CLIENT_ID = os.environ["COGNITO_CLIENT_ID"]
-COGNITO_CLIENT_SECRET = os.environ["COGNITO_CLIENT_SECRET"]
+COGNITO_CLIENT_ID = os.environ["COGNITO_API_CLIENT_ID"]
+COGNITO_CLIENT_SECRET = os.environ["COGNITO_API_CLIENT_SECRET"]
 
 
 def escape_f_string(text):
@@ -97,3 +97,8 @@ def get_cognito_token():
         return access_token
     else:
         raise Exception(f"Failed to get token: {response.text}")
+
+
+if __name__ == "__main__":
+    token = get_cognito_token()
+    print(token)

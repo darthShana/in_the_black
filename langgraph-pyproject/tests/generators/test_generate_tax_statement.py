@@ -5,7 +5,7 @@ from langsmith import unit
 
 from my_agent.generators.tax_statement import generate_tax_statement
 from my_agent.model.user import UserInfo
-from my_agent.tools.get_accounts import get_accounts
+from my_agent.retrievers.get_accounts import get_accounts
 
 
 @unit

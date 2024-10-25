@@ -17,6 +17,7 @@ import {MatMenuModule, MatMenuTrigger} from "@angular/material/menu";
 import {ProfileService} from "../../service/profile.service";
 import {MatDatepicker, MatDatepickerInput, MatDatepickerToggle} from "@angular/material/datepicker";
 import {provideNativeDateAdapter} from '@angular/material/core';
+import {AuthService} from "../../service/auth.service";
 
 interface ProfitOrLossReportLine {
   description: string;
@@ -91,7 +92,7 @@ export class EndOfYearReportsComponent implements OnInit{
       this.depreciation.push({asset: item['asset'], date_purchase: item['date_purchase'], cost: item['cost'], opening_value: item['opening_value'], rate: item['rate'], method: item['method'], depreciation: item['depreciation'], closing_value: item['closing_value']})
     }
     this.taxableIncome.push({description: 'Total Rents', amount: tax['income']['total_rents']})
-    this.taxableIncome.push({description: `Other Income (${tax['income']['other_income_description']})`, amount: tax['income']['total_income']})
+    this.taxableIncome.push({description: `Other Income (${tax['income']['other_income_description']})`, amount: tax['income']['other_income']})
     this.taxableIncome.push({description: 'Total Income', amount: tax['income']['total_income']})
 
   }
@@ -120,7 +121,7 @@ export class AddAssetDialog {
     installValue: new FormControl('')
   })
 
-  constructor(private profileService: ProfileService, private assistantService: AssistantService) {
+  constructor(private profileService: ProfileService, private assistantService: AssistantService, private authService: AuthService) {
     this.data.available_asset_types = profileService.metadata['available_asset_types'];
   }
 
@@ -128,13 +129,19 @@ export class AddAssetDialog {
     console.log(this.assetFrom.value.assetType)
     console.log(this.assetFrom.value.installDate)
     console.log(this.assetFrom.value.installValue)
-    this.assistantService.stream(
-      `add the following asset to my property.
-      asset_type:${this.assetFrom.value.assetType},
-      installation_date:${this.assetFrom.value.installDate},
-      installation_value:${this.assetFrom.value.installValue}`,
-      false
-    )
-      .then(r => console.log("done adding asset"))
+    this.authService.getUser().then(user => {
+      if (user) {
+        this.assistantService.stream(
+         `add the following asset to my property.
+          asset_type:${this.assetFrom.value.assetType},
+          installation_date:${this.assetFrom.value.installDate},
+          installation_value:${this.assetFrom.value.installValue}`,
+          false,
+          user
+        )
+          .then(r => console.log("done adding asset"))
+      }
+    })
+
   }
 }

@@ -75,10 +75,10 @@ def create_pdf_converter(api):
     http_route = aws.apigatewayv2.Route(
         "convert_pdf_to_image",
         api_id=api['gateway'].id,
-        route_key="ANY /convert_pdf_to_image",
+        route_key="ANY /convert-pdf-to-image",
         target=http_lambda_backend.id.apply(lambda target_url: "integrations/" + target_url),
         authorization_type="JWT",
-        authorizer_id=api['authorizer'].id
+        authorizer_id=api['api_authorizer'].id
     )
 
     # Give permissions from API Gateway to invoke the Lambda

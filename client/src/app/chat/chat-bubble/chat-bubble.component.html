@@ -41,6 +41,26 @@
             <mat-card-content *ngIf="!thoughtMap.get(thought)?.directToolResult && thoughtMap.get(thought)?.aiResponse">
               <div [innerText]='thoughtMap.get(thought)?.aiResponse'></div>
             </mat-card-content>
+            <mat-card-content *ngIf="!thoughtMap.get(thought)?.directToolResult && thoughtMap.get(thought)?.askHuman">
+              <div
+                *ngIf="thoughtMap.get(thought)?.askHuman?.['question']"
+                [innerText]='thoughtMap.get(thought)?.askHuman?.["question"]'></div>
+              <div
+                *ngIf="thoughtMap.get(thought)?.askHuman?.['options']"
+                class="example-button-row"
+              >
+                <button
+                  *ngFor="let option of $any(thoughtMap.get(thought)?.askHuman?.['options'])"
+                  (click)="continue(option)"
+                  mat-flat-button>
+                  {{option}}</button>
+                <button *ngIf="!$any(thoughtMap.get(thought)?.askHuman?.['options']) || $any(thoughtMap.get(thought)?.askHuman?.['options']).length === 0"
+                        (click)="continue('confirm')"
+                        mat-flat-button>
+                  continue
+                </button>
+              </div>
+            </mat-card-content>
           </div>
         </div>
         <mat-card-content *ngIf="toolUseIbProgress">

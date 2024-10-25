@@ -2,6 +2,7 @@ import logging
 from typing import List
 
 import boto3
+from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import StructuredTool
 
 from my_agent.retrievers.file_loader import AWSCSVFileLoader, AWSPDFFileLoader
@@ -14,9 +15,10 @@ s3 = boto3.client('s3')
 log = logging.getLogger(__name__)
 
 
-def load_transactions(file_name: str) -> dict[str, List[dict]]:
+def load_transactions(config: RunnableConfig, file_name: str) -> dict[str, List[dict]]:
     log.info(f"loading bank transactions: {file_name}")
-    user = UserRetriever.get_user("in here test")
+    token = config.get("configurable", {}).get("access_token")
+    user = UserRetriever.get_user(token)
 
     if file_name.endswith(".csv"):
         file_loader = AWSCSVFileLoader(

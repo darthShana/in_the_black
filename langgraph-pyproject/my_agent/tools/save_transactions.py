@@ -6,10 +6,11 @@ from typing import Annotated
 import boto3
 from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import PromptTemplate, FewShotPromptWithTemplates
+from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import StructuredTool
 from langchain_core.utils.json import parse_json_markdown
 from langgraph.prebuilt import InjectedState
-from pydantic.v1 import BaseModel, Field
+from pydantic import BaseModel, Field
 
 from my_agent.model.transaction import BankAccountTypeEnum
 from my_agent.retrievers.get_user import UserRetriever
@@ -92,14 +93,17 @@ def to_dynamo_items(customer_number: str, to_map: list[dict], bank_account_type:
 
 
 class SaveClassifiedTransactionsInput(BaseModel):
+    config: RunnableConfig = Field(description="runnable config")
     state: Annotated[dict, InjectedState] = Field(description="current state")
     account_type: BankAccountTypeEnum = Field(description="The kind of account this statement is for")
     confirm_save: bool = Field(description="has the human confirmed saving these transactions")
 
 
-def save_classified_transactions(state: Annotated[dict, InjectedState], account_type: BankAccountTypeEnum, confirm_save: bool) -> bool:
+def save_classified_transactions(config: RunnableConfig, state: Annotated[dict, InjectedState], account_type: BankAccountTypeEnum, confirm_save: bool) -> bool:
     log.info(f"confirm_save is {confirm_save}")
-    user = UserRetriever.get_user("in here test")
+    token = config.get("configurable", {}).get("access_token")
+    user = UserRetriever.get_user(token)
+
     transactions = state['transactions']['transactions']
     mapped = to_dynamo_items(user.user_id, transactions, account_type)
 

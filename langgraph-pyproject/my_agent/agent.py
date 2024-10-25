@@ -25,6 +25,7 @@ from my_agent.tools.process_statement import classify_bank_transactions_tool, cl
 from my_agent.tools.process_transactions import load_transactions_tool_name, load_transactions_tool
 from my_agent.tools.process_vendor_statement import classify_vendor_transactions_tool_name, classify_vendor_transactions_tool
 from my_agent.tools.save_transactions import save_classified_transactions_tool
+from my_agent.tools.user_greeting import user_greeting_tool
 from my_agent.utils.nodes import create_tool_node_with_fallback
 log = logging.getLogger(__name__)
 
@@ -60,7 +61,7 @@ class Assistant:
 
 
 class GraphConfig(TypedDict):
-    access_token: str
+    assistant_type: str
 
 
 llm = ChatAnthropic(model="claude-3-5-sonnet-20240620", temperature=0)
@@ -110,6 +111,7 @@ def route_tool_results(state: State) -> Literal["assistant", "update_transaction
 
 
 tools = [
+    user_greeting_tool,
     document_classifier_tool,
     load_transactions_tool,
     classify_bank_transactions_tool,

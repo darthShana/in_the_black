@@ -1,0 +1,19 @@
+<mat-card appearance="outlined">
+  <mat-card-header>
+    <mat-card-title>File Upload</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <input type="file" (change)="onFileSelected($event)" #fileInput style="display: none">
+    <button mat-raised-button color="primary" (click)="fileInput.click()">
+      Select File
+    </button>
+    <span *ngIf="selectedFile">{{ selectedFile.name }}</span>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-raised-button color="accent" (click)="uploadFile()" [disabled]="!selectedFile || uploading">
+      Upload
+    </button>
+  </mat-card-actions>
+</mat-card>
+
+<mat-progress-bar mode="indeterminate" *ngIf="uploading"></mat-progress-bar>

@@ -159,7 +159,7 @@ def create_property_valuation(api):
         route_key="ANY /valuation",
         target=property_valuation_lambda_backend.id.apply(lambda target_url: "integrations/" + target_url),
         authorization_type="JWT",
-        authorizer_id=api['authorizer'].id,
+        authorizer_id=api['api_authorizer'].id,
     )
 
     # Give permissions from API Gateway to invoke the Lambda

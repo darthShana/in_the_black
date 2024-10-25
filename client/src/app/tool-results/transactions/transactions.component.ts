@@ -19,6 +19,7 @@ import {CdkMenu, CdkMenuTrigger, CdkMenuItem, CdkMenuBar} from "@angular/cdk/men
 import {MatChipGrid, MatChipRow} from "@angular/material/chips";
 import {MatCheckbox} from "@angular/material/checkbox";
 import {TransactionsService} from "../../service/transactions.service";
+import {AuthService} from "../../service/auth.service";
 
 export interface Filter {
   column: string
@@ -83,7 +84,7 @@ export class TransactionsComponent implements OnInit, OnChanges, OnDestroy{
   transactionsSaved: boolean = false
 
 
-  constructor(private assistantService: AssistantService, private transactionService: TransactionsService) {
+  constructor(private assistantService: AssistantService, private authService: AuthService, private transactionService: TransactionsService) {
   }
 
   ngOnDestroy(): void {
@@ -115,7 +116,11 @@ export class TransactionsComponent implements OnInit, OnChanges, OnDestroy{
     this.transactionService.filterSubject
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(( command => {
-        this.assistantService.updateTransactions(this.filterMaps(this.originalDataSource, this.filters()), command)
+        this.authService.getUser().then(user => {
+          if (user){
+            this.assistantService.updateTransactions(this.filterMaps(this.originalDataSource, this.filters()), command, user)
+          }
+        })
       }))
   }
 
@@ -146,14 +151,17 @@ export class TransactionsComponent implements OnInit, OnChanges, OnDestroy{
         if (!filter.enabled) continue;
 
         const value = map[filter.column];
+        console.log('filter value')
+        console.log(filter)
+        console.log(value)
         const containsText = value && value.toString().toLowerCase().includes(filter.text.toLowerCase());
 
         if (filter.include && containsText) {
           return true;
         }
 
-        if (!filter.include && containsText) {
-          return false;
+        if (!filter.include && !containsText) {
+          return true;
         }
       }
 

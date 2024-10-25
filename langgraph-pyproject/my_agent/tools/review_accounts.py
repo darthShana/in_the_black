@@ -8,7 +8,7 @@ from langchain_core.utils.json import parse_json_markdown
 from pydantic.v1 import BaseModel, Field
 
 from my_agent.retrievers.utils import escape_examples
-from my_agent.tools.get_accounts import monthly_expenses
+from my_agent.retrievers.get_accounts import monthly_expenses
 from my_agent.tools.templates import expense_validation_prefix, expense_validation_examples, expense_validation_example_template
 
 log = logging.getLogger(__name__)

@@ -28,6 +28,8 @@ vcrpy = "^6.0.1"
 pypdf = "^5.0.0"
 langchain-voyageai = "^0.1.2"
 langchain-pinecone = "^0.2.0"
+pyjwt = "^2.9.0"
+cryptography = "^43.0.1"
 
 
 [build-system]

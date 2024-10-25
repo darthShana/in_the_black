@@ -1,5 +1,6 @@
 import pulumi_aws as aws
 import pulumi
+from attr import attributes
 
 
 def create_dbs():
@@ -52,9 +53,34 @@ def create_dbs():
         }
     )
 
+    users = aws.dynamodb.Table("users",
+        name="Users",
+        billing_mode="PAY_PER_REQUEST",
+        hash_key="UserID",
+        attributes=[
+            {
+                "name": "UserID",
+                "type": "S"
+            }, {
+                "name": "UserEmail",
+                "type": "S",
+            }
+        ],
+        global_secondary_indexes=[{
+            "name": "EmailIndex",
+            "hash_key": "UserEmail",
+            "projection_type": "ALL"
+        }],
+        tags={
+            "Name": "Users",
+            "Environment": "production",
+        }
+    )
+
     return {
         'transactions': basic_dynamodb_table,
-        'customer_assets': customer_assets
+        'customer_assets': customer_assets,
+        'users': users
     }
 
 

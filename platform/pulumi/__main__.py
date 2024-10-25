@@ -7,6 +7,7 @@ from pulumi_aws import s3
 
 from api_gateway import create_api_gateway
 from cognito_user_pool import create_cognito
+from document_upload import create_document_upload
 from pdf_converter import create_pdf_converter
 from persistance import create_dbs
 from property_valuation import create_property_valuation
@@ -41,8 +42,8 @@ secret_version = aws.secretsmanager.SecretVersion("langgraph-user-credentials-ve
 dbs = create_dbs()
 
 # Define the policy document
-langgraph_user_policy_document = pulumi.Output.all(bucket.arn, dbs['transactions'].arn, dbs['customer_assets'].arn).apply(
-    lambda args: {
+langgraph_user_policy_document = pulumi.Output.all(bucket.arn, dbs['transactions'].arn, dbs['customer_assets'].arn, dbs['users'].arn).apply(
+    lambda args: json.dumps({
         "Version": "2012-10-17",
         "Statement": [{
             "Effect": "Allow",
@@ -72,10 +73,12 @@ langgraph_user_policy_document = pulumi.Output.all(bucket.arn, dbs['transactions
                 args[1],
                 f"{args[1]}/index/*",
                 args[2],
-                f"{args[2]}/index/*"
+                f"{args[2]}/index/*",
+                args[3],
+                f"{args[3]}/index/*"
             ]
         }]
-    }
+    })
 )
 
 # Create an IAM policy for the user
@@ -99,6 +102,7 @@ cognito_outputs = create_cognito()
 gateway = create_api_gateway(cognito_outputs)
 pdf_converter_outputs = create_pdf_converter(gateway)
 property_valuation_outputs = create_property_valuation(gateway)
+document_upload_outputs = create_document_upload(gateway, bucket, dbs['users'], cognito_outputs['user_auth_pool_client'])
 
 # Export values if needed
 pulumi.export("pdf-converter-http-endpoint", pdf_converter_outputs["apigatewayv2-http-endpoint"])

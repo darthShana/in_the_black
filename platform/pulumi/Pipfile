@@ -8,6 +8,7 @@ pulumi = "<4.0.0,>=3.0.0"
 pulumi-aws = "<7.0.0,>=6.0.2"
 selenium = "*"
 boto3 = "*"
+pyjwt = "*"
 
 [dev-packages]
 

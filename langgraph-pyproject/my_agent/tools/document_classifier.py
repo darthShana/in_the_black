@@ -3,6 +3,7 @@ import logging
 import boto3
 from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import ChatPromptTemplate
+from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import StructuredTool
 from langchain_core.utils.json import parse_json_markdown
 from pydantic.v1 import Field, BaseModel
@@ -17,11 +18,13 @@ chat = ChatAnthropic(model="claude-3-5-sonnet-20240620")
 
 
 class ClassifyDocumentInput(BaseModel):
+    config: RunnableConfig = Field(description="runnable config")
     file_name: str = Field(description="the document to classify")
 
 
-def classify_document(file_name: str) -> DocumentTypeEnum:
-    user = UserRetriever.get_user("in here test")
+def classify_document(config: RunnableConfig, file_name: str) -> DocumentTypeEnum:
+    token = config.get("configurable", {}).get("access_token")
+    user = UserRetriever.get_user(token)
 
     document_type_selection_prompt = """Given some document content, select the most appropriate document type from document types provided.
                 Document types:

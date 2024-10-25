@@ -3,6 +3,7 @@ import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 import { v4 as uuid } from 'uuid';
 import { Assistant, Client, Thread } from '@langchain/langgraph-sdk';
 import { Subject } from 'rxjs/internal/Subject';
+import {User} from "oidc-client-ts";
 
 @Injectable({
   providedIn: 'root',
@@ -24,19 +25,19 @@ export class AssistantService {
   public toolProgressSubject: Subject<string> = new Subject()
 
 
-  // client = new Client()
-  client = new Client({
-    apiUrl: "https://ht-another-propane-44-77e8f9bf34eb5c32ab43c5c4e6bfba05.default.us.langgraph.app",
-    defaultHeaders: {
-      'x-api-key': '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',
-    },
-  });
+  client = new Client()
+  // client = new Client({
+  //   apiUrl: "https://ht-another-propane-44-77e8f9bf34eb5c32ab43c5c4e6bfba05.default.us.langgraph.app",
+  //   defaultHeaders: {
+  //     'x-api-key': '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',
+  //   },
+  // });
   thread?: Thread;
   assistant?: Assistant;
 
   constructor() {}
 
-  async stream(prompt: string, showQuestion: boolean) {
+  async stream(prompt: string, showQuestion: boolean, user: User) {
     const input = {
       messages: [{ role: 'user', content: prompt }],
     };
@@ -48,9 +49,16 @@ export class AssistantService {
     for await (const event of this.client.runs.stream(
       this.thread.thread_id,
       this.assistant.assistant_id,
-      { input, streamMode: 'messages' }
+      {
+        input,
+        config: {configurable: {"access_token": user.access_token}},
+        streamMode: 'messages'
+      }
     )) {
       const data = event.data as Record<string, unknown & { content: { text: string }[] } & any>;
+
+      // console.log(`stream event: ${event.event}`)
+      // console.log(event)
 
       if (event.event === 'metadata' && showQuestion) {
         this.handleMetadata(data, prompt);
@@ -62,7 +70,7 @@ export class AssistantService {
     }
   }
 
-  async continue(option: string){
+  async continue(option: string, user: User){
     if (!this.thread || !this.assistant) {
       return;
     }
@@ -85,7 +93,9 @@ export class AssistantService {
       this.assistant.assistant_id,
       {
         input: null,
-        streamMode: 'messages' }
+        config: {configurable: {"access_token": user.access_token}},
+        streamMode: 'messages'
+      }
     )) {
       const data = event.data as Record<
         string,
@@ -133,7 +143,7 @@ export class AssistantService {
     }
   }
 
-  private toolsWithViews   = new Set(['load_transactions', 'classify_bank_transactions', 'classify_property_management_transactions', 'load_vendor_transactions', 'classify_vendor_transactions', 'generate_end_of_year_reports', 'company_overview']);
+  private toolsWithViews   = new Set(['load_transactions', 'classify_bank_transactions', 'classify_property_management_transactions', 'load_vendor_transactions', 'classify_vendor_transactions', 'generate_end_of_year_reports', 'company_overview', 'user_greeting']);
 
   handleComplete(data: any) {
     let parts = data.at(-1)
@@ -181,7 +191,7 @@ export class AssistantService {
     }
   }
 
-  async initialize(user_id: string) {
+  async initialize() {
     if (this.assistant) {
       return;
     }
@@ -189,8 +199,7 @@ export class AssistantService {
       graphId: 'agent',
       config: {
         configurable: {
-          model_name: 'openai',
-          user_id: user_id,
+          assistant_type: "accountant",
         },
       },
     });
@@ -198,7 +207,7 @@ export class AssistantService {
     this.thread = await this.client.threads.create();
   }
 
-  async updateTransactions(filterMaps: Record<string, any>[], command: string) {
+  async updateTransactions(filterMaps: Record<string, any>[], command: string, user: User) {
     if (!this.thread || !this.assistant) {
       return;
     }
@@ -208,7 +217,7 @@ export class AssistantService {
         asNode: "ask_human"
       });
     console.log("transactions updated")
-    this.continue(command).then()
+    this.continue(command, user).then()
 
   }
 }

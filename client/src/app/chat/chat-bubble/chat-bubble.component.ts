@@ -12,6 +12,7 @@ export type Thought = {
   aiResponse: string;
   directToolResult: any;
   display: boolean;
+  askHuman: Record<string, unknown> | null;
 }
 @Component({
   selector: 'app-chat-bubble',
@@ -39,7 +40,7 @@ export class ChatBubbleComponent implements OnInit{
   }
 
     ngOnInit() {
-    console.log(this.thought, this.thought && this.thought["type"])
+    // console.log(this.thought, this.thought && this.thought["type"])
     if(this.thought && this.thought["type"]){
       this.isUser = this.thought["type"] === 'human';
     }
@@ -62,7 +63,8 @@ export class ChatBubbleComponent implements OnInit{
           this.thoughtMap.set(intermediate_id, {
             aiResponse: "",
             directToolResult: undefined,
-            display: false
+            display: false,
+            askHuman: null
           });
         }
         this.thoughtTime.set(intermediate_id, Date.now())
@@ -88,6 +90,11 @@ export class ChatBubbleComponent implements OnInit{
             // @ts-ignore
             latest.aiResponse = newThought["content"][0].text
             latest.display = true
+            // @ts-ignore
+            if (newThought["tool_calls"] && newThought["tool_calls"][0] && newThought["tool_calls"][0]["name"] == "AskHuman") {
+              // @ts-ignore
+              latest.askHuman = newThought['tool_calls'][0]['args']
+            }
           } else {
             latest.display = false
           }

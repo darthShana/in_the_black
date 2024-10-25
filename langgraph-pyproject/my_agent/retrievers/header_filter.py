@@ -16,7 +16,6 @@ class HeaderFilter:
     )
 
     def lines_to_skip(self, head):
-
         prefix = PromptTemplate(
             input_variables=[], template=header_filter_prefix
         )

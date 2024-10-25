@@ -5,6 +5,7 @@ from decimal import Decimal
 from typing import Annotated
 
 import boto3
+from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import StructuredTool
 from langgraph.prebuilt import InjectedState
 from pydantic import BaseModel, Field
@@ -15,14 +16,15 @@ dynamo = boto3.client('dynamodb')
 
 
 class AssetInput(BaseModel):
-    state: Annotated[dict, InjectedState] = Field(description="current state")
+    config: RunnableConfig = Field(description="rannable config")
     asset_type: str = Field(description="type of asset")
     installation_date: date = Field(description="date of installation")
     installation_value: Decimal = Field(description="value of the asset at the time of installation")
 
 
-def add_asset(state: Annotated[dict, InjectedState], asset_type: str, installation_date: date, installation_value: Decimal):
-    user = UserRetriever.get_user("in here test")
+def add_asset(config: RunnableConfig, asset_type: str, installation_date: date, installation_value: Decimal):
+    token = config.get("configurable", {}).get("access_token")
+    user = UserRetriever.get_user(token)
 
     dynamo.put_item(TableName="CustomerAssets", Item={
             'CustomerAssetsID': {'S': str(uuid.uuid4())},

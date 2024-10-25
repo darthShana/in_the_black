@@ -2,12 +2,11 @@ import logging
 import uuid
 from datetime import datetime
 from decimal import Decimal
-from unittest.mock import patch
 from langsmith import unit
 
 from my_agent.model.transaction import Transaction, BankAccountTypeEnum
 
-from my_agent.tools.get_accounts import get_accounts
+from my_agent.retrievers.get_accounts import get_accounts
 
 log = logging.getLogger(__name__)
 

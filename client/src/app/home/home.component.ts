@@ -42,14 +42,15 @@ export class HomeComponent implements OnInit{
       this.authService.getUser().then(user => {
         this.currentUser = user;
 
-        if (user && user.id_token) {
+        if (user && user.access_token) {
           console.log('User Logged In');
           this.open()
-          this.assistantService.initialize(user.id_token).then(r => {
+          this.assistantService.initialize().then(r => {
               this.assistantService.stream(
-                "provide a greeting for a returning user with a short company overview from 1st April 2023 to 31st March 2024, " +
-                "Start your response with the welcome addressing the user",
-                false).then(r => console.log('done'))
+                "Hi, Im a returning user",
+                false,
+                user
+                ).then(r => console.log('done'))
             }
           );
         } else {

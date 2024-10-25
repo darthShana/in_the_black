@@ -18,6 +18,7 @@ import { MatBottomSheetRef } from '@angular/material/bottom-sheet';
 import { MatIcon } from '@angular/material/icon';
 import { MatButton, MatButtonModule } from '@angular/material/button';
 import {AuthService} from "../service/auth.service";
+import {User} from "oidc-client-ts";
 
 @Component({
   selector: 'app-chat',
@@ -48,15 +49,14 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('textChain') textChainRef?: ElementRef;
   @ViewChild('textChainWrapper') textChainWrapperRef?: ElementRef;
 
-  user_id: string = uuid();
   unsubscribe: Subject<void> = new Subject();
 
   constructor(
     private assistantService: AssistantService,
+    private authService: AuthService,
     private bottomSheetRef: MatBottomSheetRef<ChatComponent>
   ) {
     console.log('CONSTRUCT');
-    this.user_id = 'user_id';
   }
 
   ngOnDestroy(): void {
@@ -94,7 +94,12 @@ export class ChatComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   protected stream(query: string) {
-    this.assistantService.stream(query, true).then((r) => console.log('stream done'));
+    this.authService.getUser().then(user => {
+      if (user){
+        this.assistantService.stream(query, true, user).then((r) => console.log('stream done'));
+      }
+    })
+
   }
 
   closeBottomSheet(): void {

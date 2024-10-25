@@ -41,6 +41,15 @@ class LocalCSVFileLoader(FileLoader):
         return pd.read_csv(self.path, na_filter=False, skiprows=list(range(0, f['line_number'])))
 
 
+# Function to check if a value is not null and not an empty string
+def is_not_empty(value):
+    if pd.isna(value):
+        return False
+    if isinstance(value, str) and value.strip() == '':
+        return False
+    return True
+
+
 class AWSCSVFileLoader(FileLoader):
 
     def __init__(self, client, bucket: str, key: str) -> None:
@@ -49,12 +58,13 @@ class AWSCSVFileLoader(FileLoader):
         self.s3 = client
 
     def load_head(self, rows: int) -> list[str]:
-        response = self.s3.get_object(Bucket=self.bucket, Key=self.key)
-        cr = csv.reader(io.TextIOWrapper(response['Body'], encoding="utf-8"))
+        response = self.s3.get_object(Bucket=self.bucket, Key=self.key, Range='bytes=0-2048')
+        content = response['Body'].read().decode('utf-8')
+        csv_reader = csv.reader(StringIO(content))
 
         ret = []
-        while line := next(cr, None):
-            ret.append(", ".join(line))
+        for i, row in enumerate(csv_reader):
+            ret.append(", ".join(row))
             if len(ret) >= rows:
                 return ret
 
@@ -62,6 +72,7 @@ class AWSCSVFileLoader(FileLoader):
 
     def load_content(self) -> DataFrame:
         head = self.load_head(20)
+
         header_filter = HeaderFilter()
         f = header_filter.lines_to_skip(head)
 
@@ -69,7 +80,13 @@ class AWSCSVFileLoader(FileLoader):
         body = csv_obj['Body']
         csv_string = body.read().decode('utf-8')
 
-        return pd.read_csv(StringIO(csv_string), na_filter=False, skiprows=list(range(0, f['line_number'])))
+        df = pd.read_csv(StringIO(csv_string), na_filter=False, skiprows=list(range(0, f['line_number'])))
+
+        content_count = df.applymap(is_not_empty).sum(axis=1)
+        filtered_df = df[content_count > 1]
+        # with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+        #     log.info(filtered_df)
+        return filtered_df
 
 
 class AWSPDFFileLoader(FileLoader):

@@ -6,17 +6,17 @@ from dateutil.relativedelta import relativedelta
 from my_agent.model.account import Account, AccountTypeEnum
 from my_agent.model.chart_of_accounts import default_chart_of_accounts
 from my_agent.model.transaction import BankAccountTypeEnum
-from my_agent.retrievers.get_user import UserRetriever
+from my_agent.model.user import UserInfo
 from my_agent.retrievers.get_transactions import get_transactions
 
 log = logging.getLogger(__name__)
 
 
-def monthly_expenses(current_date, end_date):
+def monthly_expenses(user: UserInfo, current_date, end_date):
     monthly = []
     while current_date <= end_date:
         last_day = (current_date + relativedelta(months=1, days=-1)).day
-        accounts = get_accounts(current_date, current_date.replace(day=last_day))
+        accounts = get_accounts(user, current_date, current_date.replace(day=last_day))
         month = {
             'period': current_date.strftime('%B %Y'),
             'expenses': {account.display_name: account.balance() for account in accounts.values() if account.account_type == AccountTypeEnum.EXPENSES}
@@ -27,9 +27,8 @@ def monthly_expenses(current_date, end_date):
     return monthly
 
 
-def get_accounts(start: datetime, end: datetime) -> Dict[str, Account]:
+def get_accounts(user: UserInfo, start: datetime, end: datetime) -> Dict[str, Account]:
     accounts: Dict[str, Account] = {}
-    user = UserRetriever.get_user("in here test")
     chart_of_accounts = default_chart_of_accounts
 
     transactions = get_transactions(user.user_id, start, end)

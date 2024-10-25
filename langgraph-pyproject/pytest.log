@@ -1,4 +1,60 @@
-2024-10-13 10:18:02 [    INFO] Retrieved transactions:131 (get_accounts.py:36)
-2024-10-13 10:18:12 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1038)
-2024-10-13 10:18:16 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1038)
-2024-10-13 10:18:16 [    INFO] content='Based on the given rules and the specific query, here\'s the calculation and response in JSON format:\n\n```json\n{\n    "depreciation": 234.50,\n    "opening_value": 2345.00,\n    "rate": 0.20,\n    "reasoning": "The asset was installed in October 2024, which falls in the tax year ending March 2025, not March 2024 as specified in the query. However, calculating for the first partial year: $2345 x 20% x (6/12) = $234.50. This represents 6 months of depreciation from October 2024 to March 2025. The opening value is the full initial value of $2345.00, and the rate used is 20% based on the 10-year useful life."\n}\n```' additional_kwargs={} response_metadata={'id': 'msg_017Yb8whvCw7Dz7VofymWXjK', 'model': 'claude-3-5-sonnet-20240620', 'stop_reason': 'end_turn', 'stop_sequence': None, 'usage': {'input_tokens': 429, 'output_tokens': 189}} id='run-87f5c577-e0f2-4e19-bd10-084d1c99fc2e-0' usage_metadata={'input_tokens': 429, 'output_tokens': 189, 'total_tokens': 618} (ir_264.py:89)
+2024-10-22 10:02:03 [    INFO] head of loaded file: (file_loader.py:75)
+2024-10-22 10:02:03 [    INFO] ['-----------------------------1526635871927531831473956669', 'Content-Disposition: form-data; name="file"; filename="Export20240727172157.csv"', 'Content-Type: text/csv', '', 'Created date / time : 27 July 2024 / 17:21:57', 'Bank 12; Branch 3273; Account 0018314-00 (Streamline)', 'From date 20230401', 'To date 20240331', 'Ledger Balance : 5694.05 as of 20240727', 'Date, Unique Id, Tran Type, Cheque Number, Payee, Memo, Amount', '', '2023/04/01, 2023040101, LOAN INT, , LOAN - INTEREST, 12-3273-0018314-92 001 INTEREST, -796.92', '2023/04/28, 2023042801, D/C, , D/C FROM KAINGA ORA, 3HLRPR 864878, 1903.66', '2023/05/01, 2023050101, LOAN INT, , LOAN - INTEREST, 12-3273-0018314-92 001 INTEREST, -771.22', '2023/05/07, 2023050701, DEBIT, , DEBIT, FC12-3148-0191417-00 dharsh, -450.00', '2023/05/31, 2023053101, D/C, , D/C FROM KAINGA ORA, 3HLRPR 875665, 1990.37', '2023/06/01, 2023060101, LOAN INT, , LOAN - INTEREST, 12-3273-0018314-92 001 INTEREST, -796.92', '2023/06/13, 2023061301, TFR OUT, , MB TRANSFER, TO 12-3637- 0481933-00, -3000.00', '2023/06/30, 2023063001, D/C, , D/C FROM KAINGA ORA, 3HLRPR 885644, 1999.66', '2023/07/01, 2023070101, LOAN INT, , LOAN - INTEREST, 12-3273-0018314-92 001 INTEREST, -771.22'] (file_loader.py:76)
+2024-10-22 10:02:07 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1038)
+2024-10-22 10:02:08 [    INFO]           Date   Unique Id Tran Type Cheque Number                Payee  \
+0   2023/04/01  2023040101  LOAN INT                    LOAN - INTEREST   
+1   2023/04/28  2023042801       D/C                D/C FROM KAINGA ORA   
+2   2023/05/01  2023050101  LOAN INT                    LOAN - INTEREST   
+3   2023/05/07  2023050701     DEBIT                              DEBIT   
+4   2023/05/31  2023053101       D/C                D/C FROM KAINGA ORA   
+5   2023/06/01  2023060101  LOAN INT                    LOAN - INTEREST   
+6   2023/06/13  2023061301   TFR OUT                        MB TRANSFER   
+7   2023/06/30  2023063001       D/C                D/C FROM KAINGA ORA   
+8   2023/07/01  2023070101  LOAN INT                    LOAN - INTEREST   
+9   2023/07/31  2023073101       D/C                D/C FROM KAINGA ORA   
+10  2023/08/01  2023080101  LOAN INT                    LOAN - INTEREST   
+11  2023/08/31  2023083101       D/C                D/C FROM KAINGA ORA   
+12  2023/09/01  2023090101  LOAN INT                    LOAN - INTEREST   
+13  2023/09/26  2023092601   TFR OUT                        FN TRANSFER   
+14  2023/09/29  2023092901       D/C                D/C FROM KAINGA ORA   
+15  2023/10/01  2023100101  LOAN INT                    LOAN - INTEREST   
+16  2023/10/31  2023103101       D/C                D/C FROM KAINGA ORA   
+17  2023/11/01  2023110101  LOAN INT                    LOAN - INTEREST   
+18  2023/11/30  2023113001       D/C                D/C FROM KAINGA ORA   
+19  2023/12/01  2023120101  LOAN INT                    LOAN - INTEREST   
+20  2023/12/21  2023122101       D/C                D/C FROM KAINGA ORA   
+21  2024/01/01  2024010101  LOAN INT                    LOAN - INTEREST   
+22  2024/01/31  2024013101       D/C                D/C FROM KAINGA ORA   
+23  2024/02/01  2024020101  LOAN INT                    LOAN - INTEREST   
+24  2024/02/29  2024022901       D/C                D/C FROM KAINGA ORA   
+25  2024/03/01  2024030101  LOAN INT                    LOAN - INTEREST   
+26  2024/03/28  2024032801       D/C                D/C FROM KAINGA ORA   
+
+                               Memo    Amount  
+0   12-3273-0018314-92 001 INTEREST   -796.92  
+1                     3HLRPR 864878   1903.66  
+2   12-3273-0018314-92 001 INTEREST   -771.22  
+3       FC12-3148-0191417-00 dharsh   -450.00  
+4                     3HLRPR 875665   1990.37  
+5   12-3273-0018314-92 001 INTEREST   -796.92  
+6            TO 12-3637- 0481933-00  -3000.00  
+7                     3HLRPR 885644   1999.66  
+8   12-3273-0018314-92 001 INTEREST   -771.22  
+9                     3HLRPR 894757   3285.00  
+10  12-3273-0018314-92 001 INTEREST  -1442.94  
+11                    3HLRPR 904940   3285.00  
+12  12-3273-0018314-92 001 INTEREST  -2337.42  
+13           TO 12-3637- 0481933-00  -5000.00  
+14                    3HLRPR 915023   3285.00  
+15  12-3273-0018314-92 001 INTEREST  -2262.02  
+16                    3HLRPR 924414   3285.00  
+17  12-3273-0018314-92 001 INTEREST  -2337.42  
+18                    3HLRPR 934231   3285.00  
+19  12-3273-0018314-92 001 INTEREST  -2262.02  
+20                    3HLRPR 943003   3285.00  
+21  12-3273-0018314-92 001 INTEREST  -2337.42  
+22                    3HLRPR 950045   3285.00  
+23  12-3273-0018314-92 001 INTEREST  -2337.42  
+24                    3HLRPR 958210   3285.00  
+25  12-3273-0018314-92 001 INTEREST  -2186.62  
+26                    3HLRPR 966722   3285.00   (file_loader.py:95)

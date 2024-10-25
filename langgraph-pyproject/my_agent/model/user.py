@@ -88,4 +88,7 @@ class Valuation(BaseModel):
 
 class UserInfo(BaseModel):
     user_id: str = Field(description="user identifier")
+    email: str= Field(description="user email address")
+    first_name: str= Field(description="user first name")
+    last_name: str= Field(description="user last name")
     properties: List[Property] = Field(description="list of properties for this user")

@@ -2,6 +2,7 @@ import logging
 from typing import List, Annotated
 
 import boto3
+from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import StructuredTool
 from langgraph.prebuilt import InjectedState
 from pydantic.v1 import BaseModel, Field
@@ -16,14 +17,16 @@ transaction_retriever = TransactionRetriever()
 
 
 class ClassifyTransactionsInput(BaseModel):
+    config: RunnableConfig = Field(description="runnable config")
     file_name: str = Field(description="file name of the statement with transactions to be classified")
     filter_transactions: bool = Field(description="have the unwanted transactions been filtered out")
     state: Annotated[dict, InjectedState] = Field(description="current state")
 
 
-def classify_vendor_transactions(file_name: str, filter_transactions: bool, state: Annotated[dict, InjectedState]) -> dict[str, List[dict]]:
+def classify_vendor_transactions(config: RunnableConfig, file_name: str, filter_transactions: bool, state: Annotated[dict, InjectedState]) -> dict[str, List[dict]]:
     log.info(f"loading vendor transactions: {file_name} filter_transactions: {filter_transactions}")
-    user = UserRetriever.get_user("in here test")
+    token = config.get("configurable", {}).get("access_token")
+    user = UserRetriever.get_user(token)
 
     file_loader = AWSPDFFileLoader(
         client=s3,

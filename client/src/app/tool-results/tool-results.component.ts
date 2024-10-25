@@ -55,7 +55,7 @@ export class ToolResultsComponent implements OnInit, OnDestroy{
           this.showEndOfYearReports = true
           this.showCompanyOverview = false
         }
-        if(completedTool === "company_overview"){
+        if(completedTool === "company_overview" || completedTool  === "user_greeting"){
           this.showTransactions = false;
           this.showEndOfYearReports = false
           this.showCompanyOverview = true
