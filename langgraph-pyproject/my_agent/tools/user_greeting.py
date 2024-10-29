@@ -25,7 +25,7 @@ def user_greeting(config: RunnableConfig):
     # Find the start date (first day of the month 12 months before)
     start_date = last_transaction.date.replace(day=1) - relativedelta(months=11)
     overview = company_overview(config, start_date, end_date)
-    overview['insights'] = {
+    overview['relevant_insights'] = {
         "expenses": review_expenses(overview['monthly_expenses'])
     }
     return overview
