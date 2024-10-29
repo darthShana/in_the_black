@@ -96,3 +96,132 @@ header_filter_examples = [
     }
 ]
 
+expenses_insights_prefix = """
+As a book keeper for a residential rental company, Given a monthly breakdown of expenses. Find anomalies such as missing payments or payments recorded
+with incorrect values. Typically a residential rental property would have expenses for mortgage interest, water, rates, insurance, 
+at times some maintenance costs, sometimes management fees
+"""
+
+expenses_insights_example_template = """
+Here is an example:
+<example>
+expenses:
+{monthly_breakdown}
+result:
+{result}
+"""
+
+expenses_insights_examples = [
+    {
+        "monthly_breakdown": """[
+            {
+                "period": "April 2023",
+                "expenses": {
+                    "water": 94.50,
+                    "rates": 657.45,
+                    "management fee": 347,
+                    "mortgage interest": 2450
+                }
+            },
+            {
+                "period": "May 2023",
+                "expenses": {
+                    "water": 89.35,
+                    "management fee": 347,
+                    "mortgage interest": 2550
+                }
+            },
+            {
+                "period": "June 2023",
+                "expenses": {
+                    "water": 99.50,
+                    "management fee": 347,
+                    "mortgage interest": 2450
+                }
+            },
+            {
+                "period": "July 2023",
+                "expenses": {
+                    "water": 104.06,
+                    "rates": 657.45,
+                    "management fee": 347,
+                    "mortgage interest": 2550
+                }
+            },
+            {
+                "period":  "August 2023",
+                "expenses": {
+                    "water": 97.80,
+                    "management fee": 347,
+                    "mortgage interest": 2550
+                }
+            },
+            {
+                "period": "September 2023",
+                "expenses": {
+                    "water": 96.50,
+                    "management fee": 347,
+                    "mortgage interest": 4900
+                }
+            },
+            {
+                "period": "October 2023",
+                "expenses": {
+                    "water": 98.80,
+                    "rates": 657.45,
+                    "management fee": 347,
+                    "mortgage interest": 2550
+                }
+            },
+            {
+                "period": "November 2023",
+                "expenses": {
+                    "management fee": 347,
+                    "mortgage interest": 2450
+                }
+            },
+            {
+                "period": "December 2023",
+                "expenses": {
+                    "water": 81.45,
+                    "management fee": 347,
+                    "mortgage interest": 2550
+                }
+            },
+            {
+                "period": "January 2024",
+                "expenses": {
+                    "water": 76.45,
+                    "rates": 657.45,
+                    "management fee": 347,
+                    "mortgage interest": 2550
+                }
+            },
+            {
+                "period": "February 2024",
+                "expenses": {
+                    "water": 85.67,
+                    "management fee": 347,
+                    "mortgage interest": 2400
+                }
+            },
+            {
+                "period": "March 2024",
+                "expenses": {
+                    "water": 93.50,
+                    "management fee": 347,
+                    "mortgage interest": 2550,
+                    "insurance": 2580
+                }
+            },
+        ]"""
+        ,
+        "result": """{
+            "issues": [
+                {"November 2023": "This month is missing the water expense which is usually a monthly expense, perhaps its been missed?"},
+                {"September 2023": "This month has about twice the mortgage expense as other months, may be ins been incorrectly recorded? "},
+            ]
+        }"""
+    }
+
+]

@@ -17,7 +17,7 @@ export class ProfileService implements OnDestroy{
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(event => {
         let tool = event.name
-        if (tool == "company_overview"){
+        if (tool === "company_overview" || tool === "user_greeting"){
           let json = event.content
           const modifiedString = json
             .replace(/'/g, '"')

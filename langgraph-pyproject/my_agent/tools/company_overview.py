@@ -34,6 +34,7 @@ def company_overview(config: RunnableConfig, start_date: datetime, end_date: dat
 
     end_of_year = generate_end_of_year_reports(config, start_date, end_date)
     market_info = get_market_data(user.properties[0])
+    log.info("market_info")
     log.info(market_info)
 
     # Calculate the number of weeks
@@ -44,7 +45,7 @@ def company_overview(config: RunnableConfig, start_date: datetime, end_date: dat
         (item['balance'] for item in end_of_year['statement_of_profit_or_loss']['revenue_items'] if item['display_name'] == 'Rental Revenue'),
         Decimal(0)
     ) * 52 / weeks
-    log.info(annual_rental_revenue)
+    log.info(f"annual_rental_revenue: {annual_rental_revenue}")
 
     property_assets = [asset for asset in end_of_year['tax']['depreciation']]
 
