@@ -7,6 +7,7 @@ from pulumi_aws import s3
 
 from api_gateway import create_api_gateway
 from cognito_user_pool import create_cognito
+from crud_entities.crud_entities import create_crud_entity_maintenance
 from document_upload import create_document_upload
 from pdf_converter import create_pdf_converter
 from persistance import create_dbs
@@ -40,6 +41,27 @@ secret_version = aws.secretsmanager.SecretVersion("langgraph-user-credentials-ve
 )
 
 dbs = create_dbs()
+
+# First, create the assume role policy that allows the user to assume the role
+assume_role_policy = pulumi.Output.all(langgraph_user.arn).apply(
+    lambda args: json.dumps({
+        "Version": "2012-10-17",
+        "Statement": [{
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": args[0]
+            },
+            "Action": "sts:AssumeRole",
+            "Condition": {}
+        }]
+    })
+)
+
+# Create the role
+langgraph_role = aws.iam.Role("langgraph-role",
+    assume_role_policy=assume_role_policy,
+    description="Role for LangGraph operations"
+)
 
 # Define the policy document
 langgraph_user_policy_document = pulumi.Output.all(bucket.arn, dbs['transactions'].arn, dbs['customer_assets'].arn, dbs['users'].arn).apply(
@@ -81,10 +103,31 @@ langgraph_user_policy_document = pulumi.Output.all(bucket.arn, dbs['transactions
     })
 )
 
-# Create an IAM policy for the user
-user_policy = aws.iam.UserPolicy("langgraph-s3-policy",
-    user=langgraph_user.name,
+# Create the IAM policy
+langgraph_policy = aws.iam.Policy("langgraph-policy",
+    description="Policy for LangGraph operations",
     policy=langgraph_user_policy_document
+)
+
+# Attach the policy to the role
+role_policy_attachment = aws.iam.RolePolicyAttachment("langgraph-policy-attachment",
+    role=langgraph_role.name,
+    policy_arn=langgraph_policy.arn
+)
+
+# Allow the user to assume the role by attaching the appropriate policy
+user_assume_role_policy = aws.iam.UserPolicy("langgraph-assume-role-policy",
+    user=langgraph_user.name,
+    policy=pulumi.Output.all(langgraph_role.arn).apply(
+        lambda args: json.dumps({
+            "Version": "2012-10-17",
+            "Statement": [{
+                "Effect": "Allow",
+                "Action": "sts:AssumeRole",
+                "Resource": args[0]
+            }]
+        })
+    )
 )
 
 # Export the name of the bucket
@@ -103,7 +146,9 @@ gateway = create_api_gateway(cognito_outputs)
 pdf_converter_outputs = create_pdf_converter(gateway)
 property_valuation_outputs = create_property_valuation(gateway)
 document_upload_outputs = create_document_upload(gateway, bucket, dbs['users'], cognito_outputs['user_auth_pool_client'])
+crud_maintenance_outputs = create_crud_entity_maintenance(gateway['gateway'], gateway['user_authorizer'], dbs['users'], cognito_outputs['user_auth_pool_client'], langgraph_role)
 
 # Export values if needed
 pulumi.export("pdf-converter-http-endpoint", pdf_converter_outputs["apigatewayv2-http-endpoint"])
 pulumi.export("property-valuation-http-endpoint", pdf_converter_outputs["apigatewayv2-http-endpoint"])
+pulumi.export("langgraph-role", langgraph_role.arn)

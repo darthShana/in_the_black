@@ -115,10 +115,10 @@ def create_document_upload(api, bucket: Bucket, dynamo_db: Table, user_pool_clie
     # Create the Lambda function
     lambda_function = aws.lambda_.Function("document_upload",
         code=pulumi.asset.AssetArchive({
-            "lambda_function.py": pulumi.asset.FileAsset(lambda_code_path),
+            "crud_entity_maintenance.py": pulumi.asset.FileAsset(lambda_code_path),
         }
         ),
-        handler="lambda_function.handler",
+        handler="crud_entity_maintenance.handler",
         role=lambda_role.arn,
         runtime="python3.12",
         layers=[lambda_layer.arn],

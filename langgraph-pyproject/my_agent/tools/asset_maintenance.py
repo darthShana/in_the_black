@@ -4,15 +4,16 @@ from datetime import date
 from decimal import Decimal
 from typing import Annotated
 
-import boto3
 from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import StructuredTool
 from langgraph.prebuilt import InjectedState
 from pydantic import BaseModel, Field
 
 from my_agent.retrievers.get_user import UserRetriever
+from my_agent.utils.aws_credentials import AWSSessionFactory
 
-dynamo = boto3.client('dynamodb')
+aws = AWSSessionFactory()
+dynamo = aws.get_session().client('dynamodb')
 
 
 class AssetInput(BaseModel):

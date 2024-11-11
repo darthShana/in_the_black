@@ -1,7 +1,6 @@
 import csv
 import os
 
-import boto3
 import logging
 
 import pandas as pd
@@ -10,9 +9,10 @@ import pytest
 from my_agent.model.chart_of_accounts import default_chart_of_accounts
 from my_agent.model.user import UserInfo
 from my_agent.tools.process_transactions import load_transactions
+from my_agent.utils.aws_credentials import AWSSessionFactory
 
 log = logging.getLogger(__name__)
-dynamodb = boto3.resource('dynamodb')
+dynamodb = AWSSessionFactory().get_session().resource('dynamodb')
 
 
 @pytest.hookimpl(tryfirst=True)
@@ -33,7 +33,7 @@ def pytest_runtest_teardown(item, nextitem):
 
 @pytest.fixture(scope='session')
 def s3_client():
-    return boto3.client('s3')
+    return AWSSessionFactory().get_session().client('s3')
 
 
 @pytest.fixture(scope='session')

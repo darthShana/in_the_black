@@ -18,13 +18,7 @@ export class ProfileService implements OnDestroy{
       .subscribe(event => {
         let tool = event.name
         if (tool === "company_overview" || tool === "user_greeting"){
-          let json = event.content
-          const modifiedString = json
-            .replace(/'/g, '"')
-            .replace(/Decimal\("?(-?\d+(?:\.\d+)?)"?\)/g, '$1')
-            .replace(/"(-?\d+(?:\.\d+)?)"/g, '$1');
-
-          let toolResult = JSON.parse(modifiedString, decimalReviver);
+          let toolResult = JSON.parse(event.content, decimalReviver);
           console.log('----------profile service------------')
           console.log(toolResult)
           this.metadata = toolResult['metadata']

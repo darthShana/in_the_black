@@ -1,0 +1,21 @@
+<h2 mat-dialog-title>Accept Issue</h2>
+<mat-dialog-content>
+  <form [formGroup]="acceptAnomalyFrom" *ngIf="data" (submit)="accept()">
+    <mat-form-field class="example-full-width">
+      <mat-label>Period</mat-label>
+      <input type="text" matInput formControlName="period">
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <mat-label>Issue</mat-label>
+      <input type="text" matInput formControlName="reason">
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <mat-label>Reason to Dismiss</mat-label>
+      <input type="text" matInput formControlName="acceptReason">
+    </mat-form-field>
+
+    <div mat-dialog-actions>
+      <button mat-flat-button mat-dialog-close type="submit" [disabled]="!acceptAnomalyFrom.valid">Submit</button>
+    </div>
+  </form>
+</mat-dialog-content>

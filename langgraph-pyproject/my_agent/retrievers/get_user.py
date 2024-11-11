@@ -1,13 +1,13 @@
 import logging
 import os
 
-import boto3
 import jwt
 import requests
 from boto3.dynamodb.conditions import Key
 
 from jwt.algorithms import RSAAlgorithm
 from my_agent.model.user import UserInfo, Property, PropertyTypeEnum
+from my_agent.utils.aws_credentials import AWSSessionFactory
 
 log = logging.getLogger(__name__)
 USER_POOL_ID = os.environ['COGNITO_USER_POOL_ID']
@@ -15,7 +15,8 @@ CLIENT_ID = os.environ["COGNITO_USER_CLIENT_ID"]
 REGION = os.environ["AWS_DEFAULT_REGION"]
 
 # Initialize the DynamoDB client
-dynamodb = boto3.resource('dynamodb')
+aws = AWSSessionFactory()
+dynamodb = aws.get_session().resource('dynamodb')
 
 # Get the table
 table = dynamodb.Table('Users')

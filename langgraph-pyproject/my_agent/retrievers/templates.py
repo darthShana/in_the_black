@@ -98,8 +98,8 @@ header_filter_examples = [
 
 expenses_insights_prefix = """
 As a book keeper for a residential rental company, Given a monthly breakdown of expenses. Find anomalies such as missing payments or payments recorded
-with incorrect values. Typically a residential rental property would have expenses for mortgage interest, water, rates, insurance, 
-at times some maintenance costs, sometimes management fees
+with incorrect values, that have NOT been already accepted in the accepted anomalies list. Typically a residential rental property would have expenses for 
+mortgage interest, water, rates, insurance and at times some maintenance costs and management fees
 """
 
 expenses_insights_example_template = """
@@ -107,6 +107,8 @@ Here is an example:
 <example>
 expenses:
 {monthly_breakdown}
+accepted anomalies:
+{accepted_anomalies}
 result:
 {result}
 """
@@ -126,7 +128,7 @@ expenses_insights_examples = [
             {
                 "period": "May 2023",
                 "expenses": {
-                    "water": 89.35,
+                    "water": -89.35,
                     "management fee": 347,
                     "mortgage interest": 2550
                 }
@@ -151,7 +153,6 @@ expenses_insights_examples = [
             {
                 "period":  "August 2023",
                 "expenses": {
-                    "water": 97.80,
                     "management fee": 347,
                     "mortgage interest": 2550
                 }
@@ -161,9 +162,33 @@ expenses_insights_examples = [
                 "expenses": {
                     "water": 96.50,
                     "management fee": 347,
-                    "mortgage interest": 4900
+                    "mortgage interest": 4900,
+                    "insurance": 2580
+
                 }
             },
+        ]""",
+        "accepted_anomalies": """[
+            {
+                "period": "May 2023",
+                "anomaly": "This month has a negative water amount, which is unusual for a water expense"
+                "reason": "I received a credit from the water company this month so the negative number is correct"
+            }
+        ]""",
+        "result": """{
+            "issues": [
+                {
+                    "period": "August 2023",
+                    "insight": "This month is missing the water expense which is usually a monthly expense, perhaps its been missed?"
+                },
+                {
+                    "period": "September 2023"
+                    "insight": "This month has about twice the mortgage expense as other months, may be ins been incorrectly recorded? "},
+            ]
+        }"""
+    },
+    {
+        "monthly_breakdown": """[
             {
                 "period": "October 2023",
                 "expenses": {
@@ -176,6 +201,7 @@ expenses_insights_examples = [
             {
                 "period": "November 2023",
                 "expenses": {
+                    "water": 95.80,
                     "management fee": 347,
                     "mortgage interest": 2450
                 }
@@ -191,10 +217,10 @@ expenses_insights_examples = [
             {
                 "period": "January 2024",
                 "expenses": {
-                    "water": 76.45,
+                    "water": -76.45,
                     "rates": 657.45,
                     "management fee": 347,
-                    "mortgage interest": 2550
+                    "mortgage interest": 3050
                 }
             },
             {
@@ -202,7 +228,7 @@ expenses_insights_examples = [
                 "expenses": {
                     "water": 85.67,
                     "management fee": 347,
-                    "mortgage interest": 2400
+                    "mortgage interest": 3900
                 }
             },
             {
@@ -210,17 +236,28 @@ expenses_insights_examples = [
                 "expenses": {
                     "water": 93.50,
                     "management fee": 347,
-                    "mortgage interest": 2550,
-                    "insurance": 2580
+                    "mortgage interest": 4050,
                 }
-            },
-        ]"""
-        ,
+            }
+        ]""",
+        "accepted_anomalies": """[
+            {
+                "period": "January 2024",
+                "anomaly": "The Mortgage Interest has increased significantly from previous months"
+                "reason": "this is expected as the loan has come off a fixed term interest rate and had to be fixed at a higher rate"
+            }
+        ]""",
         "result": """{
             "issues": [
-                {"November 2023": "This month is missing the water expense which is usually a monthly expense, perhaps its been missed?"},
-                {"September 2023": "This month has about twice the mortgage expense as other months, may be ins been incorrectly recorded? "},
-            ]
+                {
+                    "period": "January 2024",
+                    "insight": "This month has a negative water amount which is unusual"
+                },
+                {
+                    "period": "October 2023 to March 2024",
+                    "insight": "Expenses related to Insurance is missing, typically insurance is an expected expense for a rental"
+                },
+            ],
         }"""
     }
 

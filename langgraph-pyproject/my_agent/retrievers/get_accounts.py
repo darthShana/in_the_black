@@ -19,7 +19,7 @@ def monthly_expenses(user: UserInfo, current_date, end_date):
         accounts = get_accounts(user, current_date, current_date.replace(day=last_day))
         month = {
             'period': current_date.strftime('%B %Y'),
-            'expenses': {account.display_name: account.balance() for account in accounts.values() if account.account_type == AccountTypeEnum.EXPENSES}
+            'expenses': {account.display_name: float(account.balance()) for account in accounts.values() if account.account_type == AccountTypeEnum.EXPENSES}
         }
         monthly.append(month)
         current_date += relativedelta(months=1)

@@ -1,4 +1,3 @@
-import boto3
 import logging
 
 from typing import List, Annotated
@@ -7,9 +6,10 @@ from langgraph.prebuilt import InjectedState
 from pydantic.v1 import BaseModel, Field
 
 from my_agent.retrievers.transaction_retriever import TransactionRetriever, available_transaction_types
+from my_agent.utils.aws_credentials import AWSSessionFactory
 
 log = logging.getLogger(__name__)
-s3 = boto3.client('s3')
+s3 = AWSSessionFactory().get_session().client('s3')
 statement_retriever = TransactionRetriever()
 
 

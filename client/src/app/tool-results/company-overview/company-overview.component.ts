@@ -16,6 +16,7 @@ import {
 import {MatIconButton} from "@angular/material/button";
 import {AddAssetDialog} from "../end-of-year-reports/end-of-year-reports.component";
 import {MatDialog} from "@angular/material/dialog";
+import {InsightsComponent} from "./insights/insights.component";
 
 @Component({
   selector: 'app-company-overview',
@@ -36,7 +37,8 @@ import {MatDialog} from "@angular/material/dialog";
     MatRowDef,
     MatTable,
     MatColumnDef,
-    MatHeaderCellDef
+    MatHeaderCellDef,
+    InsightsComponent
   ],
   templateUrl: './company-overview.component.html',
   styleUrl: './company-overview.component.scss'
@@ -51,3 +53,4 @@ export class CompanyOverviewComponent {
     this.dialog.open(AddAssetDialog);
   }
 }
+

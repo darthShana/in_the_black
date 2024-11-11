@@ -1,7 +1,6 @@
 import logging
 from typing import List, Annotated
 
-import boto3
 from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import StructuredTool
 from langgraph.prebuilt import InjectedState
@@ -10,9 +9,10 @@ from pydantic.v1 import BaseModel, Field
 from my_agent.retrievers.file_loader import AWSPDFFileLoader
 from my_agent.retrievers.get_user import UserRetriever
 from my_agent.retrievers.transaction_retriever import TransactionRetriever
+from my_agent.utils.aws_credentials import AWSSessionFactory
 
 log = logging.getLogger(__name__)
-s3 = boto3.client('s3')
+s3 = AWSSessionFactory().get_session().client('s3')
 transaction_retriever = TransactionRetriever()
 
 

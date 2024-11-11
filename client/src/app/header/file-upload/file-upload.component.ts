@@ -38,7 +38,6 @@ export class FileUploadComponent {
       formData.append('file', this.selectedFile, this.selectedFile.name);
 
       this.authService.getUser().then(user => {
-        console.log(user?.access_token)
         if(user && this.selectedFile){
 
           const headers = new HttpHeaders({

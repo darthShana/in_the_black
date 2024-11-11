@@ -1,46 +1,34 @@
-2024-10-29 19:35:49 [    INFO] Retrying request to /v1/messages in 0.874679 seconds (_base_client.py:1069)
-2024-10-29 19:35:59 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1038)
-2024-10-29 19:35:59 [    INFO] Based on the provided monthly breakdown, I've analyzed the expenses and identified potential anomalies. Here's the result in JSON format:
+2024-11-01 13:53:01 [    INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK" (_client.py:1038)
+2024-11-01 13:53:01 [    INFO] Based on the provided monthly breakdown and accepted anomalies, here's the analysis of potential issues in JSON format:
 
 ```json
 {
   "issues": [
     {
-      "April 2023": "The Water expense is negative (-80), which is unusual and might be an error or a credit."
+      "period": "July 2023",
+      "insight": "This month is missing the Mortgage Interest expense, which is usually present every month. It might have been overlooked or not recorded."
     },
     {
-      "June 2023": "The Water expense is negative (-80) again, which is unusual and might be an error or a credit."
+      "period": "August 2023",
+      "insight": "The Management Fees for this month (619.94) are significantly higher than usual. This could be an error or might need verification."
     },
     {
-      "July 2023": "The Mortgage Interest expense is missing, which is typically a monthly expense."
+      "period": "September 2023",
+      "insight": "The Management Fees for this month (31.64) are unusually low compared to other months. This might be an error or incomplete recording."
     },
     {
-      "July 2023": "The Water expense is negative (-6.63), which is unusual and might be an error or a credit."
+      "period": "January 2024",
+      "insight": "This month is missing the Management Fees expense, which is typically a regular monthly expense. It may have been overlooked."
     },
     {
-      "August 2023": "The Water expense is missing, which is typically a monthly expense."
+      "period": "February 2024",
+      "insight": "The Management Fees (552.83) for this month are unusually high, matching the amount typically seen for Rates. This could be a mislabeling or data entry error."
     },
     {
-      "September 2023": "The Water expense is negative (-28), which is unusual and might be an error or a credit."
-    },
-    {
-      "September 2023": "The Management Fees are significantly lower than usual (31.64 vs. typically over 100)."
-    },
-    {
-      "November 2023": "The Water expense is much higher than usual (189.6 vs. typically around 30-45)."
-    },
-    {
-      "January 2024": "The Management Fees are missing, which is typically a monthly expense."
-    },
-    {
-      "February 2024": "The Water expense is missing, which is typically a monthly expense."
-    },
-    {
-      "February 2024": "The Management Fees are significantly higher than usual (552.83 vs. typically around 100-200)."
+      "period": "March 2024",
+      "insight": "The Mortgage Interest (2392.0) for this month is lower than the usual range. This might be worth checking for accuracy."
     }
   ]
 }
-```
-
-This JSON output highlights potential anomalies in the monthly expenses, including missing payments, unusual negative values, and significant deviations from typical expense amounts. (company_insights.py:44)
-2024-10-29 19:35:59 [    INFO] {'issues': [{'April 2023': 'The Water expense is negative (-80), which is unusual and might be an error or a credit.'}, {'June 2023': 'The Water expense is negative (-80) again, which is unusual and might be an error or a credit.'}, {'July 2023': 'The Mortgage Interest expense is missing, which is typically a monthly expense.'}, {'July 2023': 'The Water expense is negative (-6.63), which is unusual and might be an error or a credit.'}, {'August 2023': 'The Water expense is missing, which is typically a monthly expense.'}, {'September 2023': 'The Water expense is negative (-28), which is unusual and might be an error or a credit.'}, {'September 2023': 'The Management Fees are significantly lower than usual (31.64 vs. typically over 100).'}, {'November 2023': 'The Water expense is much higher than usual (189.6 vs. typically around 30-45).'}, {'January 2024': 'The Management Fees are missing, which is typically a monthly expense.'}, {'February 2024': 'The Water expense is missing, which is typically a monthly expense.'}, {'February 2024': 'The Management Fees are significantly higher than usual (552.83 vs. typically around 100-200).'}]} (test_company_insights.py:27)
+``` (company_insights.py:46)
+2024-11-01 13:53:01 [    INFO] [{'period': 'July 2023', 'insight': 'This month is missing the Mortgage Interest expense, which is usually present every month. It might have been overlooked or not recorded.'}, {'period': 'August 2023', 'insight': 'The Management Fees for this month (619.94) are significantly higher than usual. This could be an error or might need verification.'}, {'period': 'September 2023', 'insight': 'The Management Fees for this month (31.64) are unusually low compared to other months. This might be an error or incomplete recording.'}, {'period': 'January 2024', 'insight': 'This month is missing the Management Fees expense, which is typically a regular monthly expense. It may have been overlooked.'}, {'period': 'February 2024', 'insight': 'The Management Fees (552.83) for this month are unusually high, matching the amount typically seen for Rates. This could be a mislabeling or data entry error.'}, {'period': 'March 2024', 'insight': 'The Mortgage Interest (2392.0) for this month is lower than the usual range. This might be worth checking for accuracy.'}] (test_company_insights.py:43)

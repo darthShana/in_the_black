@@ -11,14 +11,14 @@ log = logging.getLogger(__name__)
 def generate_statement_of_profit_or_loss(accounts: Dict[str, Account]) -> dict:
     revenue_items = [{
         'display_name': v.display_name,
-        'balance': v.balance()}
+        'balance': float(v.balance())}
         for k, v in accounts.items()
         if v.account_type == AccountTypeEnum.REVENUE]
     revenue_total = sum(account['balance'] for account in revenue_items)
 
     expenses_items = [{
         'display_name': v.display_name,
-        'balance': v.balance()}
+        'balance': float(v.balance())}
         for k, v in accounts.items()
         if v.account_type == AccountTypeEnum.EXPENSES]
     expenses_total = sum(account['balance'] for account in expenses_items)

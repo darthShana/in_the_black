@@ -25,6 +25,12 @@ interface ProfitOrLossReportLine {
   subtitle: boolean;
 }
 
+interface FinancialPositionReportLine {
+  description: string;
+  amount?: string;
+  subtitle: boolean;
+}
+
 interface IncomeReportLine {
   description: string;
   amount: string
@@ -61,9 +67,11 @@ export class EndOfYearReportsComponent implements OnInit{
 
 
   protected profitOrLoss: ProfitOrLossReportLine[] = []
+  protected financialPosition: FinancialPositionReportLine[] = []
   protected taxableIncome: IncomeReportLine[] = []
   protected depreciation: DepreciationReportLine[] = []
   profitOrLossDisplayedColumns: string[] = ['description', 'amount'];
+  financialPositionDisplayedColumns: string[] = ['description', 'amount'];
   depreciationDisplayedColumns: string[] = ['asset', 'date_purchase', 'cost', 'opening_value', 'rate', 'method', 'depreciation', 'closing_value'];
 
   constructor(private assistantService: AssistantService){}
@@ -72,20 +80,35 @@ export class EndOfYearReportsComponent implements OnInit{
 
     console.log("display statement_of_profit_or_loss")
     let pOrL = this.eoyReports['statement_of_profit_or_loss']
+    let fp = this.eoyReports['statement_of_financial_position']
     let tax = this.eoyReports['tax']
 
     this.profitOrLoss.push({description: "Revenue", amount:undefined, subtitle:true})
-
     for (let revenueItem of pOrL['revenue_items']){
       this.profitOrLoss.push({description: revenueItem['display_name'], amount:revenueItem['balance'], subtitle:false})
     }
-    this.profitOrLoss.push({description: "Total Trading Income", amount:pOrL['gross_profit'], subtitle:true})
 
+    this.profitOrLoss.push({description: "Total Trading Income", amount:pOrL['gross_profit'], subtitle:true})
     for (let expenseItem of pOrL['expenses_items']){
       this.profitOrLoss.push({description: expenseItem['display_name'], amount:expenseItem['balance'], subtitle:false})
     }
+
     this.profitOrLoss.push({description: "Total Expenses", amount:pOrL['expenses_total'], subtitle:true})
 
+    this.financialPosition.push({description: "Assets", amount: undefined, subtitle:true})
+    for (let assetItem of fp['asset_items']){
+      this.financialPosition.push({description: assetItem['display_name'], amount:assetItem['balance'], subtitle:false})
+    }
+
+    this.financialPosition.push({description: "Liabilities", amount: undefined, subtitle:true})
+    for (let assetItem of fp['liability_items']){
+      this.financialPosition.push({description: assetItem['display_name'], amount:assetItem['balance'], subtitle:false})
+    }
+
+    this.financialPosition.push({description: "Equity", amount: undefined, subtitle:true})
+    for (let assetItem of fp['equity_items']){
+      this.financialPosition.push({description: assetItem['display_name'], amount:assetItem['balance'], subtitle:false})
+    }
 
     console.log("display depreciation")
     for (let item of tax['depreciation']){

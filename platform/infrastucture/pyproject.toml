@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "infrastucture"
+version = "0.1.0"
+description = ""
+authors = ["Dharshana Ratnayake <darthShana@gmail.com>"]
+readme = "README.md"
+
+packages = [
+    { include = "crud_entities"}
+]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pulumi = "^3.137.0"
+pulumi-aws = "^6.57.0"
+poetry-plugin-dotenv = "^2.4.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

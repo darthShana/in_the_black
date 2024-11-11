@@ -1,22 +1,26 @@
 import json
 import logging
 import os
+import uuid
+from datetime import datetime
+
 import requests
 
 import boto3
-import base64
 import jwt
 
 from jwt.algorithms import RSAAlgorithm
-from botocore.exceptions import ClientError
 from boto3.dynamodb.conditions import Key
 
 # Initialize the DynamoDB client
+dynamo = boto3.client('dynamodb')
 dynamodb = boto3.resource('dynamodb')
 
+user_table = dynamodb.Table('Users')
+
 # Get the table
-table = dynamodb.Table('Users')
 log = logging.getLogger(__name__)
+
 USER_POOL_ID = os.environ['USER_POOL_ID']
 CLIENT_ID = os.environ["CLIENT_ID"]
 REGION = os.environ["AWS_DEFAULT_REGION"]
@@ -85,8 +89,7 @@ def handler(event, context):
         email = decoded_token.get('username')
         print(f"username: {email}")
 
-        # Query the global secondary index
-        response = table.query(
+        response = user_table.query(
             IndexName='EmailIndex',
             KeyConditionExpression=Key('UserEmail').eq(email)
         )
@@ -96,41 +99,28 @@ def handler(event, context):
             log.info(f"user {user}")
 
             user_id = user['UserID']
-            # Get the file content from the event body
-            # Get the file content and filename from the event
-            file_content = base64.b64decode(event['body'])
-            content_disposition = event['headers'].get('content-disposition', '')
-            filename = content_disposition.split('filename=')[1].strip('"') if 'filename=' in content_disposition else 'unknown_file'
 
-            # Create the S3 object key
-            s3_key = f"{user_id}/{filename}"
-            print(f"s3_key: {s3_key}")
+            body = json.loads(event['body'])
+            print(f"body: {body}")
 
-            # Upload the file to S3
-            s3 = boto3.client('s3')
-            bucket_name = os.environ['BUCKET_NAME']  # Store this in Lambda environment variables
-            s3.put_object(Bucket=bucket_name, Key=s3_key, Body=file_content)
+            if body.get('accepted_anomaly') is not None:
+                accepted_anomaly = body.get('accepted_anomaly')
+                date_object = datetime.strptime(accepted_anomaly['period'], "%B %Y").date()
+                dynamo.put_item(TableName="AcceptedAnomalies", Item={
+                        'Id': {'S': str(uuid.uuid4())},
+                        'UserId': {'S': user_id},
+                        'Date': {'S': date_object.strftime("%Y/%m/%d")},
+                        'Period': {'S': accepted_anomaly['period']},
+                        'Insight': {'S': accepted_anomaly['insight']},
+                        'AcceptReason': {'S': accepted_anomaly['accept_reason']},
+                    }
+                )
 
-            return {
-                'statusCode': 200,
-                'body': json.dumps(f'File uploaded successfully. Object key: {s3_key}')
-            }
-        else:
-            return {
-                'statusCode': 400,
-                'body': json.dumps('Bad Request: Username not found in token')
-            }
+                return {
+                    'statusCode': 200,
+                    'body': json.dumps('Anomaly accepted successfully.')
+                }
 
-    except jwt.InvalidTokenError:
-        return {
-            'statusCode': 401,
-            'body': json.dumps('Unauthorized: Invalid token')
-        }
-    except ClientError as e:
-        return {
-            'statusCode': 500,
-            'body': json.dumps(f'Error uploading file: {str(e)}')
-        }
     except Exception as e:
         return {
             'statusCode': 500,

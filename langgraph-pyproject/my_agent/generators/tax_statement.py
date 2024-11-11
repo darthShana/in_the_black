@@ -3,14 +3,15 @@ import json
 from datetime import datetime
 from typing import List
 
-import boto3
 from boto3.dynamodb.conditions import Key, Attr
 
 from my_agent.model.account import Account, AccountTypeEnum
 from my_agent.model.user import Property, Asset, AssetTypeEnum
 from my_agent.retrievers.ir_264 import calculate_depreciation
+from my_agent.utils.aws_credentials import AWSSessionFactory
 
-dynamodb = boto3.resource('dynamodb')
+aws = AWSSessionFactory()
+dynamodb = aws.get_session().resource('dynamodb')
 
 
 def to_asset(item: dict) -> Asset:
@@ -42,8 +43,8 @@ def get_other_revenue(accounts):
 def generate_tax_statement(customer_id: str, properties: List[Property], year: int, accounts: dict[str, Account]):
     table = dynamodb.Table('CustomerAssets')
 
-    property_attr = boto3.dynamodb.conditions.Attr('PropertyID')
-    customer_attr = boto3.dynamodb.conditions.Attr('CustomerNumber')
+    property_attr = Attr('PropertyID')
+    customer_attr = Attr('CustomerNumber')
     response = table.scan(
         FilterExpression=
         customer_attr.eq(customer_id)
@@ -56,7 +57,7 @@ def generate_tax_statement(customer_id: str, properties: List[Property], year: i
         depreciation.append({
             'asset': str(asset.asset_type),
             'date_purchase': asset.installation_date.strftime('%Y/%m/%d'),
-            'cost': asset.installation_value,
+            'cost': float(asset.installation_value),
             'opening_value': dep['opening_value'],
             'rate': dep['rate'],
             'method': 'DV',
@@ -68,13 +69,13 @@ def generate_tax_statement(customer_id: str, properties: List[Property], year: i
 
     income = {}
     if 'rental_revenue' in accounts:
-        income['total_rents'] = accounts['rental_revenue'].balance()
+        income['total_rents'] = float(accounts['rental_revenue'].balance())
     if other_revenue is not None:
-        income['other_income'] = other_revenue
+        income['other_income'] = float(other_revenue)
     if other_revenue_description is not None:
         income['other_income_description'] = other_revenue_description
     if 'rental_revenue' in accounts and other_revenue is not None:
-        income['total_income'] = accounts['rental_revenue'].balance() + other_revenue
+        income['total_income'] = float(accounts['rental_revenue'].balance()) + float(other_revenue)
 
     return {
         'depreciation': depreciation,

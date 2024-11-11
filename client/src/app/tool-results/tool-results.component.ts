@@ -39,11 +39,10 @@ export class ToolResultsComponent implements OnInit, OnDestroy{
       .pipe(takeUntil(this.unsubscribe))
       .subscribe(event => {
         let completedTool = event.name
-        console.log("completed tool in tool results:"+completedTool)
+        console.log("completed tool in tool:"+completedTool)
 
         let json = event.content
-        const modifiedString = json.replace(/'/g, '"').replace(/Decimal\(/g, '').replace(/\)/g, '');
-        this.toolResult = JSON.parse(modifiedString, decimalReviver);
+        this.toolResult = JSON.parse(event.content, decimalReviver);
 
         if(this.transactionTools.has(completedTool)){
           this.showTransactions = true;

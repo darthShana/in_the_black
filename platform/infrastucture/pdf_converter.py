@@ -54,7 +54,7 @@ def create_pdf_converter(api):
     pdf_to_image_lambda = aws.lambda_.Function(
         "pdfToImageLambda",
         runtime="python3.8",
-        handler="lambda_function.handler",
+        handler="crud_entity_maintenance.handler",
         role=lambda_role.arn,
         code=create_lambda_asset(),
         layers=[poppler_layer.arn, "arn:aws:lambda:us-east-1:770693421928:layer:Klayers-p38-Pillow:10"],

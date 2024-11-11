@@ -10,7 +10,7 @@ from pydantic import BaseModel, Field
 from my_agent.retrievers.get_user import UserRetriever
 from my_agent.retrievers.metadata import get_metadata
 from my_agent.retrievers.property_valuation import get_market_data
-from my_agent.tools.generate_end_of_year_reports import generate_end_of_year_reports
+from my_agent.tools.generate_end_of_year_reports import generate_end_of_year_reports_internal
 from my_agent.retrievers.get_accounts import monthly_expenses
 
 log = logging.getLogger(__name__)
@@ -32,7 +32,7 @@ def company_overview(config: RunnableConfig, start_date: datetime, end_date: dat
 
     monthly = monthly_expenses(user, current_date, end_date)
 
-    end_of_year = generate_end_of_year_reports(config, start_date, end_date)
+    end_of_year = generate_end_of_year_reports_internal(config, start_date, end_date)
     market_info = get_market_data(user.properties[0])
     log.info("market_info")
     log.info(market_info)
@@ -57,10 +57,10 @@ def company_overview(config: RunnableConfig, start_date: datetime, end_date: dat
         'property_details': property_dict,
         'property_assets': property_assets,
         'monthly_expenses': monthly,
-        'p&l': end_of_year['statement_of_profit_or_loss']['gross_profit'] - end_of_year['statement_of_profit_or_loss']['expenses_total'],
-        'yield': annual_rental_revenue / market_info.estimated_value,
-        'market_yield': market_info.market_rental * 52 / market_info.estimated_value,
-        'expenses': end_of_year['statement_of_profit_or_loss']['expenses_items'],
+        'p&l': float(end_of_year['statement_of_profit_or_loss']['gross_profit'] - end_of_year['statement_of_profit_or_loss']['expenses_total']),
+        'yield': annual_rental_revenue / float(market_info.estimated_value),
+        'market_yield': float(market_info.market_rental * 52 / market_info.estimated_value),
+        'expenses': [{'display_name': item['display_name'], 'balance': float(item['balance'])} for item in end_of_year['statement_of_profit_or_loss']['expenses_items']],
     }
 
 

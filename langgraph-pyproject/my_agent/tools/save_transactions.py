@@ -3,7 +3,6 @@ import logging
 import uuid
 from typing import Annotated
 
-import boto3
 from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import PromptTemplate, FewShotPromptWithTemplates
 from langchain_core.runnables import RunnableConfig
@@ -16,11 +15,12 @@ from my_agent.model.transaction import BankAccountTypeEnum
 from my_agent.retrievers.get_user import UserRetriever
 from my_agent.retrievers.utils import escape_examples
 from my_agent.tools.templates import dto_mapping_example_template, dto_mapping_prefix, dto_mapping_examples
+from my_agent.utils.aws_credentials import AWSSessionFactory
 
 log = logging.getLogger(__name__)
 
 chat = ChatAnthropic(model="claude-3-5-sonnet-20240620", max_tokens=4096)
-dynamo = boto3.client('dynamodb')
+dynamo = AWSSessionFactory().get_session().client('dynamodb')
 
 EXAMPLE_PROMPT2 = PromptTemplate(
     input_variables=["transaction", "result"], template=dto_mapping_example_template

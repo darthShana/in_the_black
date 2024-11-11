@@ -1,17 +1,17 @@
 import logging
 from typing import List
 
-import boto3
 from langchain_core.runnables import RunnableConfig
 from langchain_core.tools import StructuredTool
 
 from my_agent.retrievers.file_loader import AWSCSVFileLoader, AWSPDFFileLoader
 from my_agent.retrievers.get_user import UserRetriever
 from my_agent.retrievers.transaction_retriever import TransactionRetriever
+from my_agent.utils.aws_credentials import AWSSessionFactory
 
 statement_retriever = TransactionRetriever()
 
-s3 = boto3.client('s3')
+s3 = AWSSessionFactory().get_session().client('s3')
 log = logging.getLogger(__name__)
 
 

@@ -1,6 +1,5 @@
 import logging
 
-import boto3
 from langchain_anthropic import ChatAnthropic
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.runnables import RunnableConfig
@@ -11,9 +10,11 @@ from pydantic.v1 import Field, BaseModel
 from my_agent.model.document import DocumentTypeEnum
 from my_agent.retrievers.file_loader import AWSCSVFileLoader, AWSPDFFileLoader
 from my_agent.retrievers.get_user import UserRetriever
+from my_agent.utils.aws_credentials import AWSSessionFactory
 
 log = logging.getLogger(__name__)
-s3 = boto3.client('s3')
+aws = AWSSessionFactory()
+s3 = aws.get_session().client('s3')
 chat = ChatAnthropic(model="claude-3-5-sonnet-20240620")
 
 

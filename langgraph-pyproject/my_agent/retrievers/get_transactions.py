@@ -3,12 +3,13 @@ from datetime import datetime
 from typing import List, Optional
 
 import decimal
-import boto3
 from boto3.dynamodb.conditions import Key, Attr
 
 from my_agent.model.transaction import Transaction
+from my_agent.utils.aws_credentials import AWSSessionFactory
 
-dynamodb = boto3.resource('dynamodb')
+aws = AWSSessionFactory()
+dynamodb = aws.get_session().resource('dynamodb')
 
 
 def to_transaction(i):

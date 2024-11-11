@@ -3,7 +3,7 @@ from datetime import datetime
 from decimal import Decimal
 from langsmith import unit
 
-from my_agent.tools.generate_end_of_year_reports import generate_end_of_year_reports
+from my_agent.tools.generate_end_of_year_reports import generate_end_of_year_reports, generate_end_of_year_reports_internal
 from tests.test_get_accounts import to_transaction
 
 log = logging.getLogger(__name__)
@@ -21,7 +21,7 @@ def test_generate_profit_or_loss_dharsh(sample_transaction_types, sample_transac
         return transactions
 
     monkeypatch.setattr("my_agent.tools.get_accounts.get_transactions", mock_get_transactions)
-    reports = generate_end_of_year_reports(datetime(2023, 4, 1), datetime(2024, 3, 31))
+    reports = generate_end_of_year_reports_internal(datetime(2023, 4, 1), datetime(2024, 3, 31))
 
     pl = reports['statement_of_profit_or_loss']
 
