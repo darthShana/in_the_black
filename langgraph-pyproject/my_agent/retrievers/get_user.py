@@ -16,10 +16,6 @@ REGION = os.environ["AWS_DEFAULT_REGION"]
 
 # Initialize the DynamoDB client
 aws = AWSSessionFactory()
-dynamodb = aws.get_session().resource('dynamodb')
-
-# Get the table
-table = dynamodb.Table('Users')
 
 
 def verify_token(token: str):
@@ -67,6 +63,11 @@ class UserRetriever:
 
     @staticmethod
     def get_user(access_token: str) -> UserInfo:
+        dynamodb = aws.get_session().resource('dynamodb')
+
+        # Get the table
+        table = dynamodb.Table('Users')
+
         payload = verify_token(access_token)
         email = payload.get('username')
 
