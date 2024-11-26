@@ -4,12 +4,12 @@ from boto3.dynamodb.conditions import Key, Attr
 from my_agent.model.user import UserInfo
 from my_agent.utils.aws_credentials import AWSSessionFactory
 
-aws = AWSSessionFactory()
-dynamodb = aws.get_session().resource('dynamodb')
-table = dynamodb.Table('AcceptedAnomalies')
-
 
 def accepted_anomalies(user: UserInfo, start_date: datetime, end_date: datetime):
+    aws = AWSSessionFactory()
+    dynamodb = aws.get_session().resource('dynamodb')
+    table = dynamodb.Table('AcceptedAnomalies')
+
     customer_attr = Attr('UserId')
     date_attr = Attr('Date')
 

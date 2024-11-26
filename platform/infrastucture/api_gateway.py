@@ -6,9 +6,19 @@ def create_api_gateway(cognito):
     http_endpoint = aws.apigatewayv2.Api("api-gateway-http",
         protocol_type="HTTP",
         cors_configuration={
-            "allow_origins": ["http://localhost:4200"],
+            "allow_origins": ["http://localhost:4200", "https://d3oqhhtuqrkt4g.cloudfront.net"],
             "allow_methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-            "allow_headers": ["Content-Type", "Authorization", "Content-Disposition", "X-Amz-Date", "X-Api-Key", "X-Amz-Security-Token"],
+            "allow_headers": [
+                "Content-Type",
+                "Authorization",
+                "Content-Disposition",
+                "X-Amz-Date",
+                "X-Api-Key",
+                "X-Amz-Security-Token",
+                "Origin",
+                "Access-Control-Request-Headers",
+                "Access-Control-Request-Method"
+            ],
             "allow_credentials": True,
             "max_age": 300
         }

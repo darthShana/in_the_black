@@ -10,9 +10,6 @@ from my_agent.model.user import Property, Asset, AssetTypeEnum
 from my_agent.retrievers.ir_264 import calculate_depreciation
 from my_agent.utils.aws_credentials import AWSSessionFactory
 
-aws = AWSSessionFactory()
-dynamodb = aws.get_session().resource('dynamodb')
-
 
 def to_asset(item: dict) -> Asset:
     asset_type_str = json.loads(item['AssetType'])
@@ -41,6 +38,8 @@ def get_other_revenue(accounts):
 
 
 def generate_tax_statement(customer_id: str, properties: List[Property], year: int, accounts: dict[str, Account]):
+    aws = AWSSessionFactory()
+    dynamodb = aws.get_session().resource('dynamodb')
     table = dynamodb.Table('CustomerAssets')
 
     property_attr = Attr('PropertyID')

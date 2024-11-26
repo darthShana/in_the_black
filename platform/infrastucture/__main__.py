@@ -5,6 +5,7 @@ import pulumi
 import pulumi_aws as aws
 from pulumi_aws import s3
 
+from app_hosting.app_hosting import create_app_hosting
 from api_gateway import create_api_gateway
 from cognito_user_pool import create_cognito
 from crud_entities.crud_entities import create_crud_entity_maintenance
@@ -12,6 +13,7 @@ from document_upload import create_document_upload
 from pdf_converter import create_pdf_converter
 from persistance import create_dbs
 from property_valuation import create_property_valuation
+from settings_resource.settings_resource import create_settings_resource
 
 # Create an AWS resource (S3 Bucket)
 bucket = s3.Bucket('black-transactions')
@@ -142,11 +144,14 @@ pulumi.export("access_key_id", langgraph_user_access_key.id)
 pulumi.export("secret_access_key", langgraph_user_access_key.secret)
 
 cognito_outputs = create_cognito()
-gateway = create_api_gateway(cognito_outputs)
-pdf_converter_outputs = create_pdf_converter(gateway)
-property_valuation_outputs = create_property_valuation(gateway)
-document_upload_outputs = create_document_upload(gateway, bucket, dbs['users'], cognito_outputs['user_auth_pool_client'])
-crud_maintenance_outputs = create_crud_entity_maintenance(gateway['gateway'], gateway['user_authorizer'], dbs['users'], cognito_outputs['user_auth_pool_client'], langgraph_role)
+gateway_outputs = create_api_gateway(cognito_outputs)
+app_hosting = create_app_hosting(gateway_outputs['gateway'], gateway_outputs['stage'])
+settings = create_settings_resource(cognito_outputs['user_pool'], cognito_outputs['user_auth_pool_client'], gateway_outputs['gateway'])
+
+pdf_converter_outputs = create_pdf_converter(gateway_outputs)
+property_valuation_outputs = create_property_valuation(gateway_outputs)
+document_upload_outputs = create_document_upload(gateway_outputs, bucket, dbs['users'], cognito_outputs['user_auth_pool_client'])
+crud_maintenance_outputs = create_crud_entity_maintenance(gateway_outputs['gateway'], gateway_outputs['user_authorizer'], dbs['users'], cognito_outputs['user_auth_pool_client'], langgraph_role)
 
 # Export values if needed
 pulumi.export("pdf-converter-http-endpoint", pdf_converter_outputs["apigatewayv2-http-endpoint"])

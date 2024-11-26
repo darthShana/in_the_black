@@ -7,6 +7,7 @@ import {CommonModule} from "@angular/common";
 import {MatButton} from "@angular/material/button";
 import {AuthService} from "../../service/auth.service";
 import {AssistantService} from "../../service/assistant.service";
+import {ApiService} from "../../service/api-service.service";
 
 @Component({
   selector: 'app-file-upload',
@@ -25,7 +26,7 @@ export class FileUploadComponent {
   selectedFile: File | null = null;
   uploading = false;
 
-  constructor(private http: HttpClient, private authService: AuthService, private assistantService: AssistantService) {}
+  constructor(private http: HttpClient, private apiService: ApiService, private authService: AuthService, private assistantService: AssistantService) {}
 
   onFileSelected(event: any): void {
     this.selectedFile = event.target.files[0];
@@ -45,7 +46,7 @@ export class FileUploadComponent {
             'Content-Disposition': `attachment; filename="${this.selectedFile.name}"`
           });
 
-          this.http.post('https://jtk21yuyi2.execute-api.us-east-1.amazonaws.com/prod-9c56ae7/document-upload',
+          this.http.post(`${this.apiService.getApiUrl()}/document-upload`,
             formData,
             { headers: headers, withCredentials: true}
           ).pipe(

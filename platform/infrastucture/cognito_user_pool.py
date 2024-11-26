@@ -52,8 +52,8 @@ def create_cognito():
         allowed_oauth_scopes=["email", "openid", "profile"],
         allowed_oauth_flows_user_pool_client=True,
         supported_identity_providers=["COGNITO"],
-        callback_urls=["http://localhost:4200/signin-callback"],  # Replace with your actual callback URL
-        logout_urls=["http://localhost:4200/logout"],  # Replace with your actual logout URL
+        callback_urls=["https://app.accountingassistant.io/signin-callback", "http://localhost:4200/signin-callback"],  # Replace with your actual callback URL
+        logout_urls=["https://app.accountingassistant.io/logout", "http://localhost:4200/logout"],  # Replace with your actual logout URL
         explicit_auth_flows=[
             "ALLOW_USER_SRP_AUTH",
             "ALLOW_REFRESH_TOKEN_AUTH",

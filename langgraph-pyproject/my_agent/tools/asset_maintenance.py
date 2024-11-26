@@ -12,9 +12,6 @@ from pydantic import BaseModel, Field
 from my_agent.retrievers.get_user import UserRetriever
 from my_agent.utils.aws_credentials import AWSSessionFactory
 
-aws = AWSSessionFactory()
-dynamo = aws.get_session().client('dynamodb')
-
 
 class AssetInput(BaseModel):
     config: RunnableConfig = Field(description="rannable config")
@@ -24,6 +21,9 @@ class AssetInput(BaseModel):
 
 
 def add_asset(config: RunnableConfig, asset_type: str, installation_date: date, installation_value: Decimal):
+    aws = AWSSessionFactory()
+    dynamo = aws.get_session().client('dynamodb')
+
     token = config.get("configurable", {}).get("access_token")
     user = UserRetriever.get_user(token)
 

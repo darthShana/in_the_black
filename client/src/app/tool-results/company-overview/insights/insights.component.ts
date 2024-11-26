@@ -22,11 +22,11 @@ import {
   MatDialogContent,
   MatDialogTitle
 } from "@angular/material/dialog";
-import {AddAssetDialog} from "../../end-of-year-reports/end-of-year-reports.component";
 import {MatInput, MatInputModule} from "@angular/material/input";
 import {AuthService} from "../../../service/auth.service";
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {AssistantService} from "../../../service/assistant.service";
+import {ApiService} from "../../../service/api-service.service";
 
 @Component({
   selector: 'app-insights',
@@ -85,7 +85,7 @@ export class InsightsComponent implements OnInit{
 export class AcceptAnomalyDialog {
   data = inject(MAT_DIALOG_DATA);
 
-  constructor(private authService: AuthService, private assistantService: AssistantService, private httpClient: HttpClient) {
+  constructor(private authService: AuthService, private assistantService: AssistantService, private httpClient: HttpClient, private apiService: ApiService) {
   }
 
   acceptAnomalyFrom = new FormGroup({
@@ -108,7 +108,7 @@ export class AcceptAnomalyDialog {
           }
         };
 
-        this.httpClient.post('https://jtk21yuyi2.execute-api.us-east-1.amazonaws.com/prod-9c56ae7/crud-entity-maintenance',
+        this.httpClient.post(`${this.apiService.getApiUrl()}/crud-entity-maintenance`,
           payload,
           { headers: headers, withCredentials: true}
           ).pipe().subscribe({

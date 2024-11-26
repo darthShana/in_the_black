@@ -6,7 +6,8 @@ authors = ["Dharshana Ratnayake <darthShana@gmail.com>"]
 readme = "README.md"
 
 packages = [
-    { include = "crud_entities"}
+    { include = "crud_entities"},
+    { include = "app_hosting"}
 ]
 
 [tool.poetry.dependencies]

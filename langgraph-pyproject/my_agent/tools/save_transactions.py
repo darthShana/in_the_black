@@ -20,7 +20,6 @@ from my_agent.utils.aws_credentials import AWSSessionFactory
 log = logging.getLogger(__name__)
 
 chat = ChatAnthropic(model="claude-3-5-sonnet-20240620", max_tokens=4096)
-dynamo = AWSSessionFactory().get_session().client('dynamodb')
 
 EXAMPLE_PROMPT2 = PromptTemplate(
     input_variables=["transaction", "result"], template=dto_mapping_example_template
@@ -110,6 +109,7 @@ def save_classified_transactions(config: RunnableConfig, state: Annotated[dict, 
     log.info(f"saving records to dynamo:{len(mapped)}")
     for item in mapped:
         try:
+            dynamo = AWSSessionFactory().get_session().client('dynamodb')
             dynamo.put_item(TableName="Transactions", Item=item)
         except Exception as e:
             log.error(e)

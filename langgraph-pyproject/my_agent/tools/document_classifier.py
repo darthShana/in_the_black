@@ -13,8 +13,6 @@ from my_agent.retrievers.get_user import UserRetriever
 from my_agent.utils.aws_credentials import AWSSessionFactory
 
 log = logging.getLogger(__name__)
-aws = AWSSessionFactory()
-s3 = aws.get_session().client('s3')
 chat = ChatAnthropic(model="claude-3-5-sonnet-20240620")
 
 
@@ -24,6 +22,9 @@ class ClassifyDocumentInput(BaseModel):
 
 
 def classify_document(config: RunnableConfig, file_name: str) -> DocumentTypeEnum:
+    aws = AWSSessionFactory()
+    s3 = aws.get_session().client('s3')
+
     token = config.get("configurable", {}).get("access_token")
     user = UserRetriever.get_user(token)
 

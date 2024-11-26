@@ -8,9 +8,6 @@ from boto3.dynamodb.conditions import Key, Attr
 from my_agent.model.transaction import Transaction
 from my_agent.utils.aws_credentials import AWSSessionFactory
 
-aws = AWSSessionFactory()
-dynamodb = aws.get_session().resource('dynamodb')
-
 
 def to_transaction(i):
     return Transaction(
@@ -24,6 +21,8 @@ def to_transaction(i):
 
 
 def get_transactions(user_id: str, start: Optional[datetime], end: Optional[datetime]) -> List[Transaction]:
+    aws = AWSSessionFactory()
+    dynamodb = aws.get_session().resource('dynamodb')
     table = dynamodb.Table('Transactions')
 
     customer_attr = Attr('CustomerNumber')

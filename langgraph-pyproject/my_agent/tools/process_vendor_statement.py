@@ -12,7 +12,6 @@ from my_agent.retrievers.transaction_retriever import TransactionRetriever
 from my_agent.utils.aws_credentials import AWSSessionFactory
 
 log = logging.getLogger(__name__)
-s3 = AWSSessionFactory().get_session().client('s3')
 transaction_retriever = TransactionRetriever()
 
 
@@ -25,6 +24,7 @@ class ClassifyTransactionsInput(BaseModel):
 
 def classify_vendor_transactions(config: RunnableConfig, file_name: str, filter_transactions: bool, state: Annotated[dict, InjectedState]) -> dict[str, List[dict]]:
     log.info(f"loading vendor transactions: {file_name} filter_transactions: {filter_transactions}")
+    s3 = AWSSessionFactory().get_session().client('s3')
     token = config.get("configurable", {}).get("access_token")
     user = UserRetriever.get_user(token)
 

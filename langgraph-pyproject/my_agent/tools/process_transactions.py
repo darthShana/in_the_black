@@ -11,12 +11,12 @@ from my_agent.utils.aws_credentials import AWSSessionFactory
 
 statement_retriever = TransactionRetriever()
 
-s3 = AWSSessionFactory().get_session().client('s3')
 log = logging.getLogger(__name__)
 
 
 def load_transactions(config: RunnableConfig, file_name: str) -> dict[str, List[dict]]:
     log.info(f"loading bank transactions: {file_name}")
+    s3 = AWSSessionFactory().get_session().client('s3')
     token = config.get("configurable", {}).get("access_token")
     user = UserRetriever.get_user(token)
 

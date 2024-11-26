@@ -14,9 +14,6 @@ USER_POOL_ID = os.environ['COGNITO_USER_POOL_ID']
 CLIENT_ID = os.environ["COGNITO_USER_CLIENT_ID"]
 REGION = os.environ["AWS_DEFAULT_REGION"]
 
-# Initialize the DynamoDB client
-aws = AWSSessionFactory()
-
 
 def verify_token(token: str):
     # Get the JWT headers
@@ -63,6 +60,8 @@ class UserRetriever:
 
     @staticmethod
     def get_user(access_token: str) -> UserInfo:
+        # Initialize the DynamoDB client
+        aws = AWSSessionFactory()
         dynamodb = aws.get_session().resource('dynamodb')
 
         # Get the table

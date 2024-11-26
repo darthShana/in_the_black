@@ -32,7 +32,7 @@ export class AuthService {
   private initializeUserManager(properties: Settings) {
     console.log(properties);
     const settings = {
-      authority: `https://${properties.endpoint}`,
+      authority: `https://${properties.pool}.auth.us-east-1.amazoncognito.com`,
       client_id: properties.clientID,
       redirect_uri: `${window.location.protocol}//${window.location.host}/signin-callback`,
       silent_redirect_uri: `${window.location.protocol}//${window.location.host}/silent-callback.html`,
