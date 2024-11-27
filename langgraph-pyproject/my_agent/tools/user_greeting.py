@@ -8,6 +8,7 @@ from my_agent.retrievers.company_insights import review_expenses
 from my_agent.retrievers.accepted_anomalies import accepted_anomalies
 from my_agent.retrievers.get_transactions import get_transactions
 from my_agent.retrievers.get_user import UserRetriever
+from my_agent.retrievers.metadata import get_metadata
 from my_agent.tools.company_overview import company_overview
 
 
@@ -17,10 +18,18 @@ def user_greeting(config: RunnableConfig):
     transactions = get_transactions(user_id=user.user_id, start=None, end=None)
 
     if not transactions:
-        return """User has no transactions loaded, They can get started by 
-        * uploading some statements with transactions by dragging them into file upload widget
-        * connect to a bank account by pressing the connect to bank account widget 
-        """
+        metadata = get_metadata()
+        property_dict = user.properties[0].model_dump()
+        property_dict['property_type'] = property_dict['property_type'].value
+
+        return json.dumps({
+            'metadata': metadata,
+            'property_details': property_dict,
+            'relevant_insights': """User has no transactions loaded, They can get started by 
+                * uploading some statements with transactions by dragging them into file upload widget
+                * connect to a bank account by pressing the connect to bank account widget 
+                """
+        })
 
     last_transaction = max(transactions, key=lambda t: t.date)
     # Find the end date (last day of the current month)
