@@ -95,7 +95,7 @@ class AWSPDFFileLoader(FileLoader):
         self.bucket = bucket
         self.key = key
         self.s3 = client
-        self.api_url = "https://jtk21yuyi2.execute-api.us-east-1.amazonaws.com/prod-9c56ae7/convert_pdf_to_image"
+        self.api_url = "https://app.accountingassistant.io/convert-pdf-to-image"
 
     def load_content(self) -> list[str]:
         response = self.s3.get_object(Bucket=self.bucket, Key=self.key)
@@ -109,6 +109,7 @@ class AWSPDFFileLoader(FileLoader):
             'Content-Type': 'application/json',
             "Authorization": f"Bearer {token}"
         }
+        log.info('posting to pdf converter')
         response = requests.post(self.api_url, data=payload, headers=headers)
         log.info(response.headers)
         result = json.loads(response.text)

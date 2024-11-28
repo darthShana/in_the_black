@@ -207,6 +207,22 @@ def create_app_hosting(gateway: Api, stage: Stage):
                 max_ttl=0,
                 compress=True,
             ),
+            aws.cloudfront.DistributionOrderedCacheBehaviorArgs(
+                path_pattern="/convert-pdf-to-image*",
+                allowed_methods=["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"],
+                cached_methods=["GET", "HEAD"],
+                target_origin_id="APIGateway",
+                forwarded_values=aws.cloudfront.DistributionOrderedCacheBehaviorForwardedValuesArgs(
+                    query_string=True,
+                    headers=["Authorization", "Origin", "Access-Control-Request-Headers", "Access-Control-Request-Method"],
+                    cookies=aws.cloudfront.DistributionOrderedCacheBehaviorForwardedValuesCookiesArgs(forward="all"),
+                ),
+                viewer_protocol_policy="redirect-to-https",
+                min_ttl=0,
+                default_ttl=0,
+                max_ttl=0,
+                compress=True,
+            ),
         ],
 
         restrictions=aws.cloudfront.DistributionRestrictionsArgs(

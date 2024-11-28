@@ -26,6 +26,7 @@ class TransactionRetriever:
 
     statement_extraction_prefix = """
         You are a book keeper for a residential rental company. Extract a list of transactions present in statement.
+        Exclude opening and closing balances, as these are not transactions
         Produce the list where each element has all fields, do NOT group them
         Extract the result in json format marking the json as ```json:"""
 
@@ -68,7 +69,6 @@ class TransactionRetriever:
         markdown = parse_json_markdown(response.content)
         transactions.extend(markdown)
         return transactions
-
 
     def _extract_from_dataframe(self, data_frame: pd.DataFrame) -> list[dict]:
         return data_frame.to_dict("records")

@@ -25,13 +25,13 @@ export class AssistantService {
   public toolProgressSubject: Subject<string> = new Subject()
 
 
-  // client = new Client()
-  client = new Client({
-    apiUrl: "https://ht-another-propane-44-77e8f9bf34eb5c32ab43c5c4e6bfba05.default.us.langgraph.app",
-    defaultHeaders: {
-      'x-api-key': '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',
-    },
-  });
+  client = new Client()
+  // client = new Client({
+  //   apiUrl: "https://ht-another-propane-44-77e8f9bf34eb5c32ab43c5c4e6bfba05.default.us.langgraph.app",
+  //   defaultHeaders: {
+  //     'x-api-key': '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',
+  //   },
+  // });
   thread?: Thread;
   assistant?: Assistant;
 

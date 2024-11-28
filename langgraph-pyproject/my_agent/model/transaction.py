@@ -31,6 +31,9 @@ available_transaction_types = [{
         "name": "property maintenance",
         "description": "expenses for property maintenance"
     }, {
+        "name": "bank fees",
+        "description": "fees charged by the bank"
+    },{
         "name": "capital withdrawal",
         "description": "funds taken out of the company account"
     }, {

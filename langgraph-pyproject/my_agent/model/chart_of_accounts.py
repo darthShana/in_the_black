@@ -21,6 +21,7 @@ default_chart_of_accounts = ChartOfAccounts(
             'insurance': {'display_name': 'Insurance', 'account_type': AccountTypeEnum.EXPENSES},
             'loans': {'display_name': 'loans', 'account_type': AccountTypeEnum.LIABILITY},
             'management_fees': {'display_name': 'Management Fees', 'account_type': AccountTypeEnum.EXPENSES},
+            'bank_fees': {'display_name': 'Bank Fees', 'account_type': AccountTypeEnum.EXPENSES},
             'maintenance_expenses': {'display_name': 'Maintenance Expenses', 'account_type': AccountTypeEnum.EXPENSES}
         },
         transaction_map={
@@ -32,6 +33,7 @@ default_chart_of_accounts = ChartOfAccounts(
             'insurance': {'debit': 'insurance', 'credit': 'bank_account'},
             'property management': {'debit': 'management_fees', 'credit': 'bank_account'},
             'property maintenance': {'debit': 'maintenance_expenses', 'credit': 'bank_account'},
+            'bank fees': {'debit': 'bank_fees', 'credit': 'bank_account'},
             'capital withdrawal':  {'debit': 'capital', 'credit': 'bank_account'},
             'capital deposit':  {'debit': 'bank_account', 'credit': 'capital'},
             'capital deposit reversal':  {'debit': 'capital', 'credit': 'bank_account'},
