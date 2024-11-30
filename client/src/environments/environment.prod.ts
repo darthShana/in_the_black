@@ -5,6 +5,7 @@ export const environment = {
   localSettings: {
     endpoint: '',
     clientID: '',
-    pool: ''
+    pool: '',
+    langgraph_api_key: '',
   }
 };

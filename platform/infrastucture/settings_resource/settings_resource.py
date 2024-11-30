@@ -32,6 +32,8 @@ def create_settings_resource(user_pool: UserPool, user_pool_client: UserPoolClie
         policy_arn="arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
     )
 
+    secret = aws.secretsmanager.get_secret_version(secret_id="langgraph_api_key")
+
     # Create the Lambda function
     lambda_function = aws.lambda_.Function("settings",
         code=pulumi.asset.AssetArchive({
@@ -46,7 +48,8 @@ def create_settings_resource(user_pool: UserPool, user_pool_client: UserPoolClie
                 "ENVIRONMENT": "production",
                 "ENDPOINT": user_pool.endpoint,
                 "CLIENT_ID": user_pool_client.id,
-                "USER_POOL_ID": user_pool.domain
+                "USER_POOL_ID": user_pool.domain,
+                "LANGGRAPH_API_KEY": secret.secret_string
             }
         }
     )

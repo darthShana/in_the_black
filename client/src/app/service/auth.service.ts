@@ -7,7 +7,8 @@ import { environment } from '../../environments/environment';
 export type Settings = {
   endpoint: string;
   clientID: string;
-  pool: string
+  pool: string;
+  langgraph_api_key: string;
 };
 
 @Injectable({

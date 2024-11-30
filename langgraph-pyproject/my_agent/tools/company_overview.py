@@ -58,7 +58,7 @@ def company_overview(config: RunnableConfig, start_date: datetime, end_date: dat
         'property_assets': property_assets,
         'monthly_expenses': monthly,
         'p&l': float(end_of_year['statement_of_profit_or_loss']['gross_profit'] - end_of_year['statement_of_profit_or_loss']['expenses_total']),
-        'yield': annual_rental_revenue / float(market_info.estimated_value),
+        'yield': float(annual_rental_revenue) / float(market_info.estimated_value),
         'market_yield': float(market_info.market_rental * 52 / market_info.estimated_value),
         'expenses': [{'display_name': item['display_name'], 'balance': float(item['balance'])} for item in end_of_year['statement_of_profit_or_loss']['expenses_items']],
     }

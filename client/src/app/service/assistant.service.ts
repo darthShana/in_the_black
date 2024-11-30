@@ -4,6 +4,9 @@ import { v4 as uuid } from 'uuid';
 import { Assistant, Client, Thread } from '@langchain/langgraph-sdk';
 import { Subject } from 'rxjs/internal/Subject';
 import {User} from "oidc-client-ts";
+import {environment} from "../../environments/environment";
+import {Settings} from "./auth.service";
+import {HttpClient} from "@angular/common/http";
 
 @Injectable({
   providedIn: 'root',
@@ -24,18 +27,14 @@ export class AssistantService {
   public toolResultsSubject: Subject<any> = new Subject()
   public toolProgressSubject: Subject<string> = new Subject()
 
+  client!: Client
 
-  // client = new Client()
-  client = new Client({
-    apiUrl: "https://ht-another-propane-44-77e8f9bf34eb5c32ab43c5c4e6bfba05.default.us.langgraph.app",
-    defaultHeaders: {
-      'x-api-key': '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',
-    },
-  });
   thread?: Thread;
   assistant?: Assistant;
 
-  constructor() {}
+  constructor(private httpClient: HttpClient) {
+
+  }
 
   async stream(prompt: string, showQuestion: boolean, user: User) {
     const input = {
@@ -195,6 +194,25 @@ export class AssistantService {
     if (this.assistant) {
       return;
     }
+
+    // Wait for the settings to be retrieved
+    const settings = await new Promise<Settings>((resolve) => {
+      this.httpClient.get<Settings>('https://app.accountingassistant.io/settings').subscribe(properties => {
+        resolve(properties);
+      });
+    });
+
+    if (environment.useLocalSettings) {
+      this.client = new Client();
+    } else {
+      this.client = new Client({
+        apiUrl: "https://accountingassistant-d607474a4dad5c7ebb0d09000478910f.default.us.langgraph.app",
+        defaultHeaders: {
+          'x-api-key': settings.langgraph_api_key,
+        },
+      });
+    }
+
     this.assistant = await this.client.assistants.create({
       graphId: 'agent',
       config: {
@@ -205,6 +223,7 @@ export class AssistantService {
     });
 
     this.thread = await this.client.threads.create();
+
   }
 
   async updateTransactions(filterMaps: Record<string, any>[], command: string, user: User) {
