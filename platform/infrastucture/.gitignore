@@ -5,6 +5,7 @@ venv/
 
 # Packages
 /dist/*
+layer/
 
 # Unit test / coverage reports
 .coverage
