@@ -47,6 +47,11 @@ EOF
 )"
 
 
-
-aws cognito-idp admin-create-user --user-pool-id us-east-1_F4H8i0qFX --username Ronakkhatri@gmail.com --user-attributes Name=email,Value=Ronakkhatri@gmail.com Name=phone_number,Value=+1234567890 --temporary-password MyTemp123! --message-action SUPPRESS 
+Ronakkhatri@gmail.com
 s5CAKgE_-'W#Gr.{/SVY}(
+
+# wych user
+{
+    "id": "b4fa3d6f-5ab4-43c5-aaae-392076d48246",
+    "email": "darthshana@gmail.com"
+}

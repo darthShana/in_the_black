@@ -239,7 +239,8 @@ def create_app_hosting(gateway: Api, stage: Stage):
 
         aliases=["app.accountingassistant.io"],
 
-        price_class="PriceClass_200"
+        price_class="PriceClass_200",
+
     )
 
     # Create an A record for app.accountingassistant.io

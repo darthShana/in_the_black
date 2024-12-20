@@ -30,9 +30,10 @@ def classify_document(config: RunnableConfig, file_name: str) -> DocumentTypeEnu
 
     document_type_selection_prompt = """Given some document content, select the most appropriate document type from document types provided.
                 Document types:
-                bank_statement: a statement containing transactions from a bank with revenue going in as positive amounts and expenses going out as negative amounts"
-                property_management_statement: a statement containing transactions from a property manager collecting rental revenue and paying expenses on the companies behalf"
-                vendor_statement: a statement containing charges from a vendor with payments being made for a service"
+                bank_statement: a statement containing transactions from a bank with revenue going in as positive amounts and expenses going out as negative amounts
+                property_management_statement: a statement containing transactions from a property manager collecting rental revenue and paying expenses on the companies behalf
+                vendor_statement: a statement containing charges from a vendor with payments being made for a service
+                property_valuation_report: a report containing the value of assists in a rental property, which can be depreciated
                 Extract the result in json format with the answer in property document_type, marking the json as ```json:
                 """
     if file_name.endswith(".csv"):
@@ -71,13 +72,16 @@ def classify_document(config: RunnableConfig, file_name: str) -> DocumentTypeEnu
             ]
         )
         chain = prompt | chat
-        response = chain.invoke({"image_data": file_loader.load_content()[0]})
+        content = file_loader.load_content()
+        response = chain.invoke({"image_data": content[0]})
         result = parse_json_markdown(response.content)
 
     if result['document_type'] == 'vendor_statement':
         return DocumentTypeEnum.VENDOR_STATEMENT
     elif result['document_type'] == 'property_management_statement':
         return DocumentTypeEnum.PROPERTY_MANAGEMENT_STATEMENT
+    elif result['document_type'] == 'property_valuation_report':
+        return DocumentTypeEnum.PROPERTY_VALUATION_REPORT
     else:
         return DocumentTypeEnum.BANK_STATEMENT
 

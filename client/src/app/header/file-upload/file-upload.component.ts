@@ -56,7 +56,7 @@ export class FileUploadComponent {
           ).subscribe({
             next: (response) => {
               console.log('File upload success', response)
-              this.assistantService.stream(`process transactions from file ${this.selectedFile?.name}`, true, user)
+              this.assistantService.stream(`process contents of uploaded file ${this.selectedFile?.name}`, true, user)
                 .then(r => console.log("finished streaming file process"))
             },
             error: (error) => {

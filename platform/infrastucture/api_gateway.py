@@ -54,7 +54,7 @@ def create_api_gateway(cognito):
         "prod",
         api_id=http_endpoint.id,
         auto_deploy=True,
-        access_log_settings=None
+        access_log_settings=None,
     )
 
     return {

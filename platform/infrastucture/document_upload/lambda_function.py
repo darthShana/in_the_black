@@ -127,11 +127,13 @@ def handler(event, context):
             'body': json.dumps('Unauthorized: Invalid token')
         }
     except ClientError as e:
+        print(e)
         return {
             'statusCode': 500,
             'body': json.dumps(f'Error uploading file: {str(e)}')
         }
     except Exception as e:
+        print(e)
         return {
             'statusCode': 500,
             'body': json.dumps(f'Internal server error: {str(e)}')
